@@ -40,7 +40,7 @@ export async function loginCustomer(
     return { message: "An error occurred during login" }
   }
 
-  redirect("/")
+  redirect("/dashboard")
 }
 
 export async function loginStaff(
@@ -77,5 +77,5 @@ export async function loginStaff(
     return { message: "An error occurred during login" }
   }
 
-  redirect("/")
+  redirect("/dashboard")
 }
