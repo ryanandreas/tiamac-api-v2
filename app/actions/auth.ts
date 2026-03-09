@@ -4,7 +4,12 @@ import { db } from "@/lib/db"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-export async function loginCustomer(prevState: any, formData: FormData) {
+export type AuthActionState = { message: string } | null
+
+export async function loginCustomer(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
@@ -31,14 +36,17 @@ export async function loginCustomer(prevState: any, formData: FormData) {
     cookieStore.set("customerId", customer.uuid)
     
     // You might want to store more session info or use a proper session library
-  } catch (error) {
+  } catch {
     return { message: "An error occurred during login" }
   }
 
   redirect("/")
 }
 
-export async function loginStaff(prevState: any, formData: FormData) {
+export async function loginStaff(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
@@ -65,9 +73,9 @@ export async function loginStaff(prevState: any, formData: FormData) {
     cookieStore.set("userId", user.uuid)
     cookieStore.set("role", user.role)
 
-  } catch (error) {
+  } catch {
     return { message: "An error occurred during login" }
   }
 
-  redirect("/dashboard") // Assuming staff goes to dashboard
+  redirect("/")
 }

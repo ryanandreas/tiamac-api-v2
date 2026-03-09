@@ -3,7 +3,12 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-export async function getCurrentUser() {
+export type CurrentUser =
+  | { isAuthenticated: true; type: "customer"; id: string }
+  | { isAuthenticated: true; type: "staff"; id: string; role?: string }
+  | { isAuthenticated: false; type: null; id: null }
+
+export async function getCurrentUser(): Promise<CurrentUser> {
   const cookieStore = await cookies()
   const customerId = cookieStore.get("customerId")
   const userId = cookieStore.get("userId")

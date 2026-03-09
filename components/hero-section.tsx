@@ -9,8 +9,8 @@ import 'swiper/css/effect-coverflow'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Menu, Rocket, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { UserDropdown } from '@/components/user-dropdown'
+import type { CurrentUser } from '@/app/actions/session'
 
 const menuItems = [
     { name: 'Features', href: '#' },
@@ -19,7 +19,7 @@ const menuItems = [
     { name: 'About', href: '#' },
 ]
 
-export default function HeroSection({ user }: { user?: any }) {
+export default function HeroSection({ user }: { user?: CurrentUser }) {
     const [menuState, setMenuState] = React.useState(false)
     const isAuthenticated = !!user?.isAuthenticated
 
