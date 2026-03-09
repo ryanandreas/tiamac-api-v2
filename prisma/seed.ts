@@ -66,6 +66,76 @@ async function main() {
     },
   })
   console.log('Upserted customer:', cust2.email)
+
+  // Services
+  // Service 1
+  const service1 = await prisma.services.create({
+    data: {
+      customerId: cust1.uuid,
+      jenis_servis: 'AC',
+      keluhan: 'AC tidak dingin',
+      status: 'Proses Servis',
+      status_servis: 'Sedang Berjalan',
+      biaya: 150000,
+      teknisiId: employee.uuid,
+    },
+  })
+  console.log('Created service 1')
+
+  // Service 2
+  const service2 = await prisma.services.create({
+    data: {
+      customerId: cust2.uuid,
+      jenis_servis: 'Kulkas',
+      keluhan: 'Kulkas mati total',
+      status: 'Menunggu Jadwal',
+      status_servis: 'Menunggu Jadwal',
+      biaya: 0,
+    },
+  })
+  console.log('Created service 2')
+
+  // Service 3
+  const service3 = await prisma.services.create({
+    data: {
+      customerId: cust1.uuid,
+      jenis_servis: 'Mesin Cuci',
+      keluhan: 'Mesin cuci bocor',
+      status: 'Konfirmasi Teknisi',
+      status_servis: 'Konfirmasi Teknisi',
+      biaya: 0,
+      teknisiId: employee.uuid,
+    },
+  })
+  console.log('Created service 3')
+
+  // Service 4
+  const service4 = await prisma.services.create({
+    data: {
+      customerId: cust2.uuid,
+      jenis_servis: 'AC',
+      keluhan: 'Cuci AC',
+      status: 'Menunggu Pembayaran',
+      status_servis: 'Menunggu Pembayaran',
+      biaya: 75000,
+      teknisiId: employee.uuid,
+    },
+  })
+  console.log('Created service 4')
+
+  // Service 5
+  const service5 = await prisma.services.create({
+    data: {
+      customerId: cust1.uuid,
+      jenis_servis: 'Kulkas',
+      keluhan: 'Ganti Freon',
+      status: 'Selesai',
+      status_servis: 'Selesai',
+      biaya: 250000,
+      teknisiId: employee.uuid,
+    },
+  })
+  console.log('Created service 5')
 }
 
 main()

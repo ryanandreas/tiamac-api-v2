@@ -15,6 +15,7 @@ model Users {
   role      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  services  Services[]
 
   @@map("users")
 }
@@ -29,6 +30,24 @@ model Customers {
   alamat    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  services  Services[]
 
   @@map("customers")
+}
+
+model Services {
+  id              String   @id @default(uuid())
+  customerId      String
+  customer        Customers @relation(fields: [customerId], references: [uuid])
+  jenis_servis    String
+  keluhan         String
+  status          String
+  status_servis   String
+  biaya           Int?
+  teknisiId       String?
+  teknisi         Users?    @relation(fields: [teknisiId], references: [uuid])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("services")
 }

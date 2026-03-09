@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar userRole={user.role} />
+      <AppSidebar userRole={user.role} userName={user.name} userEmail={user.email} />
       {children}
     </SidebarProvider>
   )

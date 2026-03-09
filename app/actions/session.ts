@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 
 export type CurrentUser =
   | { isAuthenticated: true; type: "customer"; id: string }
-  | { isAuthenticated: true; type: "staff"; id: string; role?: string }
+  | { isAuthenticated: true; type: "staff"; id: string; role?: string; name?: string; email?: string }
   | { isAuthenticated: false; type: null; id: null }
 
 export async function getCurrentUser(): Promise<CurrentUser> {
@@ -13,6 +13,8 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   const customerId = cookieStore.get("customerId")
   const userId = cookieStore.get("userId")
   const role = cookieStore.get("role")
+  const name = cookieStore.get("name")
+  const email = cookieStore.get("email")
 
   if (customerId) {
     return {
@@ -27,7 +29,9 @@ export async function getCurrentUser(): Promise<CurrentUser> {
       isAuthenticated: true,
       type: "staff",
       id: userId.value,
-      role: role?.value
+      role: role?.value,
+      name: name?.value,
+      email: email?.value
     }
   }
 
@@ -43,5 +47,7 @@ export async function logout() {
   cookieStore.delete("customerId")
   cookieStore.delete("userId")
   cookieStore.delete("role")
+  cookieStore.delete("name")
+  cookieStore.delete("email")
   redirect("/")
 }

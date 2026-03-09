@@ -40,7 +40,7 @@ export async function loginCustomer(
     return { message: "An error occurred during login" }
   }
 
-  redirect("/dashboard")
+  redirect("/")
 }
 
 export async function loginStaff(
@@ -72,6 +72,8 @@ export async function loginStaff(
     const cookieStore = await cookies()
     cookieStore.set("userId", user.uuid)
     cookieStore.set("role", user.role)
+    cookieStore.set("name", user.name)
+    cookieStore.set("email", user.email)
 
   } catch {
     return { message: "An error occurred during login" }
