@@ -1,10 +1,11 @@
 'use server'
 
+import { db } from "@/lib/db"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 export type CurrentUser =
-  | { isAuthenticated: true; type: "customer"; id: string }
+  | { isAuthenticated: true; type: "customer"; id: string; name?: string; email?: string }
   | { isAuthenticated: true; type: "staff"; id: string; role?: string; name?: string; email?: string }
   | { isAuthenticated: false; type: null; id: null }
 
@@ -17,10 +18,17 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   const email = cookieStore.get("email")
 
   if (customerId) {
+    const customer = await db.customers.findUnique({
+      where: { uuid: customerId.value },
+      select: { name: true, email: true },
+    })
+
     return {
       isAuthenticated: true,
       type: "customer",
-      id: customerId.value
+      id: customerId.value,
+      name: customer?.name ?? undefined,
+      email: customer?.email ?? undefined,
     }
   }
 

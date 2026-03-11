@@ -14,7 +14,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
@@ -22,11 +21,11 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { MoreHorizontal, Plus, Filter } from "lucide-react"
+import type { Customers, Users } from "@prisma/client"
 
-interface UserListTableProps {
-  data: any[]
-  type: "staff" | "customer"
-}
+type UserListTableProps =
+  | { type: "staff"; data: Users[] }
+  | { type: "customer"; data: Customers[] }
 
 export function UserListTable({ data, type }: UserListTableProps) {
   return (
@@ -66,7 +65,7 @@ export function UserListTable({ data, type }: UserListTableProps) {
           </TableHeader>
           <TableBody>
             {data.map((item) => (
-              <TableRow key={item.uuid || item.id}>
+              <TableRow key={item.uuid}>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">

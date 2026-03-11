@@ -63,12 +63,22 @@ const adminMenu = [
   {
     title: "List Servis",
     items: [
-      { title: "Sedang Berjalan", url: "/dashboard/allservis", icon: Wrench },
-      { title: "Menunggu Jadwal", url: "/dashboard/listservispenjadwalan", icon: Calendar },
-      { title: "Konfirmasi Teknisi", url: "/dashboard/allkonfirmasiteknisi", icon: CheckCircle },
-      { title: "Menunggu Pembayaran", url: "/dashboard/allmenunggupembayaran", icon: CreditCard },
-      { title: "Proses Servis", url: "/dashboard/allprosesservis", icon: Clock },
-      { title: "Selesai", url: "/dashboard/allservisselesai", icon: CheckCircle },
+      { title: "Overview", url: "/dashboard/servis/overview", icon: ClipboardList },
+      { title: "Menunggu Jadwal", url: "/dashboard/servis/menunggu-jadwal", icon: Calendar },
+      { title: "Teknisi Dikonfirmasi", url: "/dashboard/servis/teknisi-dikonfirmasi", icon: CheckCircle },
+      { title: "Dalam Pengecekan", url: "/dashboard/servis/dalam-pengecekan", icon: Wrench },
+      { title: "Menunggu Persetujuan", url: "/dashboard/servis/menunggu-persetujuan", icon: Clock },
+      { title: "Sedang Dikerjakan", url: "/dashboard/servis/sedang-dikerjakan", icon: Wrench },
+      { title: "Pekerjaan Selesai", url: "/dashboard/servis/pekerjaan-selesai", icon: CheckCircle },
+      { title: "Menunggu Pembayaran", url: "/dashboard/servis/menunggu-pembayaran", icon: CreditCard },
+    ]
+  },
+  {
+    title: "History",
+    items: [
+      { title: "Booking", url: "/dashboard/servis/booking", icon: ClipboardList },
+      { title: "Selesai (Garansi)", url: "/dashboard/servis/selesai", icon: CheckCircle },
+      { title: "Dibatalkan", url: "/dashboard/servis/dibatalkan", icon: LogOut },
     ]
   }
 ]
@@ -79,10 +89,11 @@ const karyawanMenu = [
     title: "List Servis",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: Home },
-      { title: "Semua Pesanan", url: "/dashboard/allservis", icon: ClipboardList },
-      { title: "Konfirmasi Teknisi", url: "/dashboard/allkonfirmasiteknisi", icon: CheckCircle },
-      { title: "Proses Servis", url: "/dashboard/allprosesservis", icon: Wrench },
-      { title: "Selesai", url: "/dashboard/allservisselesai", icon: CheckCircle },
+      { title: "Semua Pesanan", url: "/dashboard/servis/semua", icon: ClipboardList },
+      { title: "Teknisi Dikonfirmasi", url: "/dashboard/servis/teknisi-dikonfirmasi", icon: CheckCircle },
+      { title: "Dalam Pengecekan", url: "/dashboard/servis/dalam-pengecekan", icon: Wrench },
+      { title: "Sedang Dikerjakan", url: "/dashboard/servis/sedang-dikerjakan", icon: Wrench },
+      { title: "Pekerjaan Selesai", url: "/dashboard/servis/pekerjaan-selesai", icon: CheckCircle },
     ]
   }
 ]
@@ -112,7 +123,7 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
       <SidebarContent>
         {menuGroups.map((group) => (
           <SidebarGroup key={group.title}>
-            <div className="px-2 py-2 text-[13px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <div className="px-2 py-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               {group.title}
             </div>
             <SidebarMenu>
@@ -121,7 +132,7 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
                   <SidebarMenuButton asChild isActive={pathname === item.url} size="lg">
                     <Link href={item.url}>
                       <item.icon className="h-5 w-5" />
-                      <span className="text-base font-medium">{item.title}</span>
+                      <span className="text-sm font-medium">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -147,7 +158,7 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{userName || userRole || "User"}</span>
-                    <span className="truncate text-xs">{userEmail || "Staff"}</span>
+                    <span className="truncate text-sm">{userEmail || "Staff"}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -173,7 +184,7 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
                           {userRole ? userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase() : "Staff"}
                         </Badge>
                       </div>
-                      <span className="truncate text-xs">{userEmail || "user@example.com"}</span>
+                      <span className="truncate text-sm">{userEmail || "user@example.com"}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>

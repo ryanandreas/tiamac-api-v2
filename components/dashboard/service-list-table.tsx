@@ -1,6 +1,4 @@
 "use client"
-
-import * as React from "react"
 import {
   Table,
   TableBody,
@@ -21,9 +19,14 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MoreHorizontal, Plus, Filter } from "lucide-react"
+import type { Prisma } from "@prisma/client"
+
+type ServiceListItem = Prisma.ServicesGetPayload<{
+  include: { customer: true; teknisi: true }
+}>
 
 interface ServiceListTableProps {
-  data: any[]
+  data: ServiceListItem[]
 }
 
 export function ServiceListTable({ data }: ServiceListTableProps) {

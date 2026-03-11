@@ -16,6 +16,8 @@ model Users {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   services  Services[]
+  stockMovements StockMovement[]
+  materialUsages ServiceMaterialUsage[]
 
   @@map("users")
 }
@@ -46,8 +48,102 @@ model Services {
   biaya           Int?
   teknisiId       String?
   teknisi         Users?    @relation(fields: [teknisiId], references: [uuid])
+  materialUsages  ServiceMaterialUsage[]
+  
+  // New fields for optimized process
+  biaya_dasar     Int?      @default(50000)
+  estimasi_biaya  Int?
+  biaya_disetujui Boolean   @default(false)
+  bukti_foto_before String?
+  bukti_foto_after  String?
+  garansi_aktif_sampai DateTime?
+  alasan_batal    String?
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@map("services")
+}
+
+model AcServiceCatalog {
+  uuid      String   @id @default(uuid())
+  nama      String
+  pk        String?
+  harga     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([nama, pk])
+  @@map("ac_service_catalog")
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+}
+
+enum StockReferenceType {
+  ADMIN_ADD
+  SERVICE_USAGE
+  STOCK_OPNAME
+}
+
+enum InventoryUom {
+  pcs
+  meter
+  botol
+  tabung
+}
+
+model InventoryItem {
+  id        String   @id @default(uuid())
+  sku       String   @unique
+  nama      String
+  uom       InventoryUom
+  harga     Int
+  qtyOnHand Int      @default(0)
+  minStock  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movements StockMovement[]
+  materialUsages ServiceMaterialUsage[]
+
+  @@map("inventory_items")
+}
+
+model StockMovement {
+  id              String             @id @default(uuid())
+  itemId          String
+  item            InventoryItem      @relation(fields: [itemId], references: [id])
+  type            StockMovementType
+  qty             Int
+  referenceType   StockReferenceType
+  referenceId     String?
+  notes           String?
+  createdByUserId String?
+  createdBy       Users?             @relation(fields: [createdByUserId], references: [uuid])
+  createdAt       DateTime           @default(now())
+
+  @@index([itemId])
+  @@index([referenceType, referenceId])
+  @@map("stock_movements")
+}
+
+model ServiceMaterialUsage {
+  id              String        @id @default(uuid())
+  serviceId       String
+  service         Services      @relation(fields: [serviceId], references: [id])
+  itemId          String
+  item            InventoryItem @relation(fields: [itemId], references: [id])
+  qty             Int
+  harga_satuan    Int
+  notes           String?
+  createdByUserId String?
+  createdBy       Users?        @relation(fields: [createdByUserId], references: [uuid])
+  createdAt       DateTime      @default(now())
+
+  @@index([serviceId])
+  @@index([itemId])
+  @@map("service_material_usages")
 }
