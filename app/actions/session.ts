@@ -13,33 +13,43 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   const cookieStore = await cookies()
   const customerId = cookieStore.get("customerId")
   const userId = cookieStore.get("userId")
+  const userType = cookieStore.get("userType")
   const role = cookieStore.get("role")
   const name = cookieStore.get("name")
   const email = cookieStore.get("email")
 
-  if (customerId) {
-    const customer = await db.customers.findUnique({
-      where: { uuid: customerId.value },
-      select: { name: true, email: true },
+  const id = userId?.value ?? customerId?.value
+  if (id) {
+    const user = await db.users.findUnique({
+      where: { uuid: id },
+      select: {
+        uuid: true,
+        name: true,
+        email: true,
+        staffProfile: { select: { role: true } },
+        customerProfile: { select: { userId: true } },
+      },
     })
 
-    return {
-      isAuthenticated: true,
-      type: "customer",
-      id: customerId.value,
-      name: customer?.name ?? undefined,
-      email: customer?.email ?? undefined,
+    if (user?.staffProfile || userType?.value === "staff") {
+      return {
+        isAuthenticated: true,
+        type: "staff",
+        id,
+        role: user?.staffProfile?.role ?? role?.value,
+        name: user?.name ?? name?.value,
+        email: user?.email ?? email?.value,
+      }
     }
-  }
 
-  if (userId) {
-    return {
-      isAuthenticated: true,
-      type: "staff",
-      id: userId.value,
-      role: role?.value,
-      name: name?.value,
-      email: email?.value
+    if (user?.customerProfile || userType?.value === "customer") {
+      return {
+        isAuthenticated: true,
+        type: "customer",
+        id,
+        name: user?.name ?? name?.value,
+        email: user?.email ?? email?.value,
+      }
     }
   }
 
@@ -54,6 +64,7 @@ export async function logout() {
   const cookieStore = await cookies()
   cookieStore.delete("customerId")
   cookieStore.delete("userId")
+  cookieStore.delete("userType")
   cookieStore.delete("role")
   cookieStore.delete("name")
   cookieStore.delete("email")

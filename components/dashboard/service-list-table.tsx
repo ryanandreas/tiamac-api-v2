@@ -21,15 +21,54 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MoreHorizontal, Plus, Filter } from "lucide-react"
 import type { Prisma } from "@prisma/client"
 
-type ServiceListItem = Prisma.ServicesGetPayload<{
+type BaseService = Prisma.ServicesGetPayload<{
   include: { customer: true; teknisi: true }
 }>
 
-interface ServiceListTableProps {
-  data: ServiceListItem[]
+type ServiceListItem = BaseService & {
+  acUnits?: Array<{
+    id: string
+    pk: number
+    layanan: Array<{ id: string; nama: string }>
+  }>
 }
 
-export function ServiceListTable({ data }: ServiceListTableProps) {
+interface ServiceListTableProps {
+  data: ServiceListItem[]
+  showNextStep?: boolean
+}
+
+function nextStepLabel(status: string) {
+  switch (status) {
+    case "Booking":
+      return "Bayar DP Rp 50.000"
+    case "Menunggu Jadwal":
+      return "Menunggu jadwal"
+    case "Teknisi Dikonfirmasi":
+      return "Teknisi menuju lokasi"
+    case "Dalam Pengecekan":
+      return "Menunggu diagnosa"
+    case "Menunggu Persetujuan Customer":
+      return "Setujui estimasi biaya"
+    case "Sedang Dikerjakan":
+      return "Sedang dikerjakan"
+    case "Pekerjaan Selesai":
+      return "Menunggu invoice"
+    case "Menunggu Pembayaran":
+      return "Bayar invoice"
+    case "Selesai (Garansi Aktif)":
+      return "Garansi aktif"
+    case "Selesai":
+      return "Selesai"
+    case "Dibatalkan":
+      return "Dibatalkan"
+    default:
+      return "-"
+  }
+}
+
+export function ServiceListTable({ data, showNextStep }: ServiceListTableProps) {
+  const emptyColSpan = showNextStep ? 8 : 7
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -62,6 +101,8 @@ export function ServiceListTable({ data }: ServiceListTableProps) {
               <TableHead>Teknisi</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
+              {showNextStep ? <TableHead>Next</TableHead> : null}
+              <TableHead>Rincian</TableHead>
               <TableHead>Cost</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
@@ -107,10 +148,32 @@ export function ServiceListTable({ data }: ServiceListTableProps) {
                     {item.status_servis}
                   </Badge>
                 </TableCell>
+                {showNextStep ? (
+                  <TableCell>
+                    <div className="text-xs text-muted-foreground">{nextStepLabel(item.status_servis)}</div>
+                  </TableCell>
+                ) : null}
                 <TableCell>
-                   <span className="text-sm">
-                    {item.biaya ? `Rp ${item.biaya.toLocaleString()}` : "-"}
-                   </span>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>{item.acUnits?.length || 0} unit</div>
+                    {item.acUnits?.slice(0, 2).map((u, idx) => (
+                      <div key={u.id}>
+                        AC {idx + 1}: {u.pk} PK{" "}
+                        {u.layanan.length ? `• ${u.layanan.map((l) => l.nama).join(", ")}` : ""}
+                      </div>
+                    ))}
+                    {item.acUnits && item.acUnits.length > 2 ? (
+                      <div>+{item.acUnits.length - 2} lainnya</div>
+                    ) : null}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">
+                    {(() => {
+                      const val = item.biaya ?? item.estimasi_biaya ?? null
+                      return val ? `Rp ${val.toLocaleString("id-ID")}` : "-"
+                    })()}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -131,7 +194,7 @@ export function ServiceListTable({ data }: ServiceListTableProps) {
             ))}
             {data.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={emptyColSpan} className="h-24 text-center text-muted-foreground">
                   No services found.
                 </TableCell>
               </TableRow>

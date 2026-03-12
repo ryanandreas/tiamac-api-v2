@@ -4,10 +4,9 @@ import { SidebarInset } from "@/components/ui/sidebar"
 import { db } from "@/lib/db"
 
 export default async function CustomerListPage() {
-  const customers = await db.customers.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+  const customers = await db.customerProfile.findMany({
+    include: { user: true },
+    orderBy: { user: { createdAt: "desc" } },
   })
 
   return (

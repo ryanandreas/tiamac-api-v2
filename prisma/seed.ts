@@ -9,61 +9,75 @@ async function main() {
   // Admin User
   const admin = await prisma.users.upsert({
     where: { email: 'admin@gmail.com' },
-    update: { password: 'pass1234' },
+    update: { password: 'pass1234', status: 'ACTIVE' },
     create: {
       uuid: 'a23b2e20-bdc9-407d-81d1-fca0d5e55c2c',
       name: 'ryan',
       email: 'admin@gmail.com',
       password: 'pass1234',
-      role: 'admin',
+      status: 'ACTIVE',
     },
   })
   console.log('Upserted user:', admin.email)
+  await prisma.staffProfile.upsert({
+    where: { userId: admin.uuid },
+    update: { role: 'admin' },
+    create: { userId: admin.uuid, role: 'admin' },
+  })
 
   // Karyawan User
   const employee = await prisma.users.upsert({
     where: { email: 'john@gmail.com' },
-    update: { password: 'pass1234' },
+    update: { password: 'pass1234', status: 'ACTIVE' },
     create: {
       uuid: '86a9c744-4e7f-4dce-83c0-d06ce8860154',
       name: 'johndoe',
       email: 'john@gmail.com',
       password: 'pass1234',
-      role: 'karyawan',
+      status: 'ACTIVE',
     },
   })
   console.log('Upserted user:', employee.email)
+  await prisma.staffProfile.upsert({
+    where: { userId: employee.uuid },
+    update: { role: 'karyawan' },
+    create: { userId: employee.uuid, role: 'karyawan' },
+  })
 
   // Customers
-  // Customer 1
-  const cust1 = await prisma.customers.upsert({
+  const cust1 = await prisma.users.upsert({
     where: { email: 'cust2@gmail.com' },
-    update: { password: 'pass1234' },
+    update: { password: 'pass1234', status: 'ACTIVE' },
     create: {
       uuid: 'dfb4f26f-252d-4690-8565-bdc59dde6ffc',
       name: 'cust1',
       email: 'cust2@gmail.com',
       password: 'pass1234',
-      no_telp: '812341234',
-      provinsi: 'Jakarta timur',
-      alamat: 'Cengkareng, kapuk',
+      status: 'ACTIVE',
     },
+  })
+  await prisma.customerProfile.upsert({
+    where: { userId: cust1.uuid },
+    update: { no_telp: '812341234', provinsi: 'Jakarta timur', alamat: 'Cengkareng, kapuk' },
+    create: { userId: cust1.uuid, no_telp: '812341234', provinsi: 'Jakarta timur', alamat: 'Cengkareng, kapuk' },
   })
   console.log('Upserted customer:', cust1.email)
 
-  // Customer 2
-  const cust2 = await prisma.customers.upsert({
+  const cust2 = await prisma.users.upsert({
     where: { email: 'budi@gmail.com' },
-    update: { password: 'pass1234' },
+    update: { password: 'pass1234', status: 'ACTIVE' },
     create: {
       uuid: '3512ef7d-3cca-492a-a864-975566b8e4ae',
       name: 'Budi',
       email: 'budi@gmail.com',
       password: 'pass1234',
-      no_telp: '1234567890',
-      provinsi: 'Jakarta Barat',
-      alamat: 'cdngkareng',
+      status: 'ACTIVE',
     },
+  })
+  await prisma.customerProfile.upsert({
+    where: { userId: cust2.uuid },
+    update: { no_telp: '1234567890', provinsi: 'Jakarta Barat', alamat: 'cdngkareng' },
+    create: { userId: cust2.uuid, no_telp: '1234567890', provinsi: 'Jakarta Barat', alamat: 'cdngkareng' },
   })
   console.log('Upserted customer:', cust2.email)
 

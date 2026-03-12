@@ -26,16 +26,30 @@ export async function updateCustomerProfile(
   }
 
   try {
-    await db.customers.update({
-      where: { uuid: current.id },
-      data: {
-        name,
-        email,
-        no_telp,
-        provinsi: provinsi || null,
-        alamat: alamat || null,
-        ...(password ? { password } : {}),
-      },
+    await db.$transaction(async (tx) => {
+      await tx.users.update({
+        where: { uuid: current.id },
+        data: {
+          name,
+          email,
+          ...(password ? { password } : {}),
+        },
+      })
+
+      await tx.customerProfile.upsert({
+        where: { userId: current.id },
+        update: {
+          no_telp,
+          provinsi: provinsi || null,
+          alamat: alamat || null,
+        },
+        create: {
+          userId: current.id,
+          no_telp,
+          provinsi: provinsi || null,
+          alamat: alamat || null,
+        },
+      })
     })
   } catch {
     return { message: "Gagal menyimpan profil. Pastikan email belum dipakai." }
@@ -43,4 +57,3 @@ export async function updateCustomerProfile(
 
   return { message: "Profil berhasil disimpan." }
 }
-

@@ -21,11 +21,17 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { MoreHorizontal, Plus, Filter } from "lucide-react"
-import type { Customers, Users } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 
 type UserListTableProps =
-  | { type: "staff"; data: Users[] }
-  | { type: "customer"; data: Customers[] }
+  | {
+      type: "staff"
+      data: Prisma.StaffProfileGetPayload<{ include: { user: true } }>[]
+    }
+  | {
+      type: "customer"
+      data: Prisma.CustomerProfileGetPayload<{ include: { user: true } }>[]
+    }
 
 export function UserListTable({ data, type }: UserListTableProps) {
   return (
@@ -65,16 +71,16 @@ export function UserListTable({ data, type }: UserListTableProps) {
           </TableHeader>
           <TableBody>
             {data.map((item) => (
-              <TableRow key={item.uuid}>
+              <TableRow key={item.user.uuid}>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src={`/images/avatar.png`} alt={item.name} />
-                      <AvatarFallback>{item.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                      <AvatarImage src={`/images/avatar.png`} alt={item.user.name} />
+                      <AvatarFallback>{item.user.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="font-medium text-sm">{item.name}</span>
-                      <span className="text-xs text-muted-foreground">{item.email}</span>
+                      <span className="font-medium text-sm">{item.user.name}</span>
+                      <span className="text-xs text-muted-foreground">{item.user.email}</span>
                     </div>
                   </div>
                 </TableCell>
@@ -89,12 +95,12 @@ export function UserListTable({ data, type }: UserListTableProps) {
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="font-normal text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-100/80 dark:bg-emerald-900/30 dark:text-emerald-400">
-                    active
+                    {item.user.status.toLowerCase()}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm text-muted-foreground">
-                    {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : "Never"}
+                    {item.user.lastLogin ? new Date(item.user.lastLogin).toLocaleDateString() : "Never"}
                   </span>
                 </TableCell>
                 <TableCell>

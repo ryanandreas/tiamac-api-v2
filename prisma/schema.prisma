@@ -1,5 +1,7 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+  engineType = "binary"
 }
 
 datasource db {
@@ -8,46 +10,67 @@ datasource db {
 }
 
 model Users {
-  uuid      String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  services  Services[]
-  stockMovements StockMovement[]
-  materialUsages ServiceMaterialUsage[]
+  uuid         String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  status       UserStatus @default(ACTIVE)
+  lastLogin    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customerProfile CustomerProfile?
+  staffProfile    StaffProfile?
+
+  customerServices Services[] @relation("CustomerServices")
+  teknisiServices  Services[] @relation("TeknisiServices")
+
+  stockMovements   StockMovement[]
+  materialUsages   ServiceMaterialUsage[]
 
   @@map("users")
 }
 
-model Customers {
-  uuid      String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+model CustomerProfile {
+  userId    String  @id
+  user      Users   @relation(fields: [userId], references: [uuid])
   no_telp   String
   provinsi  String?
   alamat    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  services  Services[]
 
-  @@map("customers")
+  @@map("customer_profiles")
+}
+
+model StaffProfile {
+  userId      String @id
+  user        Users  @relation(fields: [userId], references: [uuid])
+  role        String
+  permissions Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("staff_profiles")
 }
 
 model Services {
   id              String   @id @default(uuid())
   customerId      String
-  customer        Customers @relation(fields: [customerId], references: [uuid])
+  customer        Users @relation("CustomerServices", fields: [customerId], references: [uuid])
   jenis_servis    String
   keluhan         String
   status          String
   status_servis   String
   biaya           Int?
   teknisiId       String?
-  teknisi         Users?    @relation(fields: [teknisiId], references: [uuid])
+  teknisi         Users?    @relation("TeknisiServices", fields: [teknisiId], references: [uuid])
+  acUnits         ServiceAcUnit[]
   materialUsages  ServiceMaterialUsage[]
   
   // New fields for optimized process
@@ -65,11 +88,40 @@ model Services {
   @@map("services")
 }
 
+model ServiceAcUnit {
+  id        String   @id @default(uuid())
+  serviceId String
+  service   Services @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  pk        Float
+  layanan   ServiceAcUnitLayanan[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([serviceId])
+  @@map("service_ac_units")
+}
+
+model ServiceAcUnitLayanan {
+  id        String          @id @default(uuid())
+  unitId    String
+  unit      ServiceAcUnit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  catalogId String?
+  catalog   AcServiceCatalog? @relation(fields: [catalogId], references: [uuid])
+  nama      String
+  harga     Int
+  createdAt DateTime @default(now())
+
+  @@index([unitId])
+  @@index([catalogId])
+  @@map("service_ac_unit_layanans")
+}
+
 model AcServiceCatalog {
   uuid      String   @id @default(uuid())
   nama      String
   pk        String?
   harga     Int
+  unitLayanans ServiceAcUnitLayanan[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

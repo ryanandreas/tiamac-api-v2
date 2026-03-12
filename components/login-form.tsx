@@ -12,24 +12,24 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useActionState } from "react"
-import { loginCustomer } from "@/app/actions/auth"
+import { login } from "@/app/actions/auth"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [state, formAction, isPending] = useActionState(loginCustomer, null)
+  const [state, formAction, isPending] = useActionState(login, null)
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0 h-[500px]">
-        <CardContent className="grid p-0 md:grid-cols-2 h-full">
+        <CardContent className="grid p-0 h-full">
           <form action={formAction} className="p-6 md:p-8 flex flex-col justify-center h-full">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
                 <p className="text-balance text-muted-foreground">
-                  Login to your Acme Inc account
+                  Login to your account
                 </p>
               </div>
               {state?.message && (
@@ -101,17 +101,6 @@ export function LoginForm({
               </FieldDescription>
             </FieldGroup>
           </form>
-          <div className="relative hidden md:flex flex-col items-center justify-center p-8 h-full bg-card">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <h2 className="text-xl font-semibold">Are you a Staff member?</h2>
-              <p className="text-sm text-muted-foreground">
-                Login here to access the staff dashboard and manage orders.
-              </p>
-              <Button asChild variant="outline" className="w-full max-w-xs">
-                <a href="/login/staff">Login as Staff</a>
-              </Button>
-            </div>
-          </div>
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
