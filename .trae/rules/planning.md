@@ -1,19 +1,141 @@
 # Prompt Perancangan UI/UX Admin Panel & Teknisi Panel
 
-Aplikasi: Sistem Manajemen Servis AC
+Aplikasi: Sistem Manajemen Servis AC Berbasis Website
 
-Buatkan perencanaan tampilan (UI/UX structure) untuk aplikasi berbasis web dengan 2 role utama: **Admin Panel** dan **Teknisi Panel**.
-Fokus pada dashboard operasional, kemudahan penggunaan, dan alur kerja servis AC.
+Buatkan perencanaan tampilan (UI/UX structure) untuk aplikasi web dengan 2 role utama:
+**Admin Panel** dan **Teknisi Panel**.
+
+Fokus desain:
+
+* Dashboard operasional real-time
+* Kemudahan penggunaan
+* Alur kerja servis end-to-end
+* Manajemen inventory & sparepart
+* Otomatisasi biaya servis dari pemakaian barang
 
 ---
 
-## 🎛️ 1. ADMIN PANEL
+# 🔁 SERVICE WORKFLOW TERINTEGRASI INVENTORY
 
-### Tujuan
+## 1. Booking (Pre-Service)
 
-Mengelola seluruh operasional: pesanan servis, teknisi, pelanggan, jadwal, dan laporan.
+Customer melakukan booking servis
+Sistem menampilkan Estimasi Biaya Dasar (Biaya Kunjungan/Diagnosa)
+Customer wajib menyetujui biaya dasar
 
-### A. Struktur Menu Utama (Sidebar Navigation)
+Status: **Booking**
+
+---
+
+## 2. Menunggu Jadwal (Scheduling)
+
+Admin menentukan:
+
+* Teknisi
+* Tanggal & waktu kunjungan
+
+Sistem kirim notifikasi ke Customer & Teknisi
+
+Status:
+**Menunggu Jadwal → Teknisi Dikonfirmasi**
+
+---
+
+## 3. Dalam Pengecekan
+
+Teknisi tiba di lokasi & diagnosa unit
+
+Teknisi input:
+
+* Rincian kerusakan
+* Estimasi biaya jasa
+
+Status: **Dalam Pengecekan**
+
+---
+
+## 4. Persetujuan Biaya Awal
+
+Customer melihat estimasi awal
+Customer memilih:
+
+* Setuju → lanjut pengerjaan
+* Tolak → hanya bayar biaya kunjungan
+
+Status: **Menunggu Persetujuan Customer**
+
+---
+
+## 5. Pengerjaan Servis + Pemakaian Inventory
+
+Teknisi mulai pengerjaan.
+
+Selama servis, teknisi dapat:
+
+* Menambahkan sparepart dari inventory
+* Input jumlah barang yang dipakai
+* Sistem otomatis:
+
+  * Mengurangi stok inventory
+  * Menambahkan biaya sparepart ke rincian servis
+
+Status: **Sedang Dikerjakan**
+
+---
+
+## 6. Pekerjaan Selesai & Bukti
+
+Teknisi wajib upload:
+
+* Foto Before
+* Foto After
+* Foto sparepart bekas (jika ada)
+
+Status: **Pekerjaan Selesai**
+
+---
+
+## 7. Invoice Final & Pembayaran
+
+Sistem generate Invoice Final otomatis dari:
+
+* Biaya jasa
+* Total sparepart terpakai (dari inventory)
+* Biaya tambahan lain
+
+Customer melakukan pembayaran
+
+Setelah lunas:
+
+* Sistem aktifkan garansi servis (misal 30 hari)
+
+Status:
+**Menunggu Pembayaran → Selesai (Garansi Aktif)**
+
+---
+
+# 📦 SISTEM INVENTORY (SPAREPART MANAGEMENT)
+
+Inventory terintegrasi langsung dengan proses servis.
+
+## Alur Inventory
+
+1. Admin mengelola stok barang
+2. Teknisi menggunakan barang saat servis
+3. Stok otomatis berkurang
+4. Biaya barang otomatis masuk invoice
+
+---
+
+# 🖥️ ADMIN PANEL — UI PLANNING
+
+## 🎯 Tujuan
+
+Mengelola operasional, teknisi, servis, transaksi, dan inventory.
+
+---
+
+## 🧭 Struktur Menu Admin
 
 1. Dashboard
 2. Manajemen Pesanan
@@ -21,287 +143,295 @@ Mengelola seluruh operasional: pesanan servis, teknisi, pelanggan, jadwal, dan l
 4. Teknisi
 5. Pelanggan
 6. Layanan & Harga
-7. Pembayaran & Transaksi
-8. Laporan
-9. Notifikasi
-10. Pengaturan Sistem
+7. Inventory & Sparepart
+8. Pembayaran & Transaksi
+9. Laporan
+10. Notifikasi
+11. Pengaturan Sistem
 
 ---
 
-### B. Halaman & Fitur
+## 📊 Halaman & Fitur Admin
 
-#### 1. Dashboard Admin
+### 1. Dashboard Admin
 
-Tampilkan ringkasan KPI operasional:
+KPI Operasional:
 
 * Total Pesanan Hari Ini
-* Pesanan Menunggu Konfirmasi
-* Jadwal Servis Hari Ini
-* Teknisi Aktif
-* Total Pendapatan (Harian/Bulanan)
-* Grafik Tren Pesanan
+* Servis Berjalan
+* Menunggu Persetujuan Customer
+* Stok Menipis
+* Total Pendapatan
+* Grafik Tren Servis
 * Aktivitas Terbaru
 
 ---
 
-#### 2. Manajemen Pesanan
+### 2. Manajemen Pesanan
 
 Fitur:
 
-* Tabel daftar pesanan
-* Filter status:
-
-  * Menunggu Konfirmasi
-  * Dijadwalkan
-  * Dalam Proses
-  * Selesai
-  * Dibatalkan
+* Tabel pesanan
+* Filter berdasarkan status
 * Detail pesanan:
 
   * Data pelanggan
-  * Alamat lokasi
-  * Jenis layanan AC
+  * Lokasi
   * Keluhan
-  * Estimasi biaya
-  * Teknisi yang ditugaskan
-* Tombol aksi:
+  * Estimasi biaya dasar
+  * Teknisi
+  * Timeline status
+  * Rincian biaya jasa
+  * Rincian sparepart terpakai
+  * Foto bukti servis
+  * Invoice & status bayar
 
-  * Konfirmasi pesanan
-  * Jadwalkan servis
-  * Tugaskan teknisi
-  * Ubah status
-  * Batalkan pesanan
+Aksi:
+
+* Konfirmasi booking
+* Jadwalkan servis
+* Tugaskan teknisi
+* Ubah status
+* Batalkan pesanan
 
 ---
 
-#### 3. Jadwal Servis
+### 3. Jadwal Servis
 
-Fitur:
-
-* Kalender jadwal (calendar view)
+* Calendar view
 * Drag & drop penjadwalan
-* Lihat jadwal per teknisi
-* Indikator warna berdasarkan status servis
+* Jadwal per teknisi
+* Indikator warna status
 
 ---
 
-#### 4. Manajemen Teknisi
+### 4. Manajemen Teknisi
 
-Fitur:
-
-* Daftar teknisi
-* Status:
-
-  * Aktif
-  * Bertugas
-  * Offline
-* Info teknisi:
-
-  * Nama
-  * Kontak
-  * Area cakupan
-  * Jumlah tugas selesai
-  * Rating
-* Aksi:
-
-  * Tambah teknisi
-  * Edit data
-  * Nonaktifkan
-  * Lihat riwayat tugas
+* List teknisi
+* Status aktif / bertugas / offline
+* Profil teknisi
+* Riwayat pekerjaan
+* Rating performa
 
 ---
 
-#### 5. Manajemen Pelanggan
-
-Fitur:
+### 5. Manajemen Pelanggan
 
 * Database pelanggan
-* Riwayat servis per pelanggan
+* Riwayat servis
 * Total transaksi
-* Alamat tersimpan
 
 ---
 
-#### 6. Layanan & Harga
+### 6. Layanan & Harga
 
-Fitur:
-
-* Daftar layanan:
-
-  * Cuci AC
-  * Bongkar Pasang AC
-  * Isi Freon
-  * Perbaikan AC
-* Kelola harga layanan
-* Estimasi biaya dasar kunjungan
+* Daftar layanan servis AC
+* Pengaturan harga jasa
+* Biaya kunjungan dasar
 
 ---
 
-#### 7. Pembayaran & Transaksi
+### 7. Inventory & Sparepart (NEW — CORE FEATURE)
 
-Fitur:
+#### Fitur Utama:
 
-* Status pembayaran:
+* Daftar barang
+* Kategori sparepart
+* Stok tersedia
+* Harga beli
+* Harga jual
+* Supplier
 
-  * Belum bayar
-  * DP
-  * Lunas
-* Metode pembayaran
-* Upload bukti bayar
+#### Manajemen Stok:
+
+* Tambah stok masuk
+* Edit data barang
+* Riwayat pergerakan stok
+* Stok minimum alert
+
+#### Monitoring:
+
+* Barang paling sering dipakai
+* Penggunaan per teknisi
+* Nilai aset inventory
+
+---
+
+### 8. Pembayaran & Transaksi
+
+* Status bayar: Belum Bayar / DP / Lunas
+* Detail invoice:
+
+  * Biaya jasa
+  * Sparepart terpakai (auto dari inventory)
+  * Biaya tambahan
+* Bukti pembayaran
 * Riwayat transaksi
 
 ---
 
-#### 8. Laporan
+### 9. Laporan
 
-Fitur:
-
-* Laporan pendapatan
-* Laporan jumlah servis
+* Pendapatan servis
+* Jumlah pesanan
 * Performa teknisi
-* Ekspor PDF/Excel
+* Penggunaan sparepart
+* Stok masuk & keluar
+* Garansi aktif
+* Export PDF/Excel
 
 ---
 
-#### 9. Notifikasi
+# 🧑‍🔧 TEKNISI PANEL — UI PLANNING
 
-* Pesanan baru
-* Jadwal servis hari ini
-* Pembayaran masuk
-* Status servis selesai
+## 🎯 Tujuan
 
----
-
-#### 10. Pengaturan Sistem
-
-* Profil perusahaan
-* Area layanan
-* Jam operasional
-* Hak akses user
+Membantu teknisi bekerja cepat di lapangan (mobile-friendly).
 
 ---
 
----
-
-## 🧑‍🔧 2. TEKNISI PANEL
-
-### Tujuan
-
-Membantu teknisi mengelola tugas servis di lapangan secara praktis (mobile-friendly).
-
-### A. Struktur Menu
+## 🧭 Struktur Menu Teknisi
 
 1. Dashboard Teknisi
 2. Tugas Saya
 3. Jadwal Saya
-4. Riwayat Servis
-5. Navigasi Lokasi
-6. Laporan Pekerjaan
+4. Input Pengerjaan
+5. Inventory Digunakan
+6. Riwayat Servis
 7. Profil
 
 ---
 
-### B. Halaman & Fitur
+## 📱 Halaman & Fitur Teknisi
 
-#### 1. Dashboard Teknisi
+### 1. Dashboard Teknisi
 
 * Jumlah tugas hari ini
 * Jadwal berikutnya
-* Status kerja:
-
-  * Siap Bertugas
-  * Dalam Perjalanan
-  * Sedang Servis
+* Status kerja
 
 ---
 
-#### 2. Tugas Saya
+### 2. Tugas Saya
 
-Fitur:
+Detail tugas:
 
-* Daftar tugas aktif
-* Detail tugas:
+* Data pelanggan
+* Alamat + maps
+* Jenis layanan
+* Keluhan
+* Estimasi biaya dasar
 
-  * Data pelanggan
-  * Alamat & maps
-  * Jenis layanan
-  * Keluhan pelanggan
-  * Catatan admin
-* Tombol aksi:
+Tombol aksi:
 
-  * Terima tugas
-  * Mulai perjalanan
-  * Mulai servis
-  * Selesaikan servis
+* Terima tugas
+* Mulai perjalanan
+* Tiba di lokasi
+* Mulai servis
 
 ---
 
-#### 3. Jadwal Saya
+### 3. Input Pengerjaan
 
-* Tampilan kalender
-* Timeline tugas harian
+Form:
+
+* Rincian kerusakan
+* Biaya jasa
+* Catatan teknisi
 
 ---
 
-#### 4. Riwayat Servis
+### 4. Inventory Digunakan (CRITICAL)
 
-* Daftar pekerjaan selesai
+Saat servis berjalan:
+
+Teknisi dapat:
+
+* Cari sparepart
+* Lihat stok tersedia
+* Pilih barang
+* Input jumlah pakai
+
+Sistem otomatis:
+
+* Hitung total biaya sparepart
+* Kurangi stok inventory
+* Tambahkan ke rincian servis
+
+---
+
+### 5. Selesaikan Pekerjaan
+
+Upload wajib:
+
+* Foto Before
+* Foto After
+* Foto sparepart bekas
+
+Submit pekerjaan selesai
+
+---
+
+### 6. Riwayat Servis
+
+* List pekerjaan selesai
 * Detail servis
 * Total penghasilan
 
 ---
 
-#### 5. Navigasi Lokasi
-
-* Integrasi Google Maps
-* Tombol buka rute otomatis
-
----
-
-#### 6. Laporan Pekerjaan
-
-Setelah servis selesai:
-
-* Checklist pekerjaan
-* Catatan perbaikan
-* Foto sebelum & sesudah
-* Input biaya tambahan
-* Tanda tangan pelanggan
-
----
-
-#### 7. Profil Teknisi
+### 7. Profil Teknisi
 
 * Data diri
-* Status aktif/nonaktif
+* Status aktif
 * Rating
-* Riwayat performa
+* Statistik performa
 
 ---
 
+# 📌 MASTER STATUS LIST
+
+1. Booking
+2. Menunggu Jadwal
+3. Teknisi Dikonfirmasi
+4. Dalam Pengecekan
+5. Menunggu Persetujuan Customer
+6. Sedang Dikerjakan
+7. Pekerjaan Selesai
+8. Menunggu Pembayaran
+9. Selesai (Garansi Aktif)
+10. Dibatalkan
+
 ---
 
-## 🎨 Desain UI Guidelines
+# 🎨 UI DESIGN GUIDELINES
 
-* shadcn/ui sebagai acuan desain
-* Clean dashboard
-* Warna:
-
-  * Hijau muda (utama)
-  * Biru (selesai/sukses)
-  * Oranye (proses)
-  * Merah (urgent/batal)
+* Design system berbasis shadcn/ui
+* Clean modern dashboard
 * Card-based layout
-* Mobile-first untuk teknisi panel
-* Tabel interaktif untuk admin
+* Tabel interaktif
 * Notifikasi real-time
 
+Warna:
+
+* Hijau muda → Primary
+* Biru → Selesai
+* Oranye → Proses
+* Merah → Urgent/Batal
+
+Responsiveness:
+
+* Admin → Desktop-first
+* Teknisi → Mobile-first
+
 ---
 
-## ⚙️ Output yang Diharapkan dari AI Builder
+# ⚙️ OUTPUT YANG DIHARAPKAN DARI AI BUILDER
 
-* Wireframe struktur halaman
-* Komponen UI
-* User flow antar halaman
-* Dashboard layout
-* Mobile & desktop responsive design
+1. Sitemap halaman
+2. User flow diagram
+3. Wireframe low-fidelity
+4. UI component system
+5. Dashboard layout
+6. Responsive design (Admin Desktop / Teknisi Mobile)
+7. Inventory-to-Invoice automation flow
