@@ -4,6 +4,7 @@ referensi : E:\Project\Merge\tiamac-mysql-api-v2\tiamac-api-v2\reference-nodejs
 planning file : E:\Project\Merge\tiamac-mysql-api-v2\tiamac-api-v2\.trae\rules\planning.md
 styling file : E:\Project\Merge\tiamac-mysql-api-v2\tiamac-api-v2\.trae\rules\styling.md
 shadcn-ui sebagai acuan style
+
 # 🎨 UI DESIGN GUIDELINES
 
 * Design system berbasis shadcn/ui

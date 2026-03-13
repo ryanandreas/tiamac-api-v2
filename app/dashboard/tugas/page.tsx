@@ -76,7 +76,7 @@ export default async function TugasTeknisiPage() {
                     </div>
                   </div>
                   <div className="p-3 bg-muted/30 rounded-lg text-sm italic">
-                    "{task.keluhan}"
+                    &quot;{task.keluhan}&quot;
                   </div>
                 </CardContent>
                 <CardFooter className="border-t pt-4">

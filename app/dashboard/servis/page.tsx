@@ -1,12 +1,22 @@
-import { SchedulingTable } from "@/components/dashboard/scheduling-table"
+import { ServiceListTable } from "@/components/dashboard/service-list-table"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { db } from "@/lib/db"
 
-export default async function JadwalPage() {
+export default async function ServisPage() {
   const services = await db.services.findMany({
     where: {
-      status_servis: "Menunggu Jadwal",
+      status_servis: {
+        in: [
+          "Menunggu Jadwal",
+          "Teknisi Dikonfirmasi",
+          "Dalam Pengecekan",
+          "Menunggu Persetujuan Customer",
+          "Sedang Dikerjakan",
+          "Pekerjaan Selesai",
+          "Menunggu Pembayaran",
+        ],
+      },
     },
     include: {
       customer: true,
@@ -17,33 +27,25 @@ export default async function JadwalPage() {
     },
   })
 
-  const teknisiProfiles = await db.staffProfile.findMany({
-    where: {
-      role: { in: ["karyawan", "teknisi"] },
-    },
-    include: { user: { select: { uuid: true, name: true } } },
-  })
-
-  const teknisi = teknisiProfiles.map((row) => row.user)
-
   return (
     <SidebarInset>
-      <DashboardHeader title="Jadwal Perbaikan" />
+      <DashboardHeader title="Servis Berjalan" />
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Jadwal Perbaikan</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Servis Berjalan</h2>
         </div>
         <div className="hidden h-full flex-1 flex-col space-y-8 md:flex">
           <div className="flex items-center justify-between space-y-2">
             <div>
               <p className="text-muted-foreground">
-                Tetapkan teknisi dan jadwal untuk pesanan baru.
+                Daftar semua pesanan servis yang sedang berjalan.
               </p>
             </div>
           </div>
-          <SchedulingTable data={services} teknisi={teknisi} />
+          <ServiceListTable data={services} />
         </div>
       </div>
     </SidebarInset>
   )
 }
+

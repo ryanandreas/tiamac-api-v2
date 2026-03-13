@@ -59,13 +59,20 @@ const adminMenu = [
     title: "Main",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Jadwal Servis", url: "/dashboard/jadwal", icon: Calendar },
+    ]
+  },
+  {
+    title: "SERVIS",
+    items: [
+      { title: "Booking", url: "/dashboard/booking", icon: Bell },
+      { title: "Jadwal Perbaikan", url: "/dashboard/jadwal", icon: Calendar },
+      { title: "Servis Berjalan", url: "/dashboard/servis", icon: Truck },
+      { title: "History", url: "/dashboard/history", icon: History },
     ]
   },
   {
     title: "Operasional",
     items: [
-      { title: "Manajemen Pesanan", url: "/dashboard/servis/overview", icon: ClipboardList },
       { title: "Layanan & Harga", url: "/dashboard/layanan", icon: CreditCard },
       { title: "Inventory & Sparepart", url: "/dashboard/inventory", icon: Package },
     ]

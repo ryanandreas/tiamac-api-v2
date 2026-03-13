@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/components/dashboard/header"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { Bell, Clock, Package, Wrench, User, AlertTriangle } from "lucide-react"
+import { Bell, CheckCircle2, Clock, Package, Wrench, User, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -32,7 +32,7 @@ export default function NotifikasiPage() {
       title: "Pekerjaan Selesai",
       message: "Teknisi Budi telah menyelesaikan servis #SERV-12345.",
       time: "3 jam yang lalu",
-      icon: CheckCircle,
+      icon: CheckCircle2,
       type: "service",
       color: "text-green-600",
       bg: "bg-green-50"
@@ -75,25 +75,5 @@ export default function NotifikasiPage() {
         </div>
       </div>
     </SidebarInset>
-  )
-}
-
-function CheckCircle(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
   )
 }

@@ -15,7 +15,8 @@ import {
   AlertTriangle, 
   DollarSign,
   TrendingUp,
-  Activity
+  Activity,
+  Briefcase
 } from "lucide-react"
 import { formatPrice } from "@/lib/utils"
 
@@ -25,7 +26,9 @@ export default async function Page() {
   if (!user.isAuthenticated) return null
 
   // If user is technician/karyawan, we might want to redirect or show a different view
-  const isTechnician = user.role?.toLowerCase() === "teknisi" || user.role?.toLowerCase() === "karyawan"
+  const isTechnician =
+    user.type === "staff" &&
+    (user.role?.toLowerCase() === "teknisi" || user.role?.toLowerCase() === "karyawan")
 
   if (isTechnician) {
      const tasksCount = await db.services.count({
@@ -197,25 +200,5 @@ export default async function Page() {
         </div>
       </div>
     </SidebarInset>
-  )
-}
-
-function Briefcase(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-      <rect width="20" height="14" x="2" y="6" rx="2" />
-    </svg>
   )
 }
