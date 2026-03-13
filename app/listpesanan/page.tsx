@@ -10,7 +10,6 @@ import type { Prisma } from "@prisma/client"
 export const dynamic = "force-dynamic"
 
 const ONGOING_STATUSES = [
-  "Booking",
   "Menunggu Jadwal",
   "Teknisi Dikonfirmasi",
   "Dalam Pengecekan",

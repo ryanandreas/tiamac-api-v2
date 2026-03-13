@@ -240,5 +240,5 @@ export async function createAcBooking(
     return { message: "Booking gagal dibuat. Silakan coba lagi." }
   }
 
-  redirect("/listpesanan?tab=history")
+  redirect("/customer-panel/pesanan")
 }

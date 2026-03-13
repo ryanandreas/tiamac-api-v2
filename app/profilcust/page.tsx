@@ -6,7 +6,6 @@ import { CustomerPanelNav } from "@/components/customer-panel-nav"
 import { CustomerProfileForm } from "@/components/customer-profile-form"
 
 const ONGOING_STATUSES = [
-  "Booking",
   "Menunggu Jadwal",
   "Teknisi Dikonfirmasi",
   "Dalam Pengecekan",
