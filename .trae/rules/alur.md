@@ -1,30 +1,5 @@
-### 1. Booking  (Pre-Service)
-- Customer: Melakukan booking servis.
-- Sistem: Memberikan Estimasi Biaya Dasar (misal: Biaya Kunjungan/Pengecekan Rp 50.000). Ini wajib disetujui di awal agar Customer tahu minimal biaya yang harus keluar.
-- Status: Menunggu Konfirmasi Admin .
-### 2. Menunggu Jadwal (Scheduling)
-- Admin: Menentukan jadwal dan Teknisi.
-- Sistem: Mengirim notifikasi ke Customer & Teknisi.
-- Status: Teknisi Dikonfirmasi (Siap Jalan).
-### 3. Persetujuan Biaya (The Game Changer) 💡
-Ini adalah langkah optimasi paling penting.
 
-- Teknisi: Datang ke lokasi -> Cek Unit -> Input Rincian Kerusakan & Total Biaya (Jasa + Sparepart) ke Aplikasi.
-- Customer: Melihat rincian biaya di Dashboard Customer -> Klik "Setujui Pekerjaan" atau "Tolak" .
-  - Jika Setuju: Teknisi mulai bekerja.
-  - Jika Tolak: Customer hanya membayar Biaya Kunjungan/Diagnosa saja.
-- Status: Menunggu Persetujuan Customer -> Sedang Dikerjakan .
-### 4. Pengerjaan & Bukti (Execution)
-- Teknisi: Mengerjakan servis.
-- Teknisi: Wajib upload Foto Bukti Pengerjaan (Before & After) atau foto sparepart bekas yang diganti. Ini meningkatkan kepercayaan.
-- Status: Pekerjaan Selesai .
-### 5. Pembayaran  (Post-Service)
-- Sistem: Mengirim Invoice Final (sesuai yang disetujui di tahap 3).
-- Customer: Melakukan Pembayaran.
-- Sistem: Setelah lunas, mengaktifkan Masa Garansi (misal: 30 hari) untuk servis tersebut.
-- Status: Selesai (Garansi Aktif)
-
-Status List: 
+List Status Step: 
 
 1 Booking
 
@@ -71,5 +46,9 @@ Status List:
 - Keterangan: Pembayaran lunas. Garansi mulai berjalan. Transaksi tutup.
 - Action: Customer bisa klaim garansi jika ada masalah dalam periode tertentu.
 - Dibatalkan
+
+10 Dibatalkan
+
+
 
 - Keterangan: Booking dibatalkan oleh Customer sebelum teknisi jalan, atau Customer Menolak biaya perbaikan di tahap 5 (hanya bayar biaya kunjungan)

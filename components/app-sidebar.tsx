@@ -28,6 +28,14 @@ import {
   Wrench,
   ChevronsUpDown,
   User,
+  Package,
+  FileText,
+  Bell,
+  Settings,
+  LayoutDashboard,
+  Truck,
+  History,
+  Briefcase,
 } from "lucide-react"
 import { logout } from "@/app/actions/session"
 import {
@@ -45,40 +53,42 @@ import {
 } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
-// Menu items based on reference-nodejs/src/components/Sidebar.jsx
+// Menu items based on planning.md
 const adminMenu = [
   {
-    title: "General",
+    title: "Main",
     items: [
-      { title: "Dashboard", url: "/dashboard", icon: Home },
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Jadwal Servis", url: "/dashboard/jadwal", icon: Calendar },
     ]
   },
   {
-    title: "Admin",
+    title: "Operasional",
     items: [
-      { title: "List Staff", url: "/dashboard/users", icon: Users },
-      { title: "List Customer", url: "/dashboard/customers", icon: Users },
+      { title: "Manajemen Pesanan", url: "/dashboard/servis/overview", icon: ClipboardList },
+      { title: "Layanan & Harga", url: "/dashboard/layanan", icon: CreditCard },
+      { title: "Inventory & Sparepart", url: "/dashboard/inventory", icon: Package },
     ]
   },
   {
-    title: "List Servis",
+    title: "User Management",
     items: [
-      { title: "Overview", url: "/dashboard/servis/overview", icon: ClipboardList },
-      { title: "Menunggu Jadwal", url: "/dashboard/servis/menunggu-jadwal", icon: Calendar },
-      { title: "Teknisi Dikonfirmasi", url: "/dashboard/servis/teknisi-dikonfirmasi", icon: CheckCircle },
-      { title: "Dalam Pengecekan", url: "/dashboard/servis/dalam-pengecekan", icon: Wrench },
-      { title: "Menunggu Persetujuan", url: "/dashboard/servis/menunggu-persetujuan", icon: Clock },
-      { title: "Sedang Dikerjakan", url: "/dashboard/servis/sedang-dikerjakan", icon: Wrench },
-      { title: "Pekerjaan Selesai", url: "/dashboard/servis/pekerjaan-selesai", icon: CheckCircle },
-      { title: "Menunggu Pembayaran", url: "/dashboard/servis/menunggu-pembayaran", icon: CreditCard },
+      { title: "Teknisi", url: "/dashboard/users", icon: Wrench },
+      { title: "Pelanggan", url: "/dashboard/customers", icon: Users },
     ]
   },
   {
-    title: "History",
+    title: "Finance & Reports",
     items: [
-      { title: "Booking", url: "/dashboard/servis/booking", icon: ClipboardList },
-      { title: "Selesai (Garansi)", url: "/dashboard/servis/selesai", icon: CheckCircle },
-      { title: "Dibatalkan", url: "/dashboard/servis/dibatalkan", icon: LogOut },
+      { title: "Pembayaran & Transaksi", url: "/dashboard/transaksi", icon: CreditCard },
+      { title: "Laporan", url: "/dashboard/laporan", icon: FileText },
+    ]
+  },
+  {
+    title: "System",
+    items: [
+      { title: "Notifikasi", url: "/dashboard/notifikasi", icon: Bell },
+      { title: "Pengaturan Sistem", url: "/dashboard/pengaturan", icon: Settings },
     ]
   }
 ]
@@ -86,14 +96,13 @@ const adminMenu = [
 // Assuming 'karyawan' is the role name in the database, which is equivalent to 'teknisi'
 const karyawanMenu = [
   {
-    title: "List Servis",
+    title: "Technician Panel",
     items: [
-      { title: "Dashboard", url: "/dashboard", icon: Home },
-      { title: "Semua Pesanan", url: "/dashboard/servis/semua", icon: ClipboardList },
-      { title: "Teknisi Dikonfirmasi", url: "/dashboard/servis/teknisi-dikonfirmasi", icon: CheckCircle },
-      { title: "Dalam Pengecekan", url: "/dashboard/servis/dalam-pengecekan", icon: Wrench },
-      { title: "Sedang Dikerjakan", url: "/dashboard/servis/sedang-dikerjakan", icon: Wrench },
-      { title: "Pekerjaan Selesai", url: "/dashboard/servis/pekerjaan-selesai", icon: CheckCircle },
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Tugas Saya", url: "/dashboard/tugas", icon: Briefcase },
+      { title: "Jadwal Saya", url: "/dashboard/jadwal", icon: Calendar },
+      { title: "Inventory", url: "/dashboard/inventory", icon: Package },
+      { title: "Riwayat Servis", url: "/dashboard/riwayat", icon: History },
     ]
   }
 ]
