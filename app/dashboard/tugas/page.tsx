@@ -2,35 +2,22 @@ import { DashboardHeader } from "@/components/dashboard/header"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { getCurrentUser } from "@/app/actions/session"
 import { db } from "@/lib/db"
-import Link from "next/link"
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle,
-  CardDescription,
-  CardFooter
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { MapPin, User, Clock, Phone, ArrowRight, Briefcase } from "lucide-react"
+import { Briefcase } from "lucide-react"
+import { TugasTable } from "@/components/technician/tugas-table"
 
-function extractJadwal(keluhan: string) {
-  const match = keluhan.match(/^Jadwal:\s*(.+)$/im)
-  return match?.[1]?.trim()
-}
+const STATUS_OPTIONS = [
+  { value: "all", label: "Semua Status" },
+  { value: "Teknisi Dikonfirmasi", label: "Teknisi Dikonfirmasi" },
+  { value: "Dalam Pengecekan", label: "Dalam Pengecekan" },
+  { value: "Menunggu Persetujuan Customer", label: "Menunggu Persetujuan Customer" },
+  { value: "Sedang Dikerjakan", label: "Sedang Dikerjakan" },
+]
 
-function actionForStatus(status: string, serviceId: string) {
-  if (status === "Sedang Dikerjakan") {
-    return { href: `/dashboard/pengerjaan/${serviceId}`, label: "Upload Bukti" }
-  }
-  if (status === "Dalam Pengecekan" || status === "Teknisi Dikonfirmasi") {
-    return { href: `/dashboard/pengecekan/${serviceId}`, label: status === "Dalam Pengecekan" ? "Input Pengecekan" : "Mulai Pengecekan" }
-  }
-  return null
-}
-
-export default async function TugasTeknisiPage() {
+export default async function TugasTeknisiPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>
+}) {
   const user = await getCurrentUser()
   if (
     !user.isAuthenticated ||
@@ -39,98 +26,45 @@ export default async function TugasTeknisiPage() {
   ) {
     return null
   }
-  
+
+  const { status } = await searchParams
+  const selectedStatus = status && STATUS_OPTIONS.some((s) => s.value === status) ? status : "all"
+  const statusFilter =
+    selectedStatus === "all"
+      ? ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Menunggu Persetujuan Customer", "Sedang Dikerjakan"]
+      : [selectedStatus]
+
   const tasks = await db.services.findMany({
     where: {
       teknisiId: user.id,
       status_servis: {
-        in: ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Sedang Dikerjakan"]
-      }
+        in: statusFilter,
+      },
     },
     include: {
       customer: {
         include: {
-          customerProfile: true
-        }
-      }
+          customerProfile: true,
+        },
+      },
     },
     orderBy: {
-      updatedAt: "desc"
-    }
+      updatedAt: "desc",
+    },
   })
 
   return (
     <SidebarInset>
       <DashboardHeader title="Tugas Saya" />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-        <div className="flex items-center gap-2">
-          <Briefcase className="h-6 w-6" />
-          <h2 className="text-2xl font-bold tracking-tight">Tugas Servis</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Briefcase className="h-6 w-6" />
+            <h2 className="text-2xl font-bold tracking-tight">Tugas Servis</h2>
+          </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {tasks.length === 0 ? (
-            <div className="col-span-full py-20 text-center border rounded-lg bg-muted/20 border-dashed">
-              <p className="text-muted-foreground">Tidak ada tugas aktif saat ini.</p>
-            </div>
-          ) : (
-            tasks.map((task) => (
-              (() => {
-                const jadwal = extractJadwal(task.keluhan ?? "")
-                const action = actionForStatus(task.status_servis, task.id)
-
-                return (
-              <Card key={task.id} className="overflow-hidden">
-                <CardHeader className="bg-muted/50 pb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="outline" className="bg-background">{task.status_servis}</Badge>
-                    <span className="text-xs text-muted-foreground">{new Date(task.updatedAt).toLocaleDateString()}</span>
-                  </div>
-                  <CardTitle className="text-lg">{task.jenis_servis}</CardTitle>
-                  <CardDescription className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {task.customer.customerProfile?.alamat || "Alamat tidak tersedia"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <User className="h-4 w-4" />
-                      <span>{task.customer.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Phone className="h-4 w-4" />
-                      <span>{task.customer.customerProfile?.no_telp || "-"}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>Tanggal perbaikan: {jadwal || "-"}</span>
-                  </div>
-                  <div className="p-3 bg-muted/30 rounded-lg text-sm italic">
-                    &quot;{task.keluhan}&quot;
-                  </div>
-                </CardContent>
-                <CardFooter className="border-t pt-4">
-                  {action ? (
-                    <Button className="w-full" asChild>
-                      <Link href={action.href}>
-                        {action.label}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button className="w-full" disabled>
-                      Tidak ada aksi
-                    </Button>
-                  )}
-                </CardFooter>
-              </Card>
-                )
-              })()
-            ))
-          )}
-        </div>
+        <TugasTable tasks={tasks} selectedStatus={selectedStatus} />
       </div>
     </SidebarInset>
   )

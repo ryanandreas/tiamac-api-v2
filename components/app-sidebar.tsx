@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -14,7 +13,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarFooter,
 } from "@/components/ui/sidebar"
 import {
   Home,
@@ -24,10 +22,7 @@ import {
   CreditCard,
   CheckCircle,
   Clock,
-  LogOut,
   Wrench,
-  ChevronsUpDown,
-  User,
   Package,
   FileText,
   Bell,
@@ -36,22 +31,9 @@ import {
   Truck,
   History,
   Briefcase,
+  Search,
 } from "lucide-react"
-import { logout } from "@/app/actions/session"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 
 // Menu items based on planning.md
 const adminMenu = [
@@ -118,14 +100,10 @@ const karyawanMenu = [
 
 export function AppSidebar({ userRole, userName, userEmail, ...props }: React.ComponentProps<typeof Sidebar> & { userRole?: string, userName?: string, userEmail?: string }) {
   // Normalize role to lowercase for comparison and treat 'teknisi' as 'karyawan' if needed, or just check for 'karyawan'
-  const role = userRole?.toLowerCase();
-  const menuGroups = role === "admin" ? adminMenu : (role === "karyawan" || role === "teknisi") ? karyawanMenu : []
+  const role = userRole?.toLowerCase()
+  const isTechnician = role === "karyawan" || role === "teknisi"
+  const menuGroups = role === "admin" ? adminMenu : isTechnician ? karyawanMenu : []
   const pathname = usePathname()
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
 
   return (
     <Sidebar {...props}>
@@ -141,6 +119,12 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
               priority
             />
           </Link>
+        </div>
+        <div className="px-4 py-3 border-b">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Cari menu..." className="h-9 pl-8" />
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -164,93 +148,6 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            {mounted ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src="/images/avatar.png" alt={userName} />
-                      <AvatarFallback className="rounded-lg">
-                        {userName?.slice(0, 2).toUpperCase() || "US"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{userName || userRole || "User"}</span>
-                      <span className="truncate text-sm">{userEmail || "Staff"}</span>
-                    </div>
-                    <ChevronsUpDown className="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                  side="top"
-                  align="end"
-                  sideOffset={4}
-                >
-                  <DropdownMenuLabel className="p-0 font-normal">
-                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                      <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src="/images/avatar.png" alt={userName} />
-                        <AvatarFallback className="rounded-lg">
-                          {userName?.slice(0, 2).toUpperCase() || "US"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="grid flex-1 text-left text-sm leading-tight">
-                        <div className="flex items-center gap-2">
-                          <span className="truncate font-semibold">{userName || "User"}</span>
-                          <Badge variant={userRole === "admin" ? "default" : "secondary"} className="h-4 px-1 text-[9px]">
-                            {userRole ? userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase() : "Staff"}
-                          </Badge>
-                        </div>
-                        <span className="truncate text-sm">{userEmail || "user@example.com"}</span>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {(role === "karyawan" || role === "teknisi") && (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link href="/dashboard/profile">
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  <DropdownMenuItem onClick={() => logout()}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              >
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src="/images/avatar.png" alt={userName} />
-                  <AvatarFallback className="rounded-lg">
-                    {userName?.slice(0, 2).toUpperCase() || "US"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{userName || userRole || "User"}</span>
-                  <span className="truncate text-sm">{userEmail || "Staff"}</span>
-                </div>
-                <ChevronsUpDown className="ml-auto size-4" />
-              </SidebarMenuButton>
-            )}
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )
