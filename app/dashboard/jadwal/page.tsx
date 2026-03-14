@@ -9,8 +9,9 @@ export default async function JadwalPage() {
       status_servis: "Menunggu Jadwal",
     },
     include: {
-      customer: true,
+      customer: { include: { customerProfile: true } },
       teknisi: true,
+      acUnits: { include: { layanan: true } },
     },
     orderBy: {
       createdAt: "desc",

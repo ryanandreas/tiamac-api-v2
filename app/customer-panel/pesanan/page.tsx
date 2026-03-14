@@ -43,6 +43,11 @@ export default async function MyOrdersPage({
             layanan: true,
           },
         },
+        materialUsages: {
+          include: {
+            item: { select: { nama: true } },
+          },
+        },
       },
       orderBy: {
         updatedAt: "desc",
@@ -59,6 +64,11 @@ export default async function MyOrdersPage({
         acUnits: {
           include: {
             layanan: true,
+          },
+        },
+        materialUsages: {
+          include: {
+            item: { select: { nama: true } },
           },
         },
       },
@@ -122,7 +132,7 @@ export default async function MyOrdersPage({
             <CardContent className="p-0">
               {ongoingServices.length > 0 ? (
                 <div className="overflow-x-auto">
-                   <ServiceListTable data={ongoingServices} showNextStep />
+                   <ServiceListTable data={ongoingServices} showNextStep enableCustomerApproval />
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-center">

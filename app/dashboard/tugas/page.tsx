@@ -2,6 +2,7 @@ import { DashboardHeader } from "@/components/dashboard/header"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { getCurrentUser } from "@/app/actions/session"
 import { db } from "@/lib/db"
+import Link from "next/link"
 import { 
   Card, 
   CardContent, 
@@ -14,8 +15,30 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MapPin, User, Clock, Phone, ArrowRight, Briefcase } from "lucide-react"
 
+function extractJadwal(keluhan: string) {
+  const match = keluhan.match(/^Jadwal:\s*(.+)$/im)
+  return match?.[1]?.trim()
+}
+
+function actionForStatus(status: string, serviceId: string) {
+  if (status === "Sedang Dikerjakan") {
+    return { href: `/dashboard/pengerjaan/${serviceId}`, label: "Upload Bukti" }
+  }
+  if (status === "Dalam Pengecekan" || status === "Teknisi Dikonfirmasi") {
+    return { href: `/dashboard/pengecekan/${serviceId}`, label: status === "Dalam Pengecekan" ? "Input Pengecekan" : "Mulai Pengecekan" }
+  }
+  return null
+}
+
 export default async function TugasTeknisiPage() {
   const user = await getCurrentUser()
+  if (
+    !user.isAuthenticated ||
+    user.type !== "staff" ||
+    (user.role?.toLowerCase() !== "teknisi" && user.role?.toLowerCase() !== "karyawan")
+  ) {
+    return null
+  }
   
   const tasks = await db.services.findMany({
     where: {
@@ -52,6 +75,11 @@ export default async function TugasTeknisiPage() {
             </div>
           ) : (
             tasks.map((task) => (
+              (() => {
+                const jadwal = extractJadwal(task.keluhan ?? "")
+                const action = actionForStatus(task.status_servis, task.id)
+
+                return (
               <Card key={task.id} className="overflow-hidden">
                 <CardHeader className="bg-muted/50 pb-4">
                   <div className="flex items-center justify-between mb-2">
@@ -75,17 +103,31 @@ export default async function TugasTeknisiPage() {
                       <span>{task.customer.customerProfile?.no_telp || "-"}</span>
                     </div>
                   </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>Tanggal perbaikan: {jadwal || "-"}</span>
+                  </div>
                   <div className="p-3 bg-muted/30 rounded-lg text-sm italic">
                     &quot;{task.keluhan}&quot;
                   </div>
                 </CardContent>
                 <CardFooter className="border-t pt-4">
-                  <Button className="w-full">
-                    Mulai Kerjakan
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  {action ? (
+                    <Button className="w-full" asChild>
+                      <Link href={action.href}>
+                        {action.label}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button className="w-full" disabled>
+                      Tidak ada aksi
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
+                )
+              })()
             ))
           )}
         </div>

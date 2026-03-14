@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/app/actions/session"
+import { revalidatePath } from "next/cache"
 
 export type CustomerProfileActionState = { message: string } | null
 
@@ -56,4 +57,65 @@ export async function updateCustomerProfile(
   }
 
   return { message: "Profil berhasil disimpan." }
+}
+
+export async function confirmServiceEstimate(serviceId: string) {
+  const current = await getCurrentUser()
+  if (!current.isAuthenticated || current.type !== "customer") {
+    return { success: false, message: "Unauthorized" }
+  }
+
+  const service = await db.services.findUnique({
+    where: { id: serviceId },
+    select: { id: true, customerId: true, status_servis: true },
+  })
+
+  if (!service || service.customerId !== current.id || service.status_servis !== "Menunggu Persetujuan Customer") {
+    return { success: false, message: "Servis tidak dapat diproses." }
+  }
+
+  await db.services.update({
+    where: { id: serviceId },
+    data: {
+      status: "Sedang Dikerjakan",
+      status_servis: "Sedang Dikerjakan",
+      biaya_disetujui: true,
+    },
+  })
+
+  revalidatePath("/customer-panel/pesanan")
+  revalidatePath("/customer-panel/dashboard")
+  revalidatePath(`/customer-panel/pesanan/${serviceId}`)
+  return { success: true }
+}
+
+export async function cancelServiceEstimate(serviceId: string) {
+  const current = await getCurrentUser()
+  if (!current.isAuthenticated || current.type !== "customer") {
+    return { success: false, message: "Unauthorized" }
+  }
+
+  const service = await db.services.findUnique({
+    where: { id: serviceId },
+    select: { id: true, customerId: true, status_servis: true },
+  })
+
+  if (!service || service.customerId !== current.id || service.status_servis !== "Menunggu Persetujuan Customer") {
+    return { success: false, message: "Servis tidak dapat diproses." }
+  }
+
+  await db.services.update({
+    where: { id: serviceId },
+    data: {
+      status: "Dibatalkan",
+      status_servis: "Dibatalkan",
+      biaya_disetujui: false,
+      alasan_batal: "Ditolak customer",
+    },
+  })
+
+  revalidatePath("/customer-panel/pesanan")
+  revalidatePath("/customer-panel/dashboard")
+  revalidatePath(`/customer-panel/pesanan/${serviceId}`)
+  return { success: true }
 }

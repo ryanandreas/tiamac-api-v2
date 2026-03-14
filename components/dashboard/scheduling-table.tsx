@@ -15,6 +15,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -22,9 +27,14 @@ import type { Prisma } from "@prisma/client"
 import { updateJadwal } from "@/app/actions/jadwal"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
+import { CalendarDays } from "lucide-react"
 
 type BaseService = Prisma.ServicesGetPayload<{
-  include: { customer: true; teknisi: true }
+  include: {
+    customer: { include: { customerProfile: true } }
+    teknisi: true
+    acUnits: { include: { layanan: true } }
+  }
 }>
 
 type Technician = { uuid: string; name: string }
@@ -39,20 +49,62 @@ export function SchedulingTable({ data, teknisi }: SchedulingTableProps) {
   const [selectedService, setSelectedService] = useState<BaseService | null>(null)
   const [selectedTeknisi, setSelectedTeknisi] = useState<string | undefined>()
   const [selectedDate, setSelectedDate] = useState<Date | undefined>()
+  const [selectedTime, setSelectedTime] = useState<string>("09:00")
+  const [datePickerOpen, setDatePickerOpen] = useState(false)
 
   const selectClassName =
     "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+
+  const inputClassName =
+    "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 
   const handleScheduleClick = (service: BaseService) => {
     setSelectedService(service)
     setSelectedTeknisi(undefined)
     setSelectedDate(undefined)
+    setSelectedTime("09:00")
+    setDatePickerOpen(false)
     setOpen(true)
   }
 
+  function extractLine(keluhan: string, prefix: string) {
+    const lines = keluhan.split("\n")
+    const line = lines.find((l) => l.trim().toLowerCase().startsWith(prefix.toLowerCase()))
+    if (!line) return undefined
+    return line.replace(new RegExp(`^${prefix}\\s*`, "i"), "").trim()
+  }
+
+  const serviceAlamat = selectedService
+    ? extractLine(selectedService.keluhan ?? "", "Alamat:") ??
+      selectedService.customer?.customerProfile?.alamat ??
+      "-"
+    : "-"
+
+  const serviceJadwalRequest = selectedService
+    ? extractLine(selectedService.keluhan ?? "", "Jadwal:") ?? "-"
+    : "-"
+
+  const serviceKeluhanSingkat = selectedService
+    ? (selectedService.keluhan ?? "").split("\n").find((l) => l.trim()) ?? "-"
+    : "-"
+
+  const biayaKunjungan = selectedService?.biaya_dasar ?? 50000
+  const layananRows =
+    selectedService?.acUnits.flatMap((unit, unitIdx) =>
+      unit.layanan.map((layanan) => ({
+        id: layanan.id,
+        deskripsi: `AC ${unitIdx + 1} - ${layanan.nama}`,
+        pk: unit.pk,
+        harga: layanan.harga,
+      }))
+    ) ?? []
+
+  const layananTotal = layananRows.reduce((sum, r) => sum + r.harga, 0)
+  const estimasiTotal = selectedService?.estimasi_biaya ?? biayaKunjungan + layananTotal
+
   const handleSaveChanges = async () => {
-    if (selectedService && selectedTeknisi && selectedDate) {
-      const jadwalTanggal = selectedDate.toISOString().slice(0, 10)
+    if (selectedService && selectedTeknisi && selectedDate && selectedTime) {
+      const jadwalTanggal = `${selectedDate.toISOString().slice(0, 10)} ${selectedTime}`
       await updateJadwal(selectedService.id, selectedTeknisi, jadwalTanggal)
       setOpen(false)
     }
@@ -128,39 +180,155 @@ export function SchedulingTable({ data, teknisi }: SchedulingTableProps) {
         </Table>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:max-w-4xl lg:max-w-5xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Jadwalkan Perbaikan</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <p className="col-span-1">Teknisi</p>
-              <select
-                className={cn(selectClassName, "col-span-3")}
-                value={selectedTeknisi ?? ""}
-                onChange={(event) => setSelectedTeknisi(event.target.value || undefined)}
-              >
-                <option value="" disabled>
-                  Pilih Teknisi
-                </option>
-                {teknisi.map((t) => (
-                  <option key={t.uuid} value={t.uuid}>
-                    {t.name}
-                  </option>
-                ))}
-              </select>
+          <div className="grid gap-6 lg:grid-cols-5">
+            <div className="space-y-6 lg:col-span-3">
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead colSpan={2}>Detail Servis</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="w-[180px] text-muted-foreground">Customer</TableCell>
+                      <TableCell>{selectedService?.customer?.name ?? "-"}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="text-muted-foreground">Email</TableCell>
+                      <TableCell>{selectedService?.customer?.email ?? "-"}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="text-muted-foreground">Alamat</TableCell>
+                      <TableCell>{serviceAlamat}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="text-muted-foreground">Keluhan</TableCell>
+                      <TableCell className="whitespace-normal">{serviceKeluhanSingkat}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="text-muted-foreground">Request Jadwal</TableCell>
+                      <TableCell>{serviceJadwalRequest}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="text-muted-foreground">Total Estimasi</TableCell>
+                      <TableCell>Rp {estimasiTotal.toLocaleString("id-ID")}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Rincian Servis</TableHead>
+                      <TableHead className="w-[120px]">PK</TableHead>
+                      <TableHead className="w-[140px] text-right">Harga</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium">Biaya Kunjungan & Diagnosa</TableCell>
+                      <TableCell>-</TableCell>
+                      <TableCell className="text-right">Rp {biayaKunjungan.toLocaleString("id-ID")}</TableCell>
+                    </TableRow>
+                    {layananRows.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell className="whitespace-normal">{row.deskripsi}</TableCell>
+                        <TableCell>{row.pk} PK</TableCell>
+                        <TableCell className="text-right">Rp {row.harga.toLocaleString("id-ID")}</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell className="text-right font-medium" colSpan={2}>
+                        Total layanan
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        Rp {layananTotal.toLocaleString("id-ID")}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <p className="col-span-1">Tanggal</p>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                className="rounded-md border col-span-3"
-              />
+
+            <div className="space-y-4 lg:col-span-2">
+              <div className="rounded-md border p-4 space-y-4">
+                <div className="text-sm font-medium">Penjadwalan</div>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Teknisi</div>
+                  <select
+                    className={cn(selectClassName)}
+                    value={selectedTeknisi ?? ""}
+                    onChange={(event) => setSelectedTeknisi(event.target.value || undefined)}
+                  >
+                    <option value="" disabled>
+                      Pilih Teknisi
+                    </option>
+                    {teknisi.map((t) => (
+                      <option key={t.uuid} value={t.uuid}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Tanggal Perbaikan</div>
+                  <DropdownMenu open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
+                        <CalendarDays className="mr-2 h-4 w-4" />
+                        {selectedDate ? selectedDate.toISOString().slice(0, 10) : "Pilih tanggal"}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={(next) => {
+                          setSelectedDate(next)
+                          if (next) setDatePickerOpen(false)
+                        }}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Jam</div>
+                  <input
+                    type="time"
+                    className={inputClassName}
+                    value={selectedTime}
+                    onChange={(e) => setSelectedTime(e.target.value)}
+                  />
+                </div>
+
+                <div className="text-xs text-muted-foreground">
+                  Jadwal terpilih:{" "}
+                  {selectedDate ? `${selectedDate.toISOString().slice(0, 10)} ${selectedTime}` : "-"}
+                </div>
+
+                <Button
+                  className="w-full"
+                  onClick={handleSaveChanges}
+                  disabled={!selectedService || !selectedTeknisi || !selectedDate || !selectedTime}
+                >
+                  Simpan Jadwal
+                </Button>
+              </div>
             </div>
           </div>
-          <Button onClick={handleSaveChanges}>Simpan Jadwal</Button>
         </DialogContent>
       </Dialog>
     </>
