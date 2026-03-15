@@ -32,7 +32,6 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { logout } from "@/app/actions/session"
 
 // Menu items based on planning.md
@@ -40,7 +39,7 @@ const adminMenu = [
   {
     title: "Utama",
     items: [
-      { title: "Dashboard Overview", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
     ]
   },
   {
@@ -84,20 +83,45 @@ const adminMenu = [
 
 const karyawanMenu = [
   {
-    title: "Panel Teknisi",
+    title: "Utama",
     items: [
       { title: "Beranda Kerja", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Jadwal Saya", url: "/dashboard/jadwal-saya", icon: Calendar },
-      { title: "Daftar Tugas", url: "/dashboard/tugas", icon: Briefcase },
-      { title: "Cek Keluhan", url: "/dashboard/pengecekan", icon: Wrench },
-      { title: "Unit Dikerjakan", url: "/dashboard/pengerjaan", icon: Truck },
-      { title: "Inventory Alat", url: "/dashboard/inventory", icon: Package },
-      { title: "History Kerja", url: "/dashboard/riwayat", icon: History },
+    ]
+  },
+  {
+    title: "Tugas Lapangan",
+    items: [
+      { title: "Penugasan Baru", url: "/dashboard/tugas", icon: Bell },
+      { title: "Jadwal Servis", url: "/dashboard/jadwal-saya", icon: Calendar },
+      { title: "Pengecekan & Diagnosa", url: "/dashboard/pengecekan", icon: Search },
+      { title: "Proses Pengerjaan", url: "/dashboard/pengerjaan", icon: Wrench },
+    ]
+  },
+  {
+    title: "Logistik & Arsip",
+    items: [
+      { title: "Cek Stok Material", url: "/dashboard/inventory", icon: Package },
+      { title: "Riwayat Kerja", url: "/dashboard/riwayat", icon: History },
     ]
   }
 ]
 
-export function AppSidebar({ userRole, userName, userEmail, ...props }: React.ComponentProps<typeof Sidebar> & { userRole?: string, userName?: string, userEmail?: string }) {
+export function AppSidebar({ 
+  userRole, 
+  userName, 
+  userEmail, 
+  badgeCounts,
+  ...props 
+}: React.ComponentProps<typeof Sidebar> & { 
+  userRole?: string, 
+  userName?: string, 
+  userEmail?: string,
+  badgeCounts?: {
+    booking: number;
+    jadwal: number;
+    servis: number;
+  }
+}) {
   const role = userRole?.toLowerCase()
   const isTechnician = role === "karyawan" || role === "teknisi"
   const menuGroups = role === "admin" ? adminMenu : isTechnician ? karyawanMenu : []
@@ -109,7 +133,7 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
         <Link href="/dashboard" className="flex items-center gap-3 group px-2 mb-4">
           <div className="size-10 rounded-2xl bg-green-50 flex items-center justify-center group-hover:bg-[#66B21D] transition-all duration-300">
              <Image
-                src="/images/logo.svg"
+                src="/images/logo.png"
                 alt="Logo"
                 width={32}
                 height={32}
@@ -122,14 +146,7 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dashboard</span>
           </div>
         </Link>
-        
-        <div className="relative group px-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors pointer-events-none" />
-          <Input 
-            placeholder="Cari Menu..." 
-            className="pl-10 h-10 border-none bg-slate-50 rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all text-[11px] font-black uppercase tracking-widest shadow-inner placeholder:text-slate-300"
-          />
-        </div>
+                
       </SidebarHeader>
 
       <SidebarContent className="px-4 pb-8">
@@ -141,6 +158,19 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
             <SidebarMenu className="gap-1">
               {group.items.map((item) => {
                 const isActive = pathname === item.url
+                
+                // Badge Logic for Admin
+                let badge = null
+                if (role === "admin") {
+                  if (item.url === "/dashboard/booking" && badgeCounts?.booking) {
+                    badge = badgeCounts.booking
+                  } else if (item.url === "/dashboard/jadwal" && badgeCounts?.jadwal) {
+                    badge = badgeCounts.jadwal
+                  } else if (item.url === "/dashboard/servis" && badgeCounts?.servis) {
+                    badge = badgeCounts.servis
+                  }
+                }
+
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton 
@@ -152,10 +182,17 @@ export function AppSidebar({ userRole, userName, userEmail, ...props }: React.Co
                         : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                       }`}
                     >
-                      <Link href={item.url} className="flex items-center gap-3">
+                      <Link href={item.url} className="flex items-center gap-3 w-full">
                         <item.icon className={`h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-[#66B21D]" : "text-slate-400 group-hover:text-slate-900"}`} />
                         <span className={`text-[11px] font-black uppercase tracking-widest ${isActive ? "text-slate-900" : ""}`}>{item.title}</span>
-                        {isActive && <ChevronRight className="h-3.5 w-3.5 ml-auto text-[#66B21D] animate-in slide-in-from-left-2 duration-300" />}
+                        
+                        {badge && (
+                          <span className="ml-auto min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-[9px] font-black text-white px-1 leading-none animate-in zoom-in duration-300">
+                            {badge}
+                          </span>
+                        )}
+                        
+                        {isActive && !badge && <ChevronRight className="h-3.5 w-3.5 ml-auto text-[#66B21D] animate-in slide-in-from-left-2 duration-300" />}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

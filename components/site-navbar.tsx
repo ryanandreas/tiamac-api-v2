@@ -35,11 +35,16 @@ export function SiteNavbar({
         <div className="m-auto max-w-7xl px-6 md:px-12">
           <div className="flex flex-wrap items-center justify-between gap-6 py-4 lg:gap-0 lg:py-5">
             <div className="flex w-full justify-between lg:w-auto">
-              <Link href="/" aria-label="home" className="flex items-center gap-2">
-                <div className="size-9 bg-linear-to-br from-[#4d9e0f] to-[#66B21D] rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
-                  <span className="text-white font-extrabold text-sm tracking-tight">AC</span>
-                </div>
-                <span className="text-xl font-black text-slate-900 tracking-tight">Tiam AC</span>
+              <Link href="/" aria-label="home" className="flex items-center gap-3">
+                <Image 
+                  src="/images/logo.png" 
+                  alt="Tiam AC Logo" 
+                  width={40} 
+                  height={40} 
+                  className="h-10 w-auto object-contain"
+                  priority
+                />
+                <span className="text-xl font-black text-slate-900 tracking-tight">AC Tiam</span>
               </Link>
 
               <button

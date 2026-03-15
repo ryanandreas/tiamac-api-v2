@@ -1,7 +1,6 @@
 import { SignupForm } from "@/components/signup-form"
 import { getCurrentUser } from "@/app/actions/session"
 import { redirect } from "next/navigation"
-import { SiteNavbar } from "@/components/site-navbar"
 
 export default async function SignupPage() {
   const user = await getCurrentUser()
@@ -12,9 +11,7 @@ export default async function SignupPage() {
   }
 
   return (
-    <>
-      <SiteNavbar user={user} />
-      <div className="flex flex-col lg:flex-row min-h-screen bg-white font-sans text-slate-900 pt-24 lg:pt-28">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-white font-sans text-slate-900">
         {/* Left Side: Signup Form */}
         <div className="flex-1 flex flex-col justify-center items-center p-8 md:p-12 lg:p-16 bg-white overflow-y-auto">
           <div className="w-full max-w-lg">
@@ -70,6 +67,5 @@ export default async function SignupPage() {
           </div>
         </div>
       </div>
-    </>
   )
 }

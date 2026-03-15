@@ -1,9 +1,9 @@
-import { DashboardHeader } from "@/components/dashboard/header"
-import { SidebarInset } from "@/components/ui/sidebar"
-import { getCurrentUser } from "@/app/actions/session"
 import { db } from "@/lib/db"
-import { Briefcase } from "lucide-react"
+import { Briefcase, Bell } from "lucide-react"
 import { TugasTable } from "@/components/technician/tugas-table"
+import { getCurrentUser } from "@/app/actions/session"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
+import { Pagination } from "@/components/pagination"
 
 const STATUS_OPTIONS = [
   { value: "all", label: "Semua Status" },
@@ -16,7 +16,7 @@ const STATUS_OPTIONS = [
 export default async function TugasTeknisiPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>
+  searchParams: Promise<{ status?: string; page?: string }>
 }) {
   const user = await getCurrentUser()
   if (
@@ -27,45 +27,76 @@ export default async function TugasTeknisiPage({
     return null
   }
 
-  const { status } = await searchParams
+  const { status, page } = await searchParams
+  const currentPage = Number(page) || 1
+  const pageSize = 10
+  const skip = (currentPage - 1) * pageSize
+
   const selectedStatus = status && STATUS_OPTIONS.some((s) => s.value === status) ? status : "all"
   const statusFilter =
     selectedStatus === "all"
       ? ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Menunggu Persetujuan Customer", "Sedang Dikerjakan"]
       : [selectedStatus]
 
-  const tasks = await db.services.findMany({
-    where: {
-      teknisiId: user.id,
-      status_servis: {
-        in: statusFilter,
-      },
+  const whereClause = {
+    teknisiId: user.id,
+    status_servis: {
+      in: statusFilter,
     },
-    include: {
-      customer: {
-        include: {
-          customerProfile: true,
+  }
+
+  const [tasks, totalCount] = await Promise.all([
+    db.services.findMany({
+      where: whereClause,
+      include: {
+        customer: {
+          include: {
+            customerProfile: true,
+          },
         },
       },
-    },
-    orderBy: {
-      updatedAt: "desc",
-    },
-  })
+      orderBy: {
+        updatedAt: "desc",
+      },
+      skip,
+      take: pageSize,
+    }),
+    db.services.count({ where: whereClause })
+  ])
+
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   return (
-    <SidebarInset>
-      <DashboardHeader title="Tugas Saya" />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Briefcase className="h-6 w-6" />
-            <h2 className="text-2xl font-bold tracking-tight">Tugas Servis</h2>
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="size-8 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
+              <Bell className="h-4 w-4" />
+            </div>
+            <h1 className="text-sm font-black text-orange-600 uppercase tracking-widest">Penugasan</h1>
           </div>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Tugas Servis</h2>
+          <DynamicBreadcrumbs />
+          <p className="text-slate-500 font-bold text-sm mt-1">Daftar semua tugas pengerjaan yang ditugaskan kepada Anda.</p>
         </div>
-
-        <TugasTable tasks={tasks} selectedStatus={selectedStatus} />
       </div>
-    </SidebarInset>
+
+      <div className="bg-white rounded-[32px] shadow-xl shadow-slate-200/50 border border-slate-50 overflow-hidden">
+        <div className="p-1">
+          <TugasTable tasks={tasks} selectedStatus={selectedStatus} />
+        </div>
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-slate-50 bg-slate-50/20">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              baseUrl="/dashboard/tugas"
+              searchParams={{ status: selectedStatus }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

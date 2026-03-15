@@ -112,67 +112,83 @@ export function SchedulingTable({ data, teknisi }: SchedulingTableProps) {
 
   return (
     <>
-      <div className="rounded-md border bg-card">
+      <div className="overflow-x-auto">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Customer</TableHead>
-              <TableHead>Teknisi</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+          <TableHeader className="bg-slate-50/30">
+            <TableRow className="border-slate-50 hover:bg-transparent">
+              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 pl-8">Customer</TableHead>
+              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Teknisi</TableHead>
+              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tanggal</TableHead>
+              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Status</TableHead>
+              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right pr-8">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
+              <TableRow key={item.id} className="border-slate-50 group hover:bg-slate-50/30 transition-colors">
+                <TableCell className="pl-8 py-6">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={`/images/avatar.png`} alt={item.customer?.name} />
-                      <AvatarFallback>{item.customer?.name?.slice(0, 2).toUpperCase() || "CS"}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="font-medium text-sm">{item.customer?.name}</span>
-                      <span className="text-xs text-muted-foreground">{item.customer?.email}</span>
+                    <div className="size-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-[10px] shrink-0 overflow-hidden">
+                       {item.customer?.name?.slice(0, 2).toUpperCase() || "CS"}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-black text-sm text-slate-900 group-hover:text-[#66B21D] transition-colors truncate">{item.customer?.name}</span>
+                      <span className="text-[10px] font-bold text-slate-400 truncate">{item.customer?.email}</span>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="py-6">
                   {item.teknisi ? (
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage src={`/images/avatar.png`} alt={item.teknisi.name} />
-                        <AvatarFallback>{item.teknisi.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-sm">{item.teknisi.name}</span>
-                        <span className="text-xs text-muted-foreground">Technician</span>
+                      <div className="size-9 rounded-xl bg-green-50 flex items-center justify-center text-[#66B21D] font-black text-[10px] shrink-0 overflow-hidden">
+                        {item.teknisi.name?.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-black text-sm text-slate-900 truncate">{item.teknisi.name}</span>
+                        <span className="text-[10px] font-bold text-[#66B21D] uppercase tracking-widest">Technician</span>
                       </div>
                     </div>
                   ) : (
-                    <span className="text-sm text-muted-foreground italic">Unassigned</span>
+                    <div className="flex items-center gap-2 text-slate-300 italic">
+                      <div className="size-8 rounded-lg border border-dashed border-slate-200" />
+                      <span className="text-xs font-bold">Unassigned</span>
+                    </div>
                   )}
                 </TableCell>
-                <TableCell>
-                  <span className="text-sm text-muted-foreground">
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </span>
+                <TableCell className="py-6">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black text-slate-900">
+                      {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      {new Date(item.createdAt).getFullYear()}
+                    </span>
+                  </div>
                 </TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className="font-normal text-xs">
+                <TableCell className="py-6 text-center">
+                  <Badge className="px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border-none bg-orange-100 text-orange-600">
                     {item.status_servis}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <Button onClick={() => handleScheduleClick(item)}>Jadwalkan</Button>
+                <TableCell className="py-6 pr-8 text-right">
+                  <Button 
+                    onClick={() => handleScheduleClick(item)}
+                    className="h-9 px-4 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-green-500/20 transition-all active:scale-95"
+                  >
+                    Jadwalkan
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
             {data.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  No services to schedule.
+                <TableCell colSpan={5} className="h-32 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-200 mb-2">
+                      <CalendarDays className="h-5 w-5" />
+                    </div>
+                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Tidak ada pesanan untuk dijadwalkan</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

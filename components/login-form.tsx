@@ -7,6 +7,9 @@ import { useActionState } from "react"
 import { login } from "@/app/actions/auth"
 import { ArrowRight, Eye, Mail, Lock } from "lucide-react"
 
+import Image from "next/image"
+import Link from "next/link"
+
 export function LoginForm({
   className,
   ...props
@@ -16,12 +19,16 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-10 w-full", className)} {...props}>
       {/* Brand Logo */}
-      <div className="flex items-center gap-3">
-        <div className="size-10 bg-linear-to-br from-[#4d9e0f] to-[#66B21D] rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
-          <span className="text-white font-extrabold text-sm tracking-tight">AC</span>
-        </div>
-        <span className="text-2xl font-black text-slate-900 tracking-tight">Tiam AC</span>
-      </div>
+      <Link href="/" className="flex items-center gap-3 w-fit">
+        <Image 
+          src="/images/logo.png" 
+          alt="Tiam AC Logo" 
+          width={40} 
+          height={40} 
+          className="h-10 w-auto object-contain"
+        />
+        <span className="text-2xl font-black text-slate-900 tracking-tight">AC Tiam</span>
+      </Link>
 
       {/* Heading */}
       <div className="space-y-2">

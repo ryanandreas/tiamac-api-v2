@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 
 export default function FooterSection() {
     return (
@@ -10,11 +11,15 @@ export default function FooterSection() {
             <div className="mx-auto max-w-7xl px-6 md:px-12 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
                     <div className="lg:col-span-1">
-                        <Link href="/" className="flex items-center gap-2 mb-8">
-                            <div className="size-10 bg-linear-to-br from-[#4d9e0f] to-[#66B21D] rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
-                                <span className="text-white font-extrabold text-sm tracking-tight">AC</span>
-                            </div>
-                            <span className="text-2xl font-black text-white tracking-tight">Tiam AC</span>
+                        <Link href="/" className="flex items-center gap-3 mb-8">
+                            <Image 
+                                src="/images/logo.png" 
+                                alt="Tiam AC Logo" 
+                                width={40} 
+                                height={40} 
+                                className="h-10 w-auto object-contain"
+                            />
+                            <span className="text-2xl font-black text-white tracking-tight">AC Tiam</span>
                         </Link>
                         <p className="text-slate-400 text-sm font-bold leading-relaxed mb-10 max-w-[240px]">
                             Solusi terpercaya untuk kenyamanan udara Anda di Jakarta dan sekitarnya. Teknisi ahli, harga jujur.
@@ -83,7 +88,7 @@ export default function FooterSection() {
 
                 <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
                     <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-                        © {new Date().getFullYear()} Tiam AC. Seluruh Hak Cipta Dilindungi.
+                        © {new Date().getFullYear()} AC Tiam. Seluruh Hak Cipta Dilindungi.
                     </p>
                     <div className="flex items-center gap-8">
                         <Link href="#" className="text-slate-500 text-xs font-bold hover:text-white transition-colors uppercase tracking-widest">Syarat & Ketentuan</Link>

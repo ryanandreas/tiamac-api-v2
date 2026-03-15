@@ -1,5 +1,6 @@
 # 🎨 UI DESIGN GUIDELINES
 
+* Logo project : E:\Project\Merge\tiamac-mysql-api-v2\tiamac-api-v2\public\images\logo.png
 * Gunakan warna hijau muda sebagai warna utama
 * Design system berbasis shadcn/ui
 * Clean modern dashboard

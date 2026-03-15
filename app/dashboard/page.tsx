@@ -15,11 +15,14 @@ import {
   TrendingUp,
   Activity,
   Briefcase,
-  ArrowRight
+  ArrowRight,
+  CheckCircle2,
+  Settings
 } from "lucide-react"
 import { formatPrice } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
+import Link from "next/link"
 
 export default async function Page() {
   const user = await getCurrentUser()
@@ -32,49 +35,107 @@ export default async function Page() {
     (user.role?.toLowerCase() === "teknisi" || user.role?.toLowerCase() === "karyawan")
 
   if (isTechnician) {
-     const tasksCount = await db.services.count({
-       where: {
-         teknisiId: user.id,
-         status_servis: {
-           in: ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Sedang Dikerjakan"]
+     const [activeTasks, completedTasks, pendingTasks] = await Promise.all([
+       db.services.count({
+         where: {
+           teknisiId: user.id,
+           status_servis: { in: ["Sedang Dikerjakan"] }
          }
-       }
-     })
+       }),
+       db.services.count({
+         where: {
+           teknisiId: user.id,
+           status_servis: { in: ["Pekerjaan Selesai", "Selesai (Garansi Aktif)"] }
+         }
+       }),
+       db.services.count({
+         where: {
+           teknisiId: user.id,
+           status_servis: { in: ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Menunggu Persetujuan Customer"] }
+         }
+       })
+     ])
+
+     const techStats = [
+       { title: "Tugas Berjalan", value: activeTasks, icon: Activity, color: "bg-green-50 text-[#66B21D]", desc: "Unit pengerjaan aktif" },
+       { title: "Selesai", value: completedTasks, icon: CheckCircle2, color: "bg-blue-50 text-blue-600", desc: "Total kerja berhasil" },
+       { title: "Antrean Cek", value: pendingTasks, icon: Briefcase, color: "bg-orange-50 text-orange-600", desc: "Menunggu pengecekan" },
+     ]
 
      return (
-       <div className="space-y-8">
+       <div className="space-y-10 animate-fade-in">
            <div className="flex flex-col gap-1">
              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Halo, {user.name}!</h1>
-             <p className="text-slate-500 font-bold text-sm">Semangat kerja hari ini. Berikut update tugas Anda.</p>
+             <DynamicBreadcrumbs />
+             <p className="text-slate-500 font-bold text-sm mt-1">Selamat bertugas. Pantau semua penugasan servis Anda di sini.</p>
            </div>
 
-           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-             <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group">
-               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-slate-50/50">
-                 <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-400">Tugas Aktif</CardTitle>
-                 <Briefcase className="h-5 w-5 text-[#66B21D]" />
-               </CardHeader>
-               <CardContent className="pt-6">
-                 <div className="text-4xl font-black text-slate-900 tracking-tighter">{tasksCount}</div>
-                 <p className="text-xs font-bold text-slate-400 mt-2">Unit yang perlu ditangani hari ini</p>
-               </CardContent>
-             </Card>
+           <div className="grid gap-6 md:grid-cols-3">
+             {techStats.map((stat, i) => (
+               <Card key={i} className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group hover:-translate-y-1 transition-all">
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-slate-50/30">
+                   <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.title}</CardTitle>
+                   <div className={`size-8 rounded-lg flex items-center justify-center ${stat.color}`}>
+                     <stat.icon className="h-4 w-4" />
+                   </div>
+                 </CardHeader>
+                 <CardContent className="pt-6">
+                   <div className="text-3xl font-black text-slate-900 tracking-tighter">{stat.value}</div>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">{stat.desc}</p>
+                 </CardContent>
+               </Card>
+             ))}
            </div>
            
-           <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
-             <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-12">
-               <div className="size-20 bg-green-50 rounded-3xl flex items-center justify-center mb-8 text-[#66B21D]">
-                 <Activity className="h-10 w-10" />
-               </div>
-               <h3 className="text-2xl font-black text-slate-900 tracking-tight">Monitor Tugas Secara Real-time</h3>
-               <p className="text-sm text-slate-400 font-bold max-w-md mx-auto mt-3 leading-relaxed">
-                 Gunakan menu navigasi di samping untuk melihat detail jadwal, input pengerjaan, dan riwayat tugas Anda.
-               </p>
-               <Button className="mt-10 h-12 px-8 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-widest hover:bg-[#66B21D] transition-all shadow-lg shadow-slate-900/10">
-                 Lihat Jadwal Saya
-               </Button>
-             </CardContent>
-           </Card>
+           <div className="grid gap-8 lg:grid-cols-2">
+              <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
+                <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-12">
+                  <div className="size-20 bg-green-50 rounded-3xl flex items-center justify-center mb-8 text-[#66B21D] shadow-inner">
+                    <Wrench className="h-10 w-10" />
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">Mulai Pengerjaan<br/>Sekarang Secara Akurat</h3>
+                  <p className="text-sm text-slate-400 font-bold max-w-sm mx-auto mt-4 leading-relaxed">
+                    Pastikan unit sudah dicek dan biaya sudah disetujui pelanggan sebelum menekan tombol mulai pengerjaan.
+                  </p>
+                  <Button className="mt-10 h-14 px-10 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-[#66B21D] transition-all shadow-2xl shadow-slate-900/20 group" asChild>
+                    <Link href="/dashboard/tugas">
+                      Buka Daftar Tugas <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-slate-900 text-white relative">
+                 <div className="absolute top-0 right-0 p-8 opacity-10">
+                    <Settings className="h-32 w-32" />
+                 </div>
+                 <CardHeader className="p-8">
+                    <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Tips Kerja</CardTitle>
+                 </CardHeader>
+                 <CardContent className="px-8 pb-8">
+                    <div className="space-y-6">
+                       <div className="flex gap-4">
+                          <div className="size-6 rounded-full bg-[#66B21D] flex items-center justify-center shrink-0 text-white">
+                             <CheckCircle2 className="h-3.5 w-3.5" />
+                          </div>
+                          <p className="text-sm font-bold leading-relaxed">Gunakan perlengkapan safety lengkap saat bekerja di area outdoor.</p>
+                       </div>
+                       <div className="flex gap-4">
+                          <div className="size-6 rounded-full bg-[#66B21D] flex items-center justify-center shrink-0 text-white">
+                             <CheckCircle2 className="h-3.5 w-3.5" />
+                          </div>
+                          <p className="text-sm font-bold leading-relaxed">Ambil foto unit sebelum dan sesudah diservis sebagai bukti valid.</p>
+                       </div>
+                       <div className="flex gap-4">
+                          <div className="size-6 rounded-full bg-[#66B21D] flex items-center justify-center shrink-0 text-white">
+                             <CheckCircle2 className="h-3.5 w-3.5" />
+                          </div>
+                          <p className="text-sm font-bold leading-relaxed">Pastikan area kerja pelanggan kembali bersih setelah servis selesai.</p>
+                       </div>
+                    </div>
+                 </CardContent>
+              </Card>
+           </div>
        </div>
      )
   }

@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/app/actions/session"
 import { CustomerPanelNavV2 } from "@/components/customer-panel-nav-v2"
 import { db } from "@/lib/db"
 import { Suspense } from "react"
-import { DashboardHeader } from "@/components/dashboard-header"
+import { SiteNavbar } from "@/components/site-navbar"
 import { SidebarProvider } from "@/components/ui/sidebar"
 
 const ONGOING_STATUSES = [
@@ -49,9 +49,9 @@ export default async function CustomerPanelLayout({
   return (
     <SidebarProvider>
       <div className="min-h-screen bg-slate-50/50 w-full font-sans">
-        <DashboardHeader user={user} />
+        <SiteNavbar user={user} mode="sticky" />
         
-        <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 w-full">
+        <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 w-full pt-10">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-12 w-full">
             {/* Sidebar */}
             <aside className="md:col-span-3">

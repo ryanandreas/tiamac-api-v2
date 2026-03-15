@@ -7,9 +7,11 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-coverflow'
 import Link from 'next/link'
-import { ArrowRight, Rocket } from 'lucide-react'
+import { ArrowRight, Rocket, ShieldCheck, BadgeCheck } from 'lucide-react'
 import type { CurrentUser } from '@/app/actions/session'
 import { SiteNavbar } from "@/components/site-navbar"
+
+import Image from 'next/image'
 
 export default function HeroSection({ user }: { user?: CurrentUser }) {
     return (
@@ -53,25 +55,38 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                                     </Link>
                                 </div>
                                 
-                                <div className="mt-12 flex items-center justify-center lg:justify-start gap-6 grayscale opacity-60">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-slate-200"></div>
-                                        <span className="text-xs font-bold text-slate-400">Trusted Partner</span>
+                                <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 opacity-80">
+                                    <div className="flex items-center gap-2 group cursor-default">
+                                        <div className="size-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 transition-transform group-hover:scale-110">
+                                            <ShieldCheck className="size-5" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[11px] font-black text-slate-900 uppercase tracking-wider">Trusted Partner</span>
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Certified 2024</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-slate-200"></div>
-                                        <span className="text-xs font-bold text-slate-400">Verified Service</span>
+                                    <div className="flex items-center gap-2 group cursor-default">
+                                        <div className="size-9 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 transition-transform group-hover:scale-110">
+                                            <BadgeCheck className="size-5" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[11px] font-black text-slate-900 uppercase tracking-wider">Verified Service</span>
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Quality Guaranteed</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
-                                {/* Hero Image Placeholder / Illustration */}
-                                <div className="relative aspect-square w-full bg-linear-to-br from-green-50 to-green-100 rounded-3xl overflow-hidden border-4 border-white shadow-2xl overflow-hidden">
-                                     <div className="absolute inset-0 flex items-center justify-center text-green-200">
-                                         <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg>
-                                     </div>
-                                     <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-green-600/20 to-transparent">
+                                {/* Hero Image Illustration */}
+                                <div className="relative aspect-square w-full bg-linear-to-br from-green-50 to-green-100 rounded-[48px] overflow-hidden border-8 border-white shadow-[0_32px_64px_-16px_rgba(102,178,29,0.2)]">
+                                     <Image 
+                                        src="/images/hero-illustration.png"
+                                        alt="Technician Service"
+                                        fill
+                                        className="object-cover transition-transform duration-500 hover:scale-110"
+                                     />
+                                     <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-green-600/20 to-transparent pointer-events-none">
                                          <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl flex items-center gap-4 border border-white">
                                              <div className="size-12 rounded-full bg-[#66B21D] flex items-center justify-center text-white">
                                                  <ArrowRight className="size-6" />
