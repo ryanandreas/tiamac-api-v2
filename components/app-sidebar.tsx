@@ -131,13 +131,13 @@ export function AppSidebar({
     <Sidebar {...props} className="border-r border-slate-100 bg-white">
       <SidebarHeader className="p-6">
         <Link href="/dashboard" className="flex items-center gap-3 group px-2 mb-4">
-          <div className="size-10 rounded-2xl bg-green-50 flex items-center justify-center group-hover:bg-[#66B21D] transition-all duration-300">
+          <div className="size-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm transition-all duration-300 group-hover:border-[#66B21D]/20 group-hover:shadow-md">
              <Image
                 src="/images/logo.png"
                 alt="Logo"
                 width={32}
                 height={32}
-                className="size-6 object-contain group-hover:invert transition-all"
+                className="size-7 object-contain transition-all"
                 priority
               />
           </div>
