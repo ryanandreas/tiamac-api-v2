@@ -52,8 +52,8 @@ export default async function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile" className="mt-6">
-          <Card className="shadow-sm border-muted overflow-hidden">
-            <CardHeader className="bg-muted/30 border-b py-4">
+          <Card className="shadow-sm border-muted overflow-hidden py-0 gap-0">
+            <CardHeader className="bg-muted/30 border-b py-4 pt-4">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary" /> Informasi Pribadi
               </CardTitle>
@@ -65,8 +65,8 @@ export default async function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="security" className="mt-6 space-y-6">
-          <Card className="shadow-sm border-muted">
-            <CardHeader className="bg-muted/30 border-b py-4">
+          <Card className="shadow-sm border-muted py-0 gap-0">
+            <CardHeader className="bg-muted/30 border-b py-4 pt-4">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-primary" /> Keamanan & Login
               </CardTitle>
@@ -84,8 +84,8 @@ export default async function SettingsPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm border-muted">
-            <CardHeader className="bg-muted/30 border-b py-4">
+          <Card className="shadow-sm border-muted py-0 gap-0">
+            <CardHeader className="bg-muted/30 border-b py-4 pt-4">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" /> Info Akun Terhubung
               </CardTitle>

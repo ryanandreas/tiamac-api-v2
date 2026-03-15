@@ -28,9 +28,10 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
-import { MoreHorizontal, Plus, Filter } from "lucide-react"
+import { MoreHorizontal, Plus, Filter, Receipt, Copy, Check } from "lucide-react"
 import type { Prisma } from "@prisma/client"
 import { cancelServiceEstimate, confirmServiceEstimate } from "@/app/actions/customer"
+import { OrderDetailDialog } from "./order-detail-dialog"
 
 type BaseService = Prisma.ServicesGetPayload<{
   include: { customer: true; teknisi: true }
@@ -54,6 +55,7 @@ interface ServiceListTableProps {
   data: ServiceListItem[]
   showNextStep?: boolean
   enableCustomerApproval?: boolean
+  isCustomerView?: boolean
 }
 
 function nextStepLabel(status: string) {
@@ -85,13 +87,27 @@ function nextStepLabel(status: string) {
   }
 }
 
-export function ServiceListTable({ data, showNextStep, enableCustomerApproval }: ServiceListTableProps) {
-  const emptyColSpan = showNextStep ? 8 : 7
+export function ServiceListTable({ 
+  data, 
+  showNextStep, 
+  enableCustomerApproval,
+  isCustomerView = false 
+}: ServiceListTableProps) {
+  const emptyColSpan = isCustomerView ? (showNextStep ? 6 : 5) : (showNextStep ? 8 : 7)
   const router = useRouter()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [selectedService, setSelectedService] = useState<ServiceListItem | null>(null)
   const [actionBusy, setActionBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [selectedDetailService, setSelectedDetailService] = useState<ServiceListItem | null>(null)
+
+  const openDetail = (service: ServiceListItem) => {
+    setSelectedDetailService(service)
+    setDetailOpen(true)
+  }
 
   const formatRupiah = (amount: number) =>
     new Intl.NumberFormat("id-ID", {
@@ -99,6 +115,13 @@ export function ServiceListTable({ data, showNextStep, enableCustomerApproval }:
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount)
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedId(text)
+      setTimeout(() => setCopiedId(null), 2000) // Reset after 2 seconds
+    })
+  }
 
   const detail = useMemo(() => {
     if (!selectedService) {
@@ -208,58 +231,77 @@ export function ServiceListTable({ data, showNextStep, enableCustomerApproval }:
   }
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder="Search services..."
-            className="h-9 w-[300px] bg-background"
-          />
+      {!isCustomerView && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Search services..."
+              className="h-9 w-[300px] bg-background"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-9 gap-1">
+              <Filter className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Filter
+              </span>
+            </Button>
+            <Button size="sm" className="h-9 gap-1">
+              <Plus className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Add Service
+              </span>
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-9 gap-1">
-            <Filter className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Filter
-            </span>
-          </Button>
-          <Button size="sm" className="h-9 gap-1">
-            <Plus className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Add Service
-            </span>
-          </Button>
-        </div>
-      </div>
-      <div className="rounded-md border bg-card">
+      )}
+      <div className={isCustomerView ? "" : "rounded-md border bg-card"}>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Customer</TableHead>
+              <TableHead className={isCustomerView ? "pl-6" : ""}>{isCustomerView ? "No. Pesanan" : "Customer"}</TableHead>
               <TableHead>Teknisi</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
-              {showNextStep ? <TableHead>Next</TableHead> : null}
-              <TableHead>Rincian</TableHead>
+              {!isCustomerView && showNextStep ? <TableHead>Next</TableHead> : null}
+              {!isCustomerView && <TableHead>Rincian</TableHead>}
               <TableHead>Cost</TableHead>
-              <TableHead className="w-[50px]"></TableHead>
+              <TableHead className={isCustomerView ? "w-[50px] pr-6" : "w-[50px]"}></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item) => (
               <TableRow key={item.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={`/images/avatar.png`} alt={item.customer?.name} />
-                      <AvatarFallback>{item.customer?.name?.slice(0, 2).toUpperCase() || "CS"}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="font-medium text-sm">{item.customer?.name}</span>
-                      <span className="text-xs text-muted-foreground">{item.customer?.email}</span>
+                <TableCell className={isCustomerView ? "pl-6 py-4" : ""}>
+                  {isCustomerView ? (
+                    <div className="flex items-center gap-2">
+                       <span className="font-black text-slate-900 group-hover:text-[#66B21D] transition-colors">
+                        #{item.id.slice(0, 8).toUpperCase()}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-slate-300 hover:text-slate-600"
+                        onClick={() => copyToClipboard(item.id)}
+                      >
+                        {copiedId === item.id ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                      </Button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={`/images/avatar.png`} alt={item.customer?.name} />
+                        <AvatarFallback>{item.customer?.name?.slice(0, 2).toUpperCase() || "CS"}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm">{item.customer?.name}</span>
+                        <span className="text-xs text-muted-foreground">{item.customer?.email}</span>
+                      </div>
+                    </div>
+                  )}
                 </TableCell>
-                <TableCell>
+
+                <TableCell className="py-4">
                   {item.teknisi ? (
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
@@ -275,36 +317,39 @@ export function ServiceListTable({ data, showNextStep, enableCustomerApproval }:
                     <span className="text-sm text-muted-foreground italic">Unassigned</span>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="py-4">
                   <span className="text-sm text-muted-foreground">
                     {new Date(item.createdAt).toLocaleDateString()}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell className="py-4">
                   <Badge variant="secondary" className="font-normal text-xs">
                     {item.status_servis}
                   </Badge>
                 </TableCell>
-                {showNextStep ? (
-                  <TableCell>
+                {!isCustomerView && showNextStep ? (
+                  <TableCell className="py-4">
                     <div className="text-xs text-muted-foreground">{nextStepLabel(item.status_servis)}</div>
                   </TableCell>
                 ) : null}
-                <TableCell>
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <div>{item.acUnits?.length || 0} unit</div>
-                    {item.acUnits?.slice(0, 2).map((u, idx) => (
-                      <div key={u.id}>
-                        AC {idx + 1}: {u.pk} PK{" "}
-                        {u.layanan.length ? `• ${u.layanan.map((l) => l.nama).join(", ")}` : ""}
-                      </div>
-                    ))}
-                    {item.acUnits && item.acUnits.length > 2 ? (
-                      <div>+{item.acUnits.length - 2} lainnya</div>
-                    ) : null}
-                  </div>
-                </TableCell>
-                <TableCell>
+                {!isCustomerView && (
+                  <TableCell className="py-4">
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <div>{item.acUnits?.length || 0} unit</div>
+                      {item.acUnits?.slice(0, 2).map((u, idx) => (
+                        <div key={u.id}>
+                          AC {idx + 1}: {u.pk} PK{" "}
+                          {u.layanan.length ? `• ${u.layanan.map((l) => l.nama).join(", ")}` : ""}
+                        </div>
+                      ))}
+                      {item.acUnits && item.acUnits.length > 2 ? (
+                        <div>+{item.acUnits.length - 2} lainnya</div>
+                      ) : null}
+                    </div>
+                  </TableCell>
+                )}
+
+                <TableCell className="py-4">
                   <span className="text-sm">
                     {(() => {
                       const val = item.biaya ?? item.estimasi_biaya ?? null
@@ -312,7 +357,7 @@ export function ServiceListTable({ data, showNextStep, enableCustomerApproval }:
                     })()}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell className={isCustomerView ? "pr-6 py-4" : "py-4"}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
@@ -327,7 +372,14 @@ export function ServiceListTable({ data, showNextStep, enableCustomerApproval }:
                           Konfirmasi
                         </DropdownMenuItem>
                       ) : null}
-                      <DropdownMenuItem>View details</DropdownMenuItem>
+                      {isCustomerView ? (
+                        <DropdownMenuItem onClick={() => openDetail(item)}>
+                          <Receipt className="mr-2 h-4 w-4" />
+                          <span>Detail Servis</span>
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem>View details</DropdownMenuItem>
+                      )}
                       <DropdownMenuItem>Update status</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -424,6 +476,23 @@ export function ServiceListTable({ data, showNextStep, enableCustomerApproval }:
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {selectedDetailService && (
+        <OrderDetailDialog
+          open={detailOpen}
+          onOpenChange={setDetailOpen}
+          orderId={selectedDetailService.id}
+          units={selectedDetailService.acUnits?.map((unit) => ({
+            id: unit.id,
+            name: `Unit AC ${unit.pk} PK`,
+            pk: String(unit.pk),
+            serviceName: unit.layanan.map((l) => l.nama).join(", ") || "Servis Routine",
+            price: unit.layanan.reduce((sum, l) => sum + l.harga, 0),
+          })) || []}
+          biayaDasar={selectedDetailService.biaya_dasar ?? 50000}
+          totalBiaya={selectedDetailService.biaya ?? selectedDetailService.estimasi_biaya ?? (selectedDetailService.biaya_dasar ?? 50000)}
+        />
+      )}
     </div>
   )
 }

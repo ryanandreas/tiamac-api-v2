@@ -15,72 +15,105 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
     return (
         <>
             <SiteNavbar user={user} />
-            <main className="overflow-hidden">
-                <section className="relative">
-                    <div className="relative py-24 lg:py-28">
-                        <div className="mx-auto max-w-7xl px-6 md:px-12">
-                            <div className="text-center sm:mx-auto sm:w-10/12 lg:mr-auto lg:mt-0 lg:w-4/5">
-                                <Link
-                                    href="/"
-                                    className="rounded-(--radius) mx-auto flex w-fit items-center gap-2 border p-1 pr-3">
-                                    <span className="bg-muted rounded-[calc(var(--radius)-0.25rem)] px-2 py-1 text-xs">New</span>
-                                    <span className="text-sm">Introduction Tailark Html</span>
-                                    <span className="bg-(--color-border) block h-4 w-px"></span>
+            <main className="overflow-hidden bg-[#fcfdfa]">
+                <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+                    {/* Background Ornaments */}
+                    <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-green-100/50 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+                    <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-green-50/50 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
 
-                                    <ArrowRight className="size-4" />
-                                </Link>
-
-                                <h1 className="mt-8 text-4xl font-semibold md:text-5xl xl:text-5xl xl:[line-height:1.125]">
-                                    Tame the Wild West <br /> of Frontend Development
+                    <div className="mx-auto max-w-7xl px-6 md:px-12">
+                        <div className="flex flex-col lg:flex-row items-center gap-16">
+                            <div className="flex-1 text-center lg:text-left">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 border border-green-200 text-[#4d9e0f] text-xs font-bold mb-6 animate-fade-in">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#66B21D] opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#66B21D]"></span>
+                                    </span>
+                                    Buka Hari Ini: 08:00 - 17:00
+                                </div>
+                                <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tight">
+                                    Solusi <span className="text-[#66B21D]">Dingin & Hemat</span> <br className="hidden md:block" /> untuk AC Anda
                                 </h1>
-                                <p className="mx-auto mt-8 hidden max-w-2xl text-wrap text-lg sm:block">Tailwindcss highly customizable components for building modern websites and applications that look and feel the way you mean it.</p>
-                                <p className="mx-auto mt-6 max-w-2xl text-wrap sm:hidden">Highly customizable components for building modern websites and applications, with your personal spark.</p>
-
-                                <div className="mt-8">
+                                <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                                    Layanan cuci, perbaikan, dan bongkar pasang AC profesional dengan harga transparan dan teknisi berpengalaman. Nikmati udara bersih dan sejuk sekarang juga!
+                                </p>
+                                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                     <Link
-                                        href="/booking"
-                                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/80 h-10 gap-1.5 px-4"
+                                        href={user?.isAuthenticated ? "/booking" : "/login"}
+                                        className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-[#66B21D] px-8 py-4 text-sm font-bold text-white shadow-xl shadow-green-500/25 transition-all hover:bg-[#4d9e0f] hover:scale-105 active:scale-95"
                                     >
-                                        <Rocket className="relative size-4" />
-                                        <span className="text-nowrap">Pesan Servis AC</span>
+                                        <Rocket className="mr-2 size-5" />
+                                        Pesan Sekarang
+                                    </Link>
+                                    <Link
+                                        href="#layanan"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border-2 border-slate-200 bg-white px-8 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300"
+                                    >
+                                        Lihat Layanan
                                     </Link>
                                 </div>
+                                
+                                <div className="mt-12 flex items-center justify-center lg:justify-start gap-6 grayscale opacity-60">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-200"></div>
+                                        <span className="text-xs font-bold text-slate-400">Trusted Partner</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-200"></div>
+                                        <span className="text-xs font-bold text-slate-400">Verified Service</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="x-auto relative mx-auto mt-8 max-w-lg sm:mt-12">
-                                <div className="absolute inset-0 -top-8 left-1/2 -z-20 h-56 w-full -translate-x-1/2 [background-image:linear-gradient(to_bottom,transparent_98%,theme(colors.gray.200/75%)_98%),linear-gradient(to_right,transparent_94%,_theme(colors.gray.200/75%)_94%)] [background-size:16px_35px] [mask:radial-gradient(black,transparent_95%)] dark:opacity-10"></div>
-                                <div className="absolute inset-x-0 top-12 -z-[1] mx-auto h-1/3 w-2/3 rounded-full bg-blue-300 blur-3xl dark:bg-white/20"></div>
 
-                                <Swiper
-                                    slidesPerView={1}
-                                    pagination={{ clickable: true }}
-                                    loop
-                                    modules={[EffectCoverflow]}>
-                                    <SwiperSlide className="px-2">
-                                        <div className="bg-background rounded-(--radius) h-44 max-w-lg border p-9">
-                                            <div className="mx-auto h-fit w-full">
-                                                <NetlifyLogo />
-                                            </div>
-                                            <p className="mt-6 text-center text-lg font-medium">30% Increase in revenue</p>
-                                        </div>
-                                    </SwiperSlide>
-                                    <SwiperSlide className="px-2">
-                                        <div className="bg-background rounded-(--radius) h-44 max-w-lg border p-9">
-                                            <div className="mx-auto h-fit w-full">
-                                                <AstroLogo />
-                                            </div>
-                                            <p className="mt-6 text-center text-lg font-medium">45% Increase in revenue</p>
-                                        </div>
-                                    </SwiperSlide>
-                                    <SwiperSlide className="px-2">
-                                        <div className="bg-background rounded-(--radius) h-44 max-w-lg border p-9">
-                                            <div className="mx-auto h-fit w-full">
-                                                <WorkOsLogo />
-                                            </div>
-                                            <p className="mt-6 text-center text-lg font-medium">60% Increase in revenue</p>
-                                        </div>
-                                    </SwiperSlide>
-                                </Swiper>
+                            <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
+                                {/* Hero Image Placeholder / Illustration */}
+                                <div className="relative aspect-square w-full bg-linear-to-br from-green-50 to-green-100 rounded-3xl overflow-hidden border-4 border-white shadow-2xl overflow-hidden">
+                                     <div className="absolute inset-0 flex items-center justify-center text-green-200">
+                                         <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg>
+                                     </div>
+                                     <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-green-600/20 to-transparent">
+                                         <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl flex items-center gap-4 border border-white">
+                                             <div className="size-12 rounded-full bg-[#66B21D] flex items-center justify-center text-white">
+                                                 <ArrowRight className="size-6" />
+                                             </div>
+                                             <div>
+                                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Jobs</div>
+                                                 <div className="text-lg font-black text-slate-900 tracking-tight">150+ Servis Hari Ini</div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                </div>
+                                {/* Floating Card */}
+                                <div className="absolute -top-6 -right-6 md:-right-12 bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 flex items-center gap-4 animate-bounce-slow">
+                                     <div className="p-2 bg-yellow-100 rounded-xl text-yellow-600">
+                                         <svg className="size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                     </div>
+                                     <div>
+                                         <div className="text-lg font-black text-slate-900">4.9/5</div>
+                                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Customer Satisfaction</div>
+                                     </div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Benefits Section */}
+                <section className="py-12 bg-white border-y border-slate-100">
+                    <div className="mx-auto max-w-7xl px-6 md:px-12">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+                            {[
+                                { title: "Bergaransi", desc: "Garansi servis 30 hari", icon: "🛡️" },
+                                { title: "Teknisi Jujur", desc: "Profesional & Terverifikasi", icon: "👨‍🔧" },
+                                { title: "Harga Pas", desc: "Transparan tanpa biaya gaib", icon: "💰" },
+                                { title: "Cepat & Tepat", desc: "Datang sesuai jadwal", icon: "⚡" }
+                            ].map((benefit, i) => (
+                                <div key={i} className="flex flex-col items-center text-center group">
+                                    <div className="text-3xl mb-4 transition-transform group-hover:scale-125 duration-300">{benefit.icon}</div>
+                                    <h3 className="font-extrabold text-slate-900 text-sm mb-1">{benefit.title}</h3>
+                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-tight">{benefit.desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>

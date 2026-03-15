@@ -1,21 +1,25 @@
-import HeroSection from "@/components/hero-section"
-import FooterSection from "@/components/footer"
-import { getCurrentUser } from "@/app/actions/session"
-import { redirect } from "next/navigation"
+import HeroSection from "@/components/hero-section";
+import FooterSection from "@/components/footer";
+import { LandingServices } from "@/components/landing/landing-services";
+import { LandingHowItWorks } from "@/components/landing/landing-how-it-works";
+import { getCurrentUser } from "@/app/actions/session";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
   if (user.isAuthenticated) {
     if (user.type === "staff") {
-      redirect("/dashboard")
+      redirect("/dashboard");
     }
   }
 
   return (
     <>
       <HeroSection user={user} />
+      <LandingServices />
+      <LandingHowItWorks />
       <FooterSection />
     </>
-  )
+  );
 }

@@ -34,12 +34,14 @@ export function PaymentMethodChooser({
   title,
   buttonText,
   buttonClassName,
+  triggerId,
 }: {
   orderId: string
   amount: number
   title: string
   buttonText: string
   buttonClassName?: string
+  triggerId?: string
 }) {
   const [selected, setSelected] = React.useState<MethodId>("qris")
   const selectedMethod = METHODS.find((m) => m.id === selected) ?? METHODS[0]
@@ -92,6 +94,19 @@ export function PaymentMethodChooser({
             {buttonText}
           </Button>
         </DialogTrigger>
+        {triggerId && (
+          <button
+            id={triggerId}
+            className="hidden"
+            onClick={() => {
+              // This is a hacky way to trigger Dialog from outside
+              // since Shadcn DialogTrigger needs to be a child.
+              // Better way would be controlled state, but this fits the existing structure.
+              const trigger = document.querySelector(`[aria-haspopup="dialog"]`) as HTMLButtonElement;
+              if (trigger) trigger.click();
+            }}
+          />
+        )}
         <DialogContent className="sm:max-w-xl">
           <DialogHeader className="text-center">
             <DialogTitle>{title}</DialogTitle>

@@ -7,6 +7,7 @@
 * Tabel interaktif
 * Notifikasi real-time
 * semua tampilan list table, gunakan pagination
+* Gunakan Plus Jakarta Sans sebagai font utama
 
 Warna:
 

@@ -1,6 +1,4 @@
 import { getCurrentUser } from "@/app/actions/session"
-import { SidebarInset } from "@/components/ui/sidebar"
-import { DashboardHeader } from "@/components/dashboard/header"
 import { db } from "@/lib/db"
 import { 
   Card, 
@@ -16,9 +14,12 @@ import {
   DollarSign,
   TrendingUp,
   Activity,
-  Briefcase
+  Briefcase,
+  ArrowRight
 } from "lucide-react"
 import { formatPrice } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
 export default async function Page() {
   const user = await getCurrentUser()
@@ -41,29 +42,41 @@ export default async function Page() {
      })
 
      return (
-       <SidebarInset>
-         <DashboardHeader title="Technician Dashboard" />
-         <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-             <Card>
-               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                 <CardTitle className="text-sm font-medium">Tugas Hari Ini</CardTitle>
-                 <Briefcase className="h-4 w-4 text-muted-foreground" />
+       <div className="space-y-8">
+           <div className="flex flex-col gap-1">
+             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Halo, {user.name}!</h1>
+             <p className="text-slate-500 font-bold text-sm">Semangat kerja hari ini. Berikut update tugas Anda.</p>
+           </div>
+
+           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+             <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group">
+               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-slate-50/50">
+                 <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-400">Tugas Aktif</CardTitle>
+                 <Briefcase className="h-5 w-5 text-[#66B21D]" />
                </CardHeader>
-               <CardContent>
-                 <div className="text-2xl font-bold">{tasksCount}</div>
-                 <p className="text-xs text-muted-foreground">Tugas yang perlu dikerjakan hari ini</p>
+               <CardContent className="pt-6">
+                 <div className="text-4xl font-black text-slate-900 tracking-tighter">{tasksCount}</div>
+                 <p className="text-xs font-bold text-slate-400 mt-2">Unit yang perlu ditangani hari ini</p>
                </CardContent>
              </Card>
-            {/* Add more technician stats here */}
-          </div>
-          <div className="mt-4 p-6 bg-muted/50 rounded-xl border border-dashed flex flex-col items-center justify-center min-h-[300px]">
-            <h3 className="text-lg font-semibold">Selamat Datang, {user.name}</h3>
-            <p className="text-sm text-muted-foreground">Gunakan menu di samping untuk melihat tugas dan jadwal Anda.</p>
-          </div>
-        </div>
-      </SidebarInset>
-    )
+           </div>
+           
+           <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
+             <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-12">
+               <div className="size-20 bg-green-50 rounded-3xl flex items-center justify-center mb-8 text-[#66B21D]">
+                 <Activity className="h-10 w-10" />
+               </div>
+               <h3 className="text-2xl font-black text-slate-900 tracking-tight">Monitor Tugas Secara Real-time</h3>
+               <p className="text-sm text-slate-400 font-bold max-w-md mx-auto mt-3 leading-relaxed">
+                 Gunakan menu navigasi di samping untuk melihat detail jadwal, input pengerjaan, dan riwayat tugas Anda.
+               </p>
+               <Button className="mt-10 h-12 px-8 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-widest hover:bg-[#66B21D] transition-all shadow-lg shadow-slate-900/10">
+                 Lihat Jadwal Saya
+               </Button>
+             </CardContent>
+           </Card>
+       </div>
+     )
   }
 
   // Admin Statistics
@@ -117,88 +130,113 @@ export default async function Page() {
 
   const stats = [
     {
-      title: "Total Pesanan Hari Ini",
+      title: "Pesanan Hari Ini",
       value: totalOrdersToday,
       icon: ClipboardList,
-      description: "Pesanan baru yang masuk hari ini",
-      color: "text-blue-600"
+      description: "Order baru masuk",
+      color: "bg-blue-50 text-blue-600"
     },
     {
-      title: "Servis Berjalan",
+      title: "Servis Aktif",
       value: servicesInProgress,
       icon: Wrench,
-      description: "Unit yang sedang dikerjakan teknisi",
-      color: "text-orange-600"
+      description: "Pengerjaan berjalan",
+      color: "bg-orange-50 text-orange-600"
     },
     {
-      title: "Menunggu Persetujuan",
+      title: "Menunggu Acc",
       value: pendingApproval,
       icon: Clock,
-      description: "Menunggu konfirmasi biaya dari customer",
-      color: "text-yellow-600"
+      description: "Konfirmasi biaya",
+      color: "bg-yellow-50 text-yellow-600"
     },
     {
       title: "Stok Menipis",
       value: lowStockCount,
       icon: AlertTriangle,
-      description: "Barang inventory di bawah stok minimum",
-      color: "text-red-600"
+      description: "Perlu restock item",
+      color: "bg-red-50 text-red-600"
     },
     {
-      title: "Total Pendapatan",
+      title: "Total Omzet",
       value: formatPrice(totalRevenue._sum.biaya || 0),
       icon: DollarSign,
-      description: "Total pendapatan dari servis selesai",
-      color: "text-green-600"
+      description: "Servis lunas hari ini",
+      color: "bg-green-50 text-green-600"
     }
   ]
 
   return (
-    <SidebarInset>
-      <DashboardHeader title="Admin Dashboard" />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {stats.map((stat, index) => (
-            <Card key={index} className="overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">{stat.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Tren Servis
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center bg-muted/20 rounded-lg border border-dashed">
-              <p className="text-muted-foreground">Grafik Tren Servis akan tampil di sini</p>
-            </CardContent>
-          </Card>
-          <Card className="col-span-3">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                Aktivitas Terbaru
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground text-center py-8">Belum ada aktivitas terbaru</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+    <div className="space-y-10">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Ringkasan Bisnis</h1>
+        <DynamicBreadcrumbs />
+        <p className="text-slate-500 font-bold text-sm mt-1">Update statistik operasional Tiam AC secara real-time.</p>
       </div>
-    </SidebarInset>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {stats.map((stat, index) => (
+          <Card key={index} className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group hover:-translate-y-1 transition-all">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-slate-50/30">
+              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.title}</CardTitle>
+              <div className={`size-8 rounded-lg flex items-center justify-center ${stat.color}`}>
+                <stat.icon className="h-4 w-4" />
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">{stat.description}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4 border-none shadow-xl shadow-slate-200/50 overflow-hidden">
+          <CardHeader className="p-6 border-b border-slate-50 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-[#66B21D]" /> Tren Pekerjaan
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="h-[400px] flex flex-col items-center justify-center bg-slate-50/30 p-12 text-center">
+            <div className="size-16 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-slate-100 text-slate-200">
+              <Activity className="h-8 w-8" />
+            </div>
+            <p className="text-sm font-bold text-slate-400 max-w-xs">Grafik analisis performa akan muncul di sini secara periodik.</p>
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-3 border-none shadow-xl shadow-slate-200/50 overflow-hidden">
+          <CardHeader className="p-6 border-b border-slate-50">
+            <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+              <Activity className="h-4 w-4 text-[#66B21D]" /> Aktivitas Terbaru
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y divide-slate-50">
+               {[1, 2, 3, 4].map((i) => (
+                 <div key={i} className="p-6 flex gap-4 hover:bg-slate-50/50 transition-colors">
+                   <div className="size-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                     <Clock className="h-5 w-5 text-slate-400" />
+                   </div>
+                   <div className="min-w-0 flex-1">
+                     <p className="text-xs font-black text-slate-900 line-clamp-1">Pembaruan status pesanan #AC-1928{i}</p>
+                     <p className="text-[11px] text-slate-400 font-bold mt-1">10 menit yang lalu</p>
+                   </div>
+                   <ArrowRight className="h-4 w-4 text-slate-200 shrink-0" />
+                 </div>
+               ))}
+            </div>
+            <div className="p-4 bg-slate-50/50 border-t border-slate-50">
+              <Button variant="ghost" className="w-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[#66B21D] gap-2">
+                Lihat Semua Aktivitas <ArrowRight className="h-3 w-3" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }

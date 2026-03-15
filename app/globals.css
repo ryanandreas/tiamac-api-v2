@@ -20,8 +20,10 @@ Uncomment to import Google fonts if you want to use them in your project.
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
+  --primary: #66B21D;
   --primary-foreground: oklch(0.985 0 0);
+  --brand: #66B21D;
+  --brand-dark: #4d9e0f;
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.967 0.001 286.375);
@@ -70,12 +72,13 @@ Uncomment to import Google fonts if you want to use them in your project.
   --warning: oklch(0.769 0.288 70.08);
 
   /* Fonts */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-plus-jakarta-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plus-jakarta-sans);
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
 
-  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-text: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-plus-jakarta-sans);
+  --font-text: var(--font-plus-jakarta-sans);
 
   --font-handwriting: "Caveat", cursive;
 

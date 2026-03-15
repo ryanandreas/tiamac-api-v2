@@ -7,12 +7,14 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 import { logout } from "@/app/actions/session"
 import type { CurrentUser } from "@/app/actions/session"
+import { User, Settings, LogOut, History, ShoppingBag, ChevronDown } from "lucide-react"
 
 function getInitials(value?: string) {
   const text = value?.trim()
@@ -32,56 +34,80 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-10 gap-2 rounded-full px-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/images/avatar.png" alt={displayName} />
-            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
-          </Avatar>
-          <div className="flex min-w-0 flex-col items-start leading-tight">
-            <span className="max-w-[160px] truncate text-sm font-medium">
+        <Button variant="ghost" className="h-12 gap-3 rounded-2xl px-2 hover:bg-slate-50 transition-all group">
+          <div className="relative">
+            <Avatar className="h-9 w-9 rounded-xl border-2 border-white shadow-sm ring-2 ring-slate-100 group-hover:ring-[#66B21D]/20 transition-all">
+              <AvatarImage src="/images/avatar.png" alt={displayName} />
+              <AvatarFallback className="bg-slate-100 text-slate-400 font-black text-xs">{getInitials(displayName)}</AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-0.5 -right-0.5 size-3 bg-green-500 border-2 border-white rounded-full"></div>
+          </div>
+          <div className="hidden md:flex flex-col items-start leading-tight">
+            <span className="max-w-[140px] truncate text-sm font-black text-slate-900">
               {displayName}
             </span>
-            {displayEmail ? (
-              <span className="max-w-[160px] truncate text-xs text-muted-foreground">
-                {displayEmail}
-              </span>
-            ) : null}
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              {user?.isAuthenticated && user.type === "staff" ? user.role : "Customer"}
+            </span>
           </div>
+          <ChevronDown className="h-4 w-4 text-slate-300 group-hover:text-slate-600 transition-colors" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
+      <DropdownMenuContent className="w-64 p-2 border-none shadow-2xl rounded-2xl overflow-hidden mt-2" align="end">
+        <DropdownMenuLabel className="p-4 font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-black text-slate-900 leading-none">{displayName}</p>
+            <p className="text-xs text-slate-400 font-bold truncate leading-tight mt-1">{displayEmail}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-slate-50" />
+        <DropdownMenuGroup className="p-1">
+          <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-green-50 focus:text-[#66B21D] transition-colors group">
             <Link 
-              href={user?.type === "customer" ? "/customer-panel/dashboard" : "/listpesanan"}
+              href={user?.type === "customer" ? "/customer-panel/dashboard" : "/dashboard"}
+              className="flex items-center gap-3"
             >
-              Pesanan
+              <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center group-focus:bg-white group-focus:shadow-sm transition-all text-slate-400 group-focus:text-[#66B21D]">
+                <ShoppingBag className="h-4 w-4" />
+              </div>
+              <span className="text-sm font-black">Dashboard</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-green-50 focus:text-[#66B21D] transition-colors group">
             <Link 
-              href={user?.type === "customer" ? "/customer-panel/pesanan?tab=history" : "/listpesanan?tab=history"}
+              href={user?.type === "customer" ? "/customer-panel/pesanan?tab=history" : "/dashboard/history"}
+              className="flex items-center gap-3"
             >
-              History
+              <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center group-focus:bg-white group-focus:shadow-sm transition-all text-slate-400 group-focus:text-[#66B21D]">
+                <History className="h-4 w-4" />
+              </div>
+              <span className="text-sm font-black">Riwayat</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-green-50 focus:text-[#66B21D] transition-colors group">
             <Link 
-              href={user?.type === "customer" ? "/customer-panel/settings" : "/profilcust"}
+              href={user?.type === "customer" ? "/customer-panel/settings" : "/dashboard/profile"}
+              className="flex items-center gap-3"
             >
-              Profile
+              <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center group-focus:bg-white group-focus:shadow-sm transition-all text-slate-400 group-focus:text-[#66B21D]">
+                <User className="h-4 w-4" />
+              </div>
+              <span className="text-sm font-black">Profil Akun</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
+        <DropdownMenuSeparator className="bg-slate-50" />
+        <div className="p-1">
           <DropdownMenuItem 
-            className="text-red-600 focus:text-red-600 cursor-pointer"
+            className="rounded-xl p-2.5 cursor-pointer text-red-600 focus:text-white focus:bg-red-500 transition-all gap-3 group"
             onClick={() => logout()}
           >
-            Log out
+            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center group-focus:bg-white/20 transition-all text-red-500 group-focus:text-white">
+              <LogOut className="h-4 w-4" />
+            </div>
+            <span className="text-sm font-black">Keluar Sesi</span>
           </DropdownMenuItem>
-        </DropdownMenuGroup>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )

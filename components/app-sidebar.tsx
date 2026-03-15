@@ -13,15 +13,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarFooter,
 } from "@/components/ui/sidebar"
 import {
-  Home,
   Users,
-  ClipboardList,
   Calendar,
   CreditCard,
-  CheckCircle,
-  Clock,
   Wrench,
   Package,
   FileText,
@@ -32,122 +29,152 @@ import {
   History,
   Briefcase,
   Search,
+  ChevronRight,
+  LogOut,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { logout } from "@/app/actions/session"
 
 // Menu items based on planning.md
 const adminMenu = [
   {
-    title: "Main",
+    title: "Utama",
     items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Dashboard Overview", url: "/dashboard", icon: LayoutDashboard },
     ]
   },
   {
-    title: "SERVIS",
+    title: "Manajemen Servis",
     items: [
-      { title: "Booking", url: "/dashboard/booking", icon: Bell },
+      { title: "Booking Masuk", url: "/dashboard/booking", icon: Bell },
       { title: "Jadwal Perbaikan", url: "/dashboard/jadwal", icon: Calendar },
       { title: "Servis Berjalan", url: "/dashboard/servis", icon: Truck },
-      { title: "History", url: "/dashboard/history", icon: History },
+      { title: "History Selesai", url: "/dashboard/history", icon: History },
     ]
   },
   {
-    title: "Operasional",
+    title: "Operasional Gudang",
     items: [
-      { title: "Layanan & Harga", url: "/dashboard/layanan", icon: CreditCard },
-      { title: "Inventory & Sparepart", url: "/dashboard/inventory", icon: Package },
+      { title: "Katalog Layanan", url: "/dashboard/layanan", icon: CreditCard },
+      { title: "Inventory Stok", url: "/dashboard/inventory", icon: Package },
     ]
   },
   {
-    title: "User Management",
+    title: "User & Pelanggan",
     items: [
-      { title: "Teknisi", url: "/dashboard/users", icon: Wrench },
-      { title: "Pelanggan", url: "/dashboard/customers", icon: Users },
+      { title: "Data Teknisi", url: "/dashboard/users", icon: Wrench },
+      { title: "Daftar Pelanggan", url: "/dashboard/customers", icon: Users },
     ]
   },
   {
-    title: "Finance & Reports",
+    title: "Laporan Keuangan",
     items: [
-      { title: "Pembayaran & Transaksi", url: "/dashboard/transaksi", icon: CreditCard },
-      { title: "Laporan", url: "/dashboard/laporan", icon: FileText },
+      { title: "Transaksi Masuk", url: "/dashboard/transaksi", icon: CreditCard },
+      { title: "Laporan Bulanan", url: "/dashboard/laporan", icon: FileText },
     ]
   },
   {
-    title: "System",
+    title: "Konfigurasi",
     items: [
-      { title: "Notifikasi", url: "/dashboard/notifikasi", icon: Bell },
-      { title: "Pengaturan Sistem", url: "/dashboard/pengaturan", icon: Settings },
+      { title: "Pusat Notifikasi", url: "/dashboard/notifikasi", icon: Bell },
+      { title: "Settings Sistem", url: "/dashboard/pengaturan", icon: Settings },
     ]
   }
 ]
 
-// Assuming 'karyawan' is the role name in the database, which is equivalent to 'teknisi'
 const karyawanMenu = [
   {
-    title: "Technician Panel",
+    title: "Panel Teknisi",
     items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Beranda Kerja", url: "/dashboard", icon: LayoutDashboard },
       { title: "Jadwal Saya", url: "/dashboard/jadwal-saya", icon: Calendar },
-      { title: "Tugas Saya", url: "/dashboard/tugas", icon: Briefcase },
-      { title: "Dalam Pengecekan", url: "/dashboard/pengecekan", icon: Wrench },
-      { title: "Sedang Dikerjakan", url: "/dashboard/pengerjaan", icon: Truck },
-      { title: "Inventory", url: "/dashboard/inventory", icon: Package },
-      { title: "Riwayat Servis", url: "/dashboard/riwayat", icon: History },
+      { title: "Daftar Tugas", url: "/dashboard/tugas", icon: Briefcase },
+      { title: "Cek Keluhan", url: "/dashboard/pengecekan", icon: Wrench },
+      { title: "Unit Dikerjakan", url: "/dashboard/pengerjaan", icon: Truck },
+      { title: "Inventory Alat", url: "/dashboard/inventory", icon: Package },
+      { title: "History Kerja", url: "/dashboard/riwayat", icon: History },
     ]
   }
 ]
 
 export function AppSidebar({ userRole, userName, userEmail, ...props }: React.ComponentProps<typeof Sidebar> & { userRole?: string, userName?: string, userEmail?: string }) {
-  // Normalize role to lowercase for comparison and treat 'teknisi' as 'karyawan' if needed, or just check for 'karyawan'
   const role = userRole?.toLowerCase()
   const isTechnician = role === "karyawan" || role === "teknisi"
   const menuGroups = role === "admin" ? adminMenu : isTechnician ? karyawanMenu : []
   const pathname = usePathname()
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader>
-        <div className="flex h-12 items-center px-4 border-b">
-          <Link href="/dashboard" className="flex items-center space-x-2">
-            <Image
-              src="/images/logo.svg"
-              alt="Logo"
-              width={120}
-              height={24}
-              className="h-6 w-auto"
-              priority
-            />
-          </Link>
-        </div>
-        <div className="px-4 py-3 border-b">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Cari menu..." className="h-9 pl-8" />
+    <Sidebar {...props} className="border-r border-slate-100 bg-white">
+      <SidebarHeader className="p-6">
+        <Link href="/dashboard" className="flex items-center gap-3 group px-2 mb-4">
+          <div className="size-10 rounded-2xl bg-green-50 flex items-center justify-center group-hover:bg-[#66B21D] transition-all duration-300">
+             <Image
+                src="/images/logo.svg"
+                alt="Logo"
+                width={32}
+                height={32}
+                className="size-6 object-contain group-hover:invert transition-all"
+                priority
+              />
           </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-black text-slate-900 tracking-tight">TIAM AC</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dashboard</span>
+          </div>
+        </Link>
+        
+        <div className="relative group px-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors pointer-events-none" />
+          <Input 
+            placeholder="Cari Menu..." 
+            className="pl-10 h-10 border-none bg-slate-50 rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all text-[11px] font-black uppercase tracking-widest shadow-inner placeholder:text-slate-300"
+          />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+
+      <SidebarContent className="px-4 pb-8">
         {menuGroups.map((group) => (
-          <SidebarGroup key={group.title}>
-            <div className="px-2 py-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          <SidebarGroup key={group.title} className="mb-6">
+            <div className="px-3 pb-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] opacity-80">
               {group.title}
             </div>
-            <SidebarMenu>
-              {group.items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url} size="lg">
-                    <Link href={item.url}>
-                      <item.icon className="h-5 w-5" />
-                      <span className="text-sm font-medium">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="gap-1">
+              {group.items.map((item) => {
+                const isActive = pathname === item.url
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={isActive} 
+                      className={`h-11 rounded-xl px-4 transition-all duration-200 group relative ${
+                        isActive 
+                        ? "bg-green-50 text-[#66B21D] shadow-sm shadow-green-500/5 hover:bg-green-50 hover:text-[#66B21D]" 
+                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                    >
+                      <Link href={item.url} className="flex items-center gap-3">
+                        <item.icon className={`h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-[#66B21D]" : "text-slate-400 group-hover:text-slate-900"}`} />
+                        <span className={`text-[11px] font-black uppercase tracking-widest ${isActive ? "text-slate-900" : ""}`}>{item.title}</span>
+                        {isActive && <ChevronRight className="h-3.5 w-3.5 ml-auto text-[#66B21D] animate-in slide-in-from-left-2 duration-300" />}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroup>
         ))}
       </SidebarContent>
+
+      <SidebarFooter className="p-6 mt-auto border-t border-slate-50">
+        <button 
+          onClick={() => logout()}
+          className="w-full h-12 rounded-2xl bg-slate-900 flex items-center justify-center gap-3 text-white hover:bg-red-600 transition-all duration-300 group shadow-lg shadow-slate-900/10 active:scale-95"
+        >
+          <LogOut className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="text-[11px] font-black uppercase tracking-widest">Keluar Dashboard</span>
+        </button>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

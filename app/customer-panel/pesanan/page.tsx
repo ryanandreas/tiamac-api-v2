@@ -5,8 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Search, Plus, Filter, Clock, CheckCircle2 } from "lucide-react"
+import { Search, Plus, Filter, Clock, CheckCircle2, ArrowRight } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { Pagination } from "@/components/pagination"
+
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
 const ONGOING_STATUSES = [
   "Menunggu Jadwal",
@@ -23,18 +26,22 @@ const HISTORY_STATUSES = ["Selesai (Garansi Aktif)", "Selesai", "Dibatalkan"]
 export default async function MyOrdersPage({ 
   searchParams 
 }: { 
-  searchParams: Promise<{ tab?: string }> 
+  searchParams: Promise<{ tab?: string; page?: string }> 
 }) {
   const user = await getCurrentUser()
-  const { tab } = await searchParams
+  const { tab, page } = await searchParams
   const activeTab = tab === "history" ? "history" : "ongoing"
+  const currentPage = parseInt(page || "1")
+  const pageSize = 10
 
-  const [ongoingServices, historyServices] = await Promise.all([
+  const whereClause = {
+    customerId: user.id,
+    status_servis: { in: activeTab === "ongoing" ? ONGOING_STATUSES : HISTORY_STATUSES },
+  }
+
+  const [services, totalCount] = await Promise.all([
     db.services.findMany({
-      where: {
-        customerId: user.id,
-        status_servis: { in: ONGOING_STATUSES },
-      },
+      where: whereClause,
       include: {
         customer: true,
         teknisi: true,
@@ -52,174 +59,151 @@ export default async function MyOrdersPage({
       orderBy: {
         updatedAt: "desc",
       },
+      skip: (currentPage - 1) * pageSize,
+      take: pageSize,
     }),
-    db.services.findMany({
-      where: {
-        customerId: user.id,
-        status_servis: { in: HISTORY_STATUSES },
-      },
-      include: {
-        customer: true,
-        teknisi: true,
-        acUnits: {
-          include: {
-            layanan: true,
-          },
-        },
-        materialUsages: {
-          include: {
-            item: { select: { nama: true } },
-          },
-        },
-      },
-      orderBy: {
-        updatedAt: "desc",
-      },
-      take: 20,
-    }),
+    db.services.count({ where: whereClause }),
   ])
 
+  const totalPages = Math.ceil(totalCount / pageSize)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pesanan Saya</h1>
-          <p className="text-muted-foreground">Kelola semua pengerjaan servis AC Anda.</p>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Pesanan Saya</h1>
+          <DynamicBreadcrumbs />
+          <p className="text-slate-500 font-bold text-sm mt-1">Kelola semua pengerjaan servis AC Anda.</p>
         </div>
         <Link href="/booking">
-          <Button className="gap-2 shadow-sm">
+          <Button className="h-11 px-6 rounded-2xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs shadow-lg shadow-green-500/20 gap-2 transition-all">
             <Plus className="h-4 w-4" /> Pesan Servis Baru
           </Button>
         </Link>
       </div>
 
       <Tabs defaultValue={activeTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-[400px] shadow-sm">
+        <TabsList className="flex w-full max-w-md bg-slate-100 p-1 rounded-2xl h-12 shadow-inner">
           <Link href="/customer-panel/pesanan?tab=ongoing" className="contents">
-            <TabsTrigger value="ongoing" className="gap-2 text-xs sm:text-sm w-full">
-              <Clock className="h-3.5 w-3.5" /> Sedang Berjalan
+            <TabsTrigger value="ongoing" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-sm transition-all gap-2">
+              <Clock className="h-4 w-4" /> Berjalan
             </TabsTrigger>
           </Link>
           <Link href="/customer-panel/pesanan?tab=history" className="contents">
-            <TabsTrigger value="history" className="gap-2 text-xs sm:text-sm w-full">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Riwayat & Selesai
+            <TabsTrigger value="history" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-sm transition-all gap-2">
+              <CheckCircle2 className="h-4 w-4" /> Riwayat
             </TabsTrigger>
           </Link>
         </TabsList>
         
-        <TabsContent value="ongoing" className="mt-6 space-y-4">
-          <Card className="shadow-sm border-muted">
-            <CardHeader className="pb-3 border-b bg-muted/30">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <TabsContent value={activeTab} className="mt-2 space-y-4">
+          <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
+            <CardHeader className="px-6 py-5 border-b border-slate-50">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <CardTitle className="text-lg">Daftar Pesanan Aktif</CardTitle>
-                  <CardDescription className="text-xs">Pantau progress pengerjaan teknisi secara real-time.</CardDescription>
+                  <CardTitle className="text-lg font-black text-slate-900 uppercase tracking-widest">Daftar {activeTab === "ongoing" ? "Pesanan Aktif" : "Riwayat Pesanan"}</CardTitle>
+                  <CardDescription className="text-xs font-bold text-slate-400 mt-1">
+                    {activeTab === "ongoing" 
+                      ? "Pantau progress pengerjaan teknisi secara real-time." 
+                      : "Daftar pengerjaan yang sudah selesai atau dibatalkan."}
+                  </CardDescription>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <div className="relative w-full sm:w-64">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none" />
                     <Input
                       placeholder="Cari ID pesanan..."
-                      className="pl-8 h-9 text-xs sm:text-sm shadow-none focus-visible:ring-primary"
+                      className="pl-10 h-10 text-xs font-black uppercase tracking-widest border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none"
                     />
                   </div>
-                  <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 shadow-sm">
+                  <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 border-slate-100 rounded-xl text-slate-400 hover:text-[#66B21D] hover:bg-green-50 transition-all">
                     <Filter className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              {ongoingServices.length > 0 ? (
+              {services.length > 0 ? (
                 <div className="overflow-x-auto">
-                   <ServiceListTable data={ongoingServices} showNextStep enableCustomerApproval />
+                   <ServiceListTable 
+                     data={services} 
+                     showNextStep={false} 
+                     enableCustomerApproval={activeTab === "ongoing"} 
+                     isCustomerView={true} 
+                  />
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <Clock className="h-8 w-8 text-muted-foreground/30" />
+                <div className="flex flex-col items-center justify-center py-24 text-center">
+                  <div className="size-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 text-slate-200">
+                    <Clock className="h-10 w-10" />
                   </div>
-                  <h3 className="text-lg font-semibold">Tidak ada pesanan aktif</h3>
-                  <p className="text-sm text-muted-foreground max-w-xs mx-auto mt-1 leading-relaxed">
-                    Anda tidak memiliki pesanan yang sedang diproses saat ini.
+                  <h3 className="text-xl font-black text-slate-900">Belum ada pesanan</h3>
+                  <p className="text-sm text-slate-400 font-bold max-w-xs mx-auto mt-2 leading-relaxed">
+                    Sepertinya Anda belum memiliki daftar pesanan di bagian ini.
                   </p>
-                  <Link href="/booking" className="mt-6">
-                    <Button variant="outline" size="sm" className="h-9 shadow-sm">Mulai Pesan Layanan</Button>
+                  <Link href="/booking" className="mt-8">
+                    <Button variant="outline" size="sm" className="h-11 px-8 rounded-xl font-black text-xs border-slate-200 hover:border-[#66B21D] hover:text-[#66B21D] transition-all">Mulai Pesan Layanan</Button>
                   </Link>
                 </div>
               )}
             </CardContent>
-          </Card>
-          
-          {/* Info Alur Mini */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border bg-blue-500/5 p-4 border-blue-500/20 flex gap-3">
-              <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold shrink-0">1</div>
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-blue-700">Pembayaran DP</p>
-                <p className="text-xs text-blue-600/80 leading-relaxed">
-                  Lakukan pembayaran biaya kunjungan Rp 50.000 untuk konfirmasi jadwal kedatangan teknisi.
+            
+            {services.length > 0 && (
+              <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-50">
+                <p className="text-xs font-bold text-slate-400">
+                  Menampilkan {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalCount)} dari {totalCount} pesanan
                 </p>
-              </div>
-            </div>
-            <div className="rounded-xl border bg-amber-500/5 p-4 border-amber-500/20 flex gap-3">
-              <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-xs font-bold shrink-0">2</div>
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-amber-700">Pelunasan Servis</p>
-                <p className="text-xs text-amber-600/80 leading-relaxed">
-                  Setelah servis selesai, silakan lakukan pelunasan biaya untuk mengaktifkan masa garansi Anda.
-                </p>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="history" className="mt-6 space-y-4">
-          <Card className="shadow-sm border-muted">
-            <CardHeader className="pb-3 border-b bg-muted/30">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <CardTitle className="text-lg font-bold">Riwayat Pesanan</CardTitle>
-                  <CardDescription className="text-xs">Daftar pengerjaan yang sudah selesai atau dibatalkan.</CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="relative w-full sm:w-64">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Cari ID pesanan..."
-                      className="pl-8 h-9 text-xs sm:text-sm shadow-none focus-visible:ring-primary"
-                    />
-                  </div>
-                  <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 shadow-sm">
-                    <Filter className="h-4 w-4" />
-                  </Button>
+                  <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    baseUrl="/customer-panel/pesanan"
+                    searchParams={{ tab: activeTab }}
+                  />
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              {historyServices.length > 0 ? (
-                <div className="overflow-x-auto">
-                   <ServiceListTable data={historyServices} />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <CheckCircle2 className="h-8 w-8 text-muted-foreground/30" />
-                  </div>
-                  <h3 className="text-lg font-semibold">Belum ada riwayat</h3>
-                  <p className="text-sm text-muted-foreground max-w-xs mx-auto mt-1 leading-relaxed">
-                    Anda belum pernah menyelesaikan pesanan atau membatalkan pesanan.
+            )}
+          </Card>
+
+          {activeTab === "ongoing" && (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="rounded-3xl bg-green-50/50 p-6 border border-green-100 flex gap-4">
+                <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-[#66B21D] shadow-sm shrink-0 font-black text-sm">1</div>
+                <div className="space-y-1">
+                  <p className="text-sm font-black text-slate-900">Pembayaran DP</p>
+                  <p className="text-xs text-slate-500 font-bold leading-relaxed">
+                    Lakukan pembayaran biaya kunjungan Rp 50.000 untuk konfirmasi jadwal kedatangan teknisi ke lokasi Anda.
                   </p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          <div className="rounded-xl border bg-green-500/5 p-4 border-green-500/20">
-            <p className="text-xs text-green-700/80 leading-relaxed">
-              <span className="font-bold">Info Garansi:</span> Pengerjaan dengan status &quot;Selesai (Garansi Aktif)&quot; dapat diklaim jika terjadi masalah dalam 30 hari pengerjaan.
-            </p>
-          </div>
+              </div>
+              <div className="rounded-3xl bg-orange-50/50 p-6 border border-orange-100 flex gap-4">
+                <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-orange-600 shadow-sm shrink-0 font-black text-sm">2</div>
+                <div className="space-y-1">
+                  <p className="text-sm font-black text-slate-900">Pelunasan Servis</p>
+                  <p className="text-xs text-slate-500 font-bold leading-relaxed">
+                    Setelah servis selesai, silakan lakukan pelunasan biaya untuk mengaktifkan masa garansi pengerjaan selama 30 hari.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "history" && (
+            <Card className="border-none bg-[#66B21D] text-white shadow-2xl shadow-green-500/20 overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+              <CardContent className="p-6 relative z-10">
+                <p className="text-xs font-black uppercase tracking-widest text-[#white/80] flex items-center gap-2">
+                   <CheckCircle2 className="h-4 w-4" /> Info Garansi
+                </p>
+                <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <p className="text-sm font-bold leading-relaxed max-w-xl">
+                    Pengerjaan dengan status &quot;Selesai (Garansi Aktif)&quot; dapat diklaim jika terjadi masalah dalam 30 hari pengerjaan. Simpan nomor pesanan Anda.
+                  </p>
+                  <Button variant="secondary" size="sm" className="h-10 px-6 rounded-xl font-black text-xs text-[#66B21D] shrink-0">Pelajari Syarat & Ketentuan</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>
