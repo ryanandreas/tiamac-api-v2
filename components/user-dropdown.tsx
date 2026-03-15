@@ -52,13 +52,25 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/listpesanan">Pesanan</Link>
+            <Link 
+              href={user?.type === "customer" ? "/customer-panel/dashboard" : "/listpesanan"}
+            >
+              Pesanan
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/listpesanan?tab=history">History</Link>
+            <Link 
+              href={user?.type === "customer" ? "/customer-panel/pesanan?tab=history" : "/listpesanan?tab=history"}
+            >
+              History
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/profilcust">Profile</Link>
+            <Link 
+              href={user?.type === "customer" ? "/customer-panel/settings" : "/profilcust"}
+            >
+              Profile
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

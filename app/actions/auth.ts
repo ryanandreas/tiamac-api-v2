@@ -54,7 +54,7 @@ export async function login(
     } else if (user.customerProfile) {
       cookieStore.set("userType", "customer")
       cookieStore.set("customerId", user.uuid)
-      redirectPath = "/customer-panel/dashboard"
+      redirectPath = "/"
     } else {
       return { message: "User profile not configured" }
     }

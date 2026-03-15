@@ -147,7 +147,7 @@ export default async function BillingPage() {
                               month: "short",
                               year: "numeric",
                             })}
-                            keluhan={keluhanText}
+                            keluhan={keluhanMain}
                             alamat={alamat}
                             jadwal={jadwal}
                             catatan={catatan}

@@ -7,9 +7,7 @@ export default async function Page() {
   const user = await getCurrentUser()
 
   if (user.isAuthenticated) {
-    if (user.type === "customer") {
-      redirect("/customer-panel/dashboard")
-    } else if (user.type === "staff") {
+    if (user.type === "staff") {
       redirect("/dashboard")
     }
   }
