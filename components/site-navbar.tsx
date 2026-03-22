@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Menu, X } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { UserDropdown } from "@/components/user-dropdown"
 import type { CurrentUser } from "@/app/actions/session"
 
@@ -22,6 +23,8 @@ export function SiteNavbar({
   mode?: "fixed" | "sticky"
 }) {
   const [menuState, setMenuState] = React.useState(false)
+  const pathname = usePathname()
+  const isCustomerPanel = pathname.startsWith("/customer-panel")
   const isAuthenticated = !!user?.isAuthenticated
 
   const navClassName =
@@ -58,24 +61,36 @@ export function SiteNavbar({
             </div>
 
             <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl p-6 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-10 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
-              <div className="lg:pr-4">
-                <ul className="space-y-6 text-base lg:flex lg:gap-8 lg:space-y-0 lg:text-[14px]">
-                  {menuItems.map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={item.href}
-                        className="text-slate-600 font-bold hover:text-[#66B21D] transition-colors"
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {!isCustomerPanel && (
+                <div className="lg:pr-4">
+                  <ul className="space-y-6 text-base lg:flex lg:gap-8 lg:space-y-0 lg:text-[14px]">
+                    {menuItems.map((item, index) => (
+                      <li key={index}>
+                        <Link
+                          href={item.href}
+                          className="text-slate-600 font-bold hover:text-[#66B21D] transition-colors"
+                        >
+                          <span>{item.name}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-4 sm:space-y-0 md:w-fit lg:border-l lg:pl-10">
+              <div className={`flex w-full flex-col space-y-3 sm:flex-row sm:gap-4 sm:space-y-0 md:w-fit ${!isCustomerPanel ? 'lg:border-l lg:pl-10' : ''}`}>
                 {isAuthenticated ? (
-                  <UserDropdown user={user} />
+                  <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                    {!isCustomerPanel && (
+                      <Link
+                        href={user?.type === "customer" ? "/customer-panel/dashboard" : "/dashboard"}
+                        className="w-full sm:w-auto inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-bold transition-all bg-[#66B21D] text-white hover:bg-[#4d9e0f] h-10 px-6 shadow-sm"
+                      >
+                        Buka Dashboard
+                      </Link>
+                    )}
+                    <UserDropdown user={user} />
+                  </div>
                 ) : (
                   <Link
                     href="/login"

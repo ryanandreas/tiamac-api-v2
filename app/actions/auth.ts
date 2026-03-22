@@ -34,7 +34,7 @@ export async function login(
     if (user.staffProfile) {
       redirect("/dashboard")
     } else {
-      redirect("/")
+      redirect("/customer-panel/dashboard")
     }
   } catch (error: any) {
     if (error.digest?.startsWith("NEXT_REDIRECT")) throw error;

@@ -79,7 +79,7 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
 
                             <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
                                 {/* Hero Image Illustration */}
-                                <div className="relative aspect-square w-full bg-linear-to-br from-green-50 to-green-100 rounded-[48px] overflow-hidden">
+                                <div className="relative aspect-square w-full bg-linear-to-b from-green-50 to-slate-50 rounded-[48px] overflow-hidden">
                                      <Image 
                                         src="/images/hero-illustration.png"
                                         alt="Technician Service"

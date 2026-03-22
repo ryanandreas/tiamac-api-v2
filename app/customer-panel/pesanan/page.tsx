@@ -4,6 +4,7 @@ import { ServiceListTable } from "@/components/dashboard/service-list-table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Search, Plus, Filter, Clock, CheckCircle2, ArrowRight } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -39,7 +40,7 @@ export default async function MyOrdersPage({
     status_servis: { in: activeTab === "ongoing" ? ONGOING_STATUSES : HISTORY_STATUSES },
   }
 
-  const [services, totalCount] = await Promise.all([
+  const [services, ongoingCount, historyCount] = await Promise.all([
     db.services.findMany({
       where: whereClause,
       include: {
@@ -62,8 +63,11 @@ export default async function MyOrdersPage({
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
     }),
-    db.services.count({ where: whereClause }),
+    db.services.count({ where: { customerId: user.id, status_servis: { in: ONGOING_STATUSES } } }),
+    db.services.count({ where: { customerId: user.id, status_servis: { in: HISTORY_STATUSES } } }),
   ])
+  
+  const totalCount = activeTab === "ongoing" ? ongoingCount : historyCount
 
   const totalPages = Math.ceil(totalCount / pageSize)
 
@@ -76,29 +80,39 @@ export default async function MyOrdersPage({
           <p className="text-slate-500 font-bold text-sm mt-1">Kelola semua pengerjaan servis AC Anda.</p>
         </div>
         <Link href="/booking">
-          <Button className="h-11 px-6 rounded-2xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs shadow-lg shadow-green-500/20 gap-2 transition-all">
+          <Button className="h-11 px-6 rounded-2xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs shadow-none gap-2 transition-all">
             <Plus className="h-4 w-4" /> Pesan Servis Baru
           </Button>
         </Link>
       </div>
 
       <Tabs defaultValue={activeTab} className="w-full">
-        <TabsList className="flex w-full max-w-md bg-slate-100 p-1 rounded-2xl h-12 shadow-inner">
+        <TabsList className="flex w-full max-w-md bg-slate-100 p-1 rounded-2xl h-12 shadow-none border-none">
           <Link href="/customer-panel/pesanan?tab=ongoing" className="contents">
-            <TabsTrigger value="ongoing" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-sm transition-all gap-2">
+            <TabsTrigger value="ongoing" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
               <Clock className="h-4 w-4" /> Berjalan
+              {ongoingCount > 0 && (
+                <Badge className="h-5 px-2 bg-orange-500 hover:bg-orange-600 text-white border-none animate-pulse">
+                  {ongoingCount}
+                </Badge>
+              )}
             </TabsTrigger>
           </Link>
           <Link href="/customer-panel/pesanan?tab=history" className="contents">
-            <TabsTrigger value="history" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-sm transition-all gap-2">
+            <TabsTrigger value="history" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
               <CheckCircle2 className="h-4 w-4" /> Riwayat
+              {historyCount > 0 && (
+                <Badge className="h-5 px-2 bg-slate-200 text-slate-500 hover:bg-slate-300 border-none">
+                  {historyCount}
+                </Badge>
+              )}
             </TabsTrigger>
           </Link>
         </TabsList>
         
         <TabsContent value={activeTab} className="mt-2 space-y-4">
-          <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
-            <CardHeader className="px-6 py-5 border-b border-slate-50">
+          <Card className="border-none shadow-none overflow-hidden bg-white">
+            <CardHeader className="px-6 py-5 border-none">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <CardTitle className="text-lg font-black text-slate-900 uppercase tracking-widest">Daftar {activeTab === "ongoing" ? "Pesanan Aktif" : "Riwayat Pesanan"}</CardTitle>
@@ -113,10 +127,10 @@ export default async function MyOrdersPage({
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none" />
                     <Input
                       placeholder="Cari ID pesanan..."
-                      className="pl-10 h-10 text-xs font-black uppercase tracking-widest border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none"
+                      className="pl-10 h-10 text-xs font-black uppercase tracking-widest bg-slate-50 border-none rounded-xl focus-visible:ring-[#66B21D] shadow-none"
                     />
                   </div>
-                  <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 border-slate-100 rounded-xl text-slate-400 hover:text-[#66B21D] hover:bg-green-50 transition-all">
+                  <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 border-none bg-slate-50 rounded-xl text-slate-400 hover:text-[#66B21D] hover:bg-green-50 transition-all">
                     <Filter className="h-4 w-4" />
                   </Button>
                 </div>
@@ -149,7 +163,7 @@ export default async function MyOrdersPage({
             </CardContent>
             
             {services.length > 0 && (
-              <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-50">
+              <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-none pt-6">
                 <p className="text-xs font-bold text-slate-400">
                   Menampilkan {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalCount)} dari {totalCount} pesanan
                 </p>
@@ -167,8 +181,8 @@ export default async function MyOrdersPage({
 
           {activeTab === "ongoing" && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="rounded-3xl bg-green-50/50 p-6 border border-green-100 flex gap-4">
-                <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-[#66B21D] shadow-sm shrink-0 font-black text-sm">1</div>
+              <div className="rounded-3xl bg-white p-6 border-none flex gap-4">
+                <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-[#66B21D] shadow-none shrink-0 font-black text-sm">1</div>
                 <div className="space-y-1">
                   <p className="text-sm font-black text-slate-900">Pembayaran DP</p>
                   <p className="text-xs text-slate-500 font-bold leading-relaxed">
@@ -176,8 +190,8 @@ export default async function MyOrdersPage({
                   </p>
                 </div>
               </div>
-              <div className="rounded-3xl bg-orange-50/50 p-6 border border-orange-100 flex gap-4">
-                <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-orange-600 shadow-sm shrink-0 font-black text-sm">2</div>
+              <div className="rounded-3xl bg-white p-6 border-none flex gap-4">
+                <div className="size-10 rounded-2xl bg-slate-50 flex items-center justify-center text-orange-600 shadow-none shrink-0 font-black text-sm">2</div>
                 <div className="space-y-1">
                   <p className="text-sm font-black text-slate-900">Pelunasan Servis</p>
                   <p className="text-xs text-slate-500 font-bold leading-relaxed">
@@ -189,7 +203,7 @@ export default async function MyOrdersPage({
           )}
 
           {activeTab === "history" && (
-            <Card className="border-none bg-[#66B21D] text-white shadow-2xl shadow-green-500/20 overflow-hidden relative">
+            <Card className="border-none bg-[#66B21D] text-white shadow-none overflow-hidden relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
               <CardContent className="p-6 relative z-10">
                 <p className="text-xs font-black uppercase tracking-widest text-[#white/80] flex items-center gap-2">

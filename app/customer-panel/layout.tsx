@@ -48,7 +48,7 @@ export default async function CustomerPanelLayout({
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-slate-50/50 w-full font-sans">
+      <div className="min-h-screen bg-[#f4faef] w-full font-sans">
         <SiteNavbar user={user} mode="sticky" />
         
         <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 w-full pt-10">
@@ -64,7 +64,7 @@ export default async function CustomerPanelLayout({
                   />
                 </Suspense>
                 
-                <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/50 relative overflow-hidden group">
+                <div className="rounded-3xl border-none bg-white p-6 shadow-none relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-colors"></div>
                   <h4 className="text-sm font-black text-slate-900 mb-2 relative z-10 flex items-center gap-2 uppercase tracking-widest">
                      <div className="size-1.5 bg-[#66B21D] rounded-full"></div> Butuh Bantuan?

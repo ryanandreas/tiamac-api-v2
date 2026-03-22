@@ -42,18 +42,18 @@ export default async function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-[400px] shadow-sm">
-          <TabsTrigger value="profile" className="gap-2 text-xs sm:text-sm">
-            <User className="h-3.5 w-3.5" /> Profil & Alamat
+        <TabsList className="flex w-full max-w-md bg-slate-100 p-1 rounded-2xl h-12 shadow-none border-none">
+          <TabsTrigger value="profile" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
+            <User className="h-4 w-4" /> Profil & Alamat
           </TabsTrigger>
-          <TabsTrigger value="security" className="gap-2 text-xs sm:text-sm">
-            <Lock className="h-3.5 w-3.5" /> Keamanan Akun
+          <TabsTrigger value="security" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
+            <Lock className="h-4 w-4" /> Keamanan Akun
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="mt-6">
-          <Card className="shadow-sm border-muted overflow-hidden py-0 gap-0">
-            <CardHeader className="bg-muted/30 border-b py-4 pt-4">
+          <Card className="shadow-none border-none overflow-hidden py-0 gap-0 bg-white">
+            <CardHeader className="bg-muted/30 border-none py-4 pt-4">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary" /> Informasi Pribadi
               </CardTitle>
@@ -65,14 +65,14 @@ export default async function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="security" className="mt-6 space-y-6">
-          <Card className="shadow-sm border-muted py-0 gap-0">
-            <CardHeader className="bg-muted/30 border-b py-4 pt-4">
+          <Card className="shadow-none border-none py-0 gap-0 bg-white">
+            <CardHeader className="bg-muted/30 border-none py-4 pt-4">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-primary" /> Keamanan & Login
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-8 pb-10 text-center space-y-4">
-              <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center mx-auto border-2 border-dashed border-muted-foreground/30">
+              <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center mx-auto border-none">
                 <Lock className="h-8 w-8 text-muted-foreground/30" />
               </div>
               <div className="space-y-1">
@@ -84,8 +84,8 @@ export default async function SettingsPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm border-muted py-0 gap-0">
-            <CardHeader className="bg-muted/30 border-b py-4 pt-4">
+          <Card className="shadow-none border-none py-0 gap-0 bg-white">
+            <CardHeader className="bg-muted/30 border-none py-4 pt-4">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" /> Info Akun Terhubung
               </CardTitle>

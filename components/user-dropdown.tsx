@@ -36,7 +36,7 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-12 gap-3 rounded-2xl px-2 hover:bg-slate-50 transition-all group">
           <div className="relative">
-            <Avatar className="h-9 w-9 rounded-xl border-2 border-white shadow-sm ring-2 ring-slate-100 group-hover:ring-[#66B21D]/20 transition-all">
+            <Avatar className="h-9 w-9 rounded-xl shadow-sm group-hover:scale-105 transition-all">
               <AvatarImage src="/images/avatar.png" alt={displayName} />
               <AvatarFallback className="bg-slate-100 text-slate-400 font-black text-xs">{getInitials(displayName)}</AvatarFallback>
             </Avatar>
@@ -99,13 +99,13 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
         <DropdownMenuSeparator className="bg-slate-50" />
         <div className="p-1">
           <DropdownMenuItem 
-            className="rounded-xl p-2.5 cursor-pointer text-red-600 focus:text-white focus:bg-red-500 transition-all gap-3 group"
+            className="rounded-xl p-2.5 cursor-pointer text-red-600 focus:text-white focus:bg-red-500 hover:text-white hover:bg-red-500 data-[highlighted]:bg-red-500 data-[highlighted]:text-white transition-all gap-3 group"
             onClick={() => logout()}
           >
-            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center group-focus:bg-white/20 transition-all text-red-500 group-focus:text-white">
+            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center group-focus:bg-white/20 group-hover:bg-white/20 transition-all text-red-500 group-focus:text-white group-hover:text-white group-data-[highlighted]:bg-white/20 group-data-[highlighted]:text-white">
               <LogOut className="h-4 w-4" />
             </div>
-            <span className="text-sm font-black">Keluar Sesi</span>
+            <span className="text-sm font-black group-focus:text-white group-hover:text-white group-data-[highlighted]:text-white">Keluar Sesi</span>
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>

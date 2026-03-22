@@ -67,7 +67,7 @@ export default async function CustomerDashboardPage() {
           { label: "Belum Dibayar", value: stats.unpaid, icon: CreditCard, color: "bg-orange-100 text-orange-600", desc: "Butuh tindakan" },
           { label: "Total Selesai", value: stats.completed, icon: Package, color: "bg-blue-100 text-blue-600", desc: "Riwayat servis" },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group py-0 gap-0">
+          <Card key={i} className="border-none shadow-none overflow-hidden group py-0 gap-0">
             <CardContent className="p-6 pt-8 relative">
               <div className="flex items-center justify-between mb-4">
                  <div className={`p-3 rounded-2xl ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
@@ -88,8 +88,8 @@ export default async function CustomerDashboardPage() {
       {/* Main Widgets */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Ongoing Orders Widget */}
-        <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden py-0 gap-0">
-          <CardHeader className="p-6 border-b border-slate-50 flex flex-row items-center justify-between pt-8 pb-4">
+        <Card className="border-none shadow-none overflow-hidden py-0 gap-0 bg-white">
+          <CardHeader className="p-6 border-none flex flex-row items-center justify-between pt-8 pb-4">
             <div>
               <CardTitle className="text-lg font-black text-slate-900">Pesanan Aktif</CardTitle>
               <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Progress pengerjaan</CardDescription>
@@ -104,7 +104,7 @@ export default async function CustomerDashboardPage() {
             {activeServices.length > 0 ? (
               activeServices.map((service) => (
                 <Link key={service.id} href={`/customer-panel/pesanan/${service.id}`}>
-                  <div className="group flex items-center gap-4 rounded-2xl border border-slate-50 p-4 hover:border-green-100 hover:bg-green-50/30 transition-all duration-300">
+                  <div className="group flex items-center gap-4 rounded-2xl border-none p-4 hover:bg-green-50/30 transition-all duration-300">
                     <div className="size-12 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-xs shrink-0 group-hover:bg-[#66B21D] transition-colors">
                       {service.id.slice(0, 2).toUpperCase()}
                     </div>
@@ -125,7 +125,7 @@ export default async function CustomerDashboardPage() {
                         {service.keluhan || "Servis AC Routine"}
                       </p>
                     </div>
-                    <div className="size-8 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:text-[#66B21D] group-hover:border-green-200 transition-all">
+                    <div className="size-8 rounded-full border-none flex items-center justify-center text-slate-300 group-hover:text-[#66B21D] transition-all">
                         <ArrowRight className="h-4 w-4" />
                     </div>
                   </div>
@@ -149,15 +149,15 @@ export default async function CustomerDashboardPage() {
         </Card>
 
         {/* Notifications Widget */}
-        <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden py-0 gap-0">
-          <CardHeader className="p-6 border-b border-slate-50 pt-8 pb-4">
+        <Card className="border-none shadow-none overflow-hidden py-0 gap-0 bg-white">
+          <CardHeader className="p-6 border-none pt-8 pb-4">
             <CardTitle className="text-lg font-black text-slate-900">Notifikasi</CardTitle>
             <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Update status & info</CardDescription>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             {stats.unpaid > 0 && (
-              <div className="flex gap-4 p-5 rounded-3xl bg-orange-50 border border-orange-100 items-start">
-                <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-orange-600 shadow-sm shrink-0">
+              <div className="flex gap-4 p-5 rounded-3xl bg-orange-50 border-none items-start">
+                <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-orange-600 shadow-none shrink-0">
                     <AlertCircle className="h-6 w-6" />
                 </div>
                 <div className="min-w-0">

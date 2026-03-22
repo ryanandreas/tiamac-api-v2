@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 export default async function LoginPage() {
   const user = await getCurrentUser()
   if (user.isAuthenticated) {
-    redirect(user.type === "staff" ? "/dashboard" : "/")
+    redirect(user.type === "staff" ? "/dashboard" : "/customer-panel/dashboard")
   }
 
   return (
@@ -26,9 +26,8 @@ export default async function LoginPage() {
         <div className="relative z-10 flex flex-col items-center text-center gap-12 max-w-lg">
           <div className="relative group">
             {/* Illustration Container */}
-            <div className="absolute inset-0 bg-white rounded-[48px] rotate-3 -translate-y-2 shadow-2xl shadow-slate-200/50 transition-transform group-hover:rotate-1 group-hover:-translate-y-4 duration-500" />
             <div className="relative bg-white p-4 rounded-[48px] shadow-xl border border-white overflow-hidden ring-4 ring-slate-50">
-              <div className="aspect-square w-[400px] bg-linear-to-br from-green-50 to-green-100 rounded-[32px] overflow-hidden">
+              <div className="aspect-square w-[400px] bg-linear-to-b from-green-50 to-slate-50 rounded-[32px] overflow-hidden">
                 <img 
                   src="/images/login-illustration.png" 
                   alt="Modern AC Technician" 

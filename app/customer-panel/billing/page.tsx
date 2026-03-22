@@ -85,9 +85,9 @@ export default async function BillingPage({
       </div>
 
       <Tabs defaultValue={activeTab} className="w-full">
-        <TabsList className="flex w-full max-w-md bg-slate-100 p-1 rounded-2xl h-12 shadow-inner">
+        <TabsList className="flex w-full max-w-md bg-slate-100 p-1 rounded-2xl h-12 shadow-none border-none">
           <Link href="/customer-panel/billing?tab=unpaid" className="contents">
-            <TabsTrigger value="unpaid" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-sm transition-all gap-2">
+            <TabsTrigger value="unpaid" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
               Belum Dibayar
               {unpaidTotal > 0 && (
                 <Badge className="h-5 px-2 bg-orange-500 text-white border-none animate-pulse">
@@ -97,7 +97,7 @@ export default async function BillingPage({
             </TabsTrigger>
           </Link>
           <Link href="/customer-panel/billing?tab=paid" className="contents">
-            <TabsTrigger value="paid" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-sm transition-all gap-2">
+            <TabsTrigger value="paid" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
               Riwayat
             </TabsTrigger>
           </Link>
@@ -130,8 +130,8 @@ export default async function BillingPage({
                   service.status_servis === "Booking" ? biayaKunjungan : Math.max(0, (service.biaya ?? 0) - biayaKunjungan)
 
                 return (
-                  <Card key={service.id} className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group py-0 gap-0">
-                    <div className="bg-orange-50 px-6 py-3 flex items-center justify-between border-b border-orange-100/50 pt-3 pb-3">
+                  <Card key={service.id} className="border-none shadow-none overflow-hidden group py-0 gap-0 bg-white">
+                    <div className="bg-orange-50 px-6 py-3 flex items-center justify-between border-none pt-3 pb-3">
                       <div className="flex items-center gap-2 text-[10px] font-black text-orange-600 uppercase tracking-widest">
                         <AlertCircle className="h-4 w-4" />
                         Pembayaran Dibutuhkan
@@ -166,13 +166,13 @@ export default async function BillingPage({
                               biayaDasar={biayaKunjungan}
                               totalBiaya={service.biaya ?? totalEstimasi}
                               trigger={
-                                <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl border-slate-200 hover:border-[#66B21D] hover:text-[#66B21D] transition-all">
+                                <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl border-none bg-slate-50 hover:bg-green-50 hover:text-[#66B21D] transition-all">
                                   <Receipt className="h-5 w-5" />
                                 </Button>
                               }
                             />
                             <Link href={`/customer-panel/pesanan/${service.id}`}>
-                              <Button size="sm" className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs shadow-lg shadow-green-500/20 gap-2">
+                              <Button size="sm" className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs shadow-none gap-2">
                                 <CreditCard className="h-4 w-4" /> Bayar Sekarang
                               </Button>
                             </Link>
@@ -198,7 +198,7 @@ export default async function BillingPage({
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-50">
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-3xl shadow-none border-none">
               <div className="size-20 bg-green-50 rounded-3xl flex items-center justify-center mb-6 text-[#66B21D]">
                 <CheckCircle2 className="h-10 w-10" />
               </div>
@@ -211,8 +211,8 @@ export default async function BillingPage({
         </TabsContent>
 
         <TabsContent value="paid" className="space-y-6 mt-8">
-          <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white py-0 gap-0">
-            <CardHeader className="p-6 border-b border-slate-50 bg-slate-50/30 pt-8 pb-4">
+          <Card className="border-none shadow-none overflow-hidden bg-white py-0 gap-0">
+            <CardHeader className="p-6 border-none bg-slate-50/30 pt-8 pb-4">
               <CardTitle className="text-sm font-black text-slate-900 flex items-center gap-2 uppercase tracking-widest">
                 <Receipt className="h-4 w-4 text-[#66B21D]" /> Riwayat Transaksi
               </CardTitle>
@@ -274,10 +274,10 @@ export default async function BillingPage({
       </Tabs>
 
       {/* Payment Gateway Info Card */}
-      <Card className="border-none bg-slate-900 text-white shadow-2xl shadow-slate-900/20 overflow-hidden relative py-0 gap-0">
+      <Card className="border-none bg-slate-900 text-white shadow-none overflow-hidden relative py-0 gap-0">
         <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="flex flex-col md:flex-row items-center gap-6 p-8 pt-10 pb-10 relative z-10">
-          <div className="size-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 shadow-xl border border-white/10">
+          <div className="size-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border-none shadow-none">
             <CreditCard className="h-8 w-8 text-[#66B21D]" />
           </div>
           <div className="flex-1 text-center md:text-left">

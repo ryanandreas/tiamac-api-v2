@@ -9,11 +9,7 @@ import { redirect } from "next/navigation";
 export default async function Page() {
   const user = await getCurrentUser();
 
-  if (user.isAuthenticated) {
-    if (user.type === "staff") {
-      redirect("/dashboard");
-    }
-  }
+  // Redirect dihapus agar user logged in tetap bisa melihat page / (Landing Page)
 
   return (
     <>
