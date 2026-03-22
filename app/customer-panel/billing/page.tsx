@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/app/actions/session"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,6 +10,10 @@ import Link from "next/link"
 import { OrderDetailDialog } from "@/components/dashboard/order-detail-dialog"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
+
+export const metadata: Metadata = {
+  title: "Tagihan & Pembayaran",
+}
 
 export default async function BillingPage({
   searchParams,

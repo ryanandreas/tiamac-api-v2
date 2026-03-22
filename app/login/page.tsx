@@ -1,6 +1,12 @@
+import type { Metadata } from "next"
 import { LoginForm } from "@/components/login-form"
 import { getCurrentUser } from "@/app/actions/session"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Masuk",
+  description: "Masuk ke akun Tiam AC Anda untuk mengelola layanan dan pesanan AC.",
+}
 
 export default async function LoginPage() {
   const user = await getCurrentUser()

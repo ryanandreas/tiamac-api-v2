@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/app/actions/session"
 import { CustomerPanelNavV2 } from "@/components/customer-panel-nav-v2"
@@ -17,6 +18,11 @@ const ONGOING_STATUSES = [
 ]
 
 const HISTORY_STATUSES = ["Selesai (Garansi Aktif)", "Selesai", "Dibatalkan"]
+
+export const metadata: Metadata = {
+  title: "Customer Panel",
+  description: "Kelola pesanan servis AC, pantau status pengerjaan, dan lakukan pembayaran dengan mudah di Tiam AC.",
+}
 
 export default async function CustomerPanelLayout({
   children,

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { History, Eye, Search, MapPin, Calendar, CheckCircle2, Clock } from "lucide-react"
 import { getCurrentUser } from "@/app/actions/session"
@@ -7,6 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
+
+export const metadata: Metadata = {
+  title: "Riwayat Kerja",
+}
 
 export default async function RiwayatTeknisiPage({
   searchParams,
@@ -54,20 +59,16 @@ export default async function RiwayatTeknisiPage({
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="size-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
-              <History className="h-4 w-4" />
-            </div>
-            <h1 className="text-sm font-black text-slate-600 uppercase tracking-widest">Arsip Kerja</h1>
-          </div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Riwayat Kerja</h2>
+        <div className="space-y-4">
           <DynamicBreadcrumbs />
-          <p className="text-slate-500 font-bold text-sm mt-1">Daftar semua pekerjaan servis yang telah Anda selesaikan.</p>
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Riwayat Kerja</h1>
+            <p className="text-slate-500 font-medium text-base">Daftar semua pekerjaan servis yang telah Anda selesaikan.</p>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-[32px] shadow-xl shadow-slate-200/50 border border-slate-50 overflow-hidden">
+      <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-slate-50/30">
@@ -139,7 +140,7 @@ export default async function RiwayatTeknisiPage({
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="p-6 border-t border-slate-50 bg-slate-50/20">
+          <div className="p-6 bg-slate-50/20">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

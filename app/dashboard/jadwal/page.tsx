@@ -1,8 +1,13 @@
+import type { Metadata } from "next"
 import { SchedulingTable } from "@/components/dashboard/scheduling-table"
 import { db } from "@/lib/db"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Calendar } from "lucide-react"
 import { Pagination } from "@/components/pagination"
+
+export const metadata: Metadata = {
+  title: "Atur Jadwal",
+}
 
 export default async function JadwalPage({
   searchParams,

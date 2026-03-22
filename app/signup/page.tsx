@@ -1,6 +1,12 @@
+import type { Metadata } from "next"
 import { SignupForm } from "@/components/signup-form"
 import { getCurrentUser } from "@/app/actions/session"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Daftar Akun",
+  description: "Daftar akun Tiam AC untuk mendapatkan layanan service AC terbaik dan terpercaya.",
+}
 
 export default async function SignupPage() {
   const user = await getCurrentUser()

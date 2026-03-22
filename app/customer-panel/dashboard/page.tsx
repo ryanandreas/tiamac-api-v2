@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/app/actions/session"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,6 +16,12 @@ const ONGOING_STATUSES = [
   "Pekerjaan Selesai",
   "Menunggu Pembayaran",
 ]
+
+const HISTORY_STATUSES = ["Selesai (Garansi Aktif)", "Selesai", "Dibatalkan"]
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+}
 
 export default async function CustomerDashboardPage() {
   const user = await getCurrentUser()
@@ -49,7 +56,7 @@ export default async function CustomerDashboardPage() {
       },
     }),
     completed: await db.services.count({
-      where: { customerId: user.id, status_servis: { in: ["Selesai", "Selesai (Garansi Aktif)"] } },
+      where: { customerId: user.id, status_servis: { in: HISTORY_STATUSES } },
     }),
   }
 

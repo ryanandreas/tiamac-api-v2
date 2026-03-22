@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/app/actions/session"
 import { CustomerProfileForm } from "@/components/customer-profile-form"
@@ -6,6 +7,10 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { User, Lock, MapPin, ShieldCheck, Smartphone, Mail } from "lucide-react"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Pengaturan Profil",
+}
 
 export default async function SettingsPage() {
   const current = await getCurrentUser()

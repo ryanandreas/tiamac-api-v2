@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/app/actions/session"
 import { ServiceListTable } from "@/components/dashboard/service-list-table"
@@ -23,6 +24,10 @@ const ONGOING_STATUSES = [
 ]
 
 const HISTORY_STATUSES = ["Selesai (Garansi Aktif)", "Selesai", "Dibatalkan"]
+
+export const metadata: Metadata = {
+  title: "Pesanan Saya",
+}
 
 export default async function MyOrdersPage({ 
   searchParams 

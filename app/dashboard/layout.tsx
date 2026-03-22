@@ -1,9 +1,15 @@
+import type { Metadata } from "next"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { getCurrentUser } from "@/app/actions/session"
 import { redirect } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { db } from "@/lib/db"
+
+export const metadata: Metadata = {
+  title: "Dashboard Admin",
+  description: "Sistem manajemen operasional Tiam AC untuk pengelolaan tugas, jadwal, dan inventaris.",
+}
 
 export default async function DashboardLayout({
   children,
