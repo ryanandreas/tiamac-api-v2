@@ -49,48 +49,44 @@ export default async function InventoryPage({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="size-8 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
-              <Package className="h-4 w-4" />
-            </div>
-            <h1 className="text-sm font-black text-purple-600 uppercase tracking-widest">Gudang & Stok</h1>
-          </div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Manajemen Inventory</h2>
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-4">
           <DynamicBreadcrumbs />
-          <p className="text-slate-500 font-bold text-sm mt-1">Kelola ketersediaan sparepart dan material teknisi.</p>
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Manajemen Inventory</h1>
+            <p className="text-slate-500 font-medium text-base">Kelola ketersediaan sparepart dan material teknisi.</p>
+          </div>
         </div>
         {!isTechnician && (
-          <Button className="h-11 px-6 rounded-2xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs shadow-lg shadow-green-500/20 gap-2 transition-all">
+          <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs border-none shadow-none gap-2 transition-all active:scale-95">
             <Plus className="h-4 w-4" /> Tambah Barang Baru
           </Button>
         )}
       </div>
 
-      <div className="bg-white rounded-[32px] shadow-xl shadow-slate-200/50 border border-slate-50 overflow-hidden">
-        <div className="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center gap-4 bg-white">
+      <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
+        <div className="p-6 flex flex-col md:flex-row md:items-center gap-4 bg-white">
           <div className="relative flex-1 max-w-sm group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors pointer-events-none" />
-            <Input
+            <input
               placeholder="Cari sparepart atau material..."
-              className="pl-10 h-10 text-[11px] font-black uppercase tracking-widest border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none bg-slate-50/50 placeholder:text-slate-300"
+              className="pl-10 h-10 w-full text-sm font-medium border border-slate-100 rounded-xl focus-visible:ring-[#66B21D] outline-none shadow-none bg-slate-50/50 placeholder:text-slate-300 transition-all"
             />
           </div>
           <div className="flex-1"></div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Total {totalCount} Barang</p>
+          <p className="text-xs font-bold text-slate-400">Total {totalCount} Barang</p>
         </div>
 
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50/30">
+            <TableHeader className="bg-slate-50/10">
               <TableRow className="border-slate-50 hover:bg-transparent">
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 pl-8">SKU</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12">Nama Barang</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Stok</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Harga Jual</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Status</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 pr-8">Aksi</TableHead>
+                <TableHead className="text-xs font-bold text-slate-400 h-12 pl-8">SKU</TableHead>
+                <TableHead className="text-xs font-bold text-slate-400 h-12">Nama Barang</TableHead>
+                <TableHead className="text-xs font-bold text-slate-400 h-12 text-center">Stok</TableHead>
+                <TableHead className="text-xs font-bold text-slate-400 h-12 text-center">Harga Jual</TableHead>
+                <TableHead className="text-xs font-bold text-slate-400 h-12 text-center">Status</TableHead>
+                <TableHead className="text-right text-xs font-bold text-slate-400 h-12 pr-8">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -150,7 +146,7 @@ export default async function InventoryPage({
         </div>
 
         {totalPages > 1 && (
-          <div className="p-6 border-t border-slate-50 bg-slate-50/20">
+          <div className="p-6 bg-slate-50/20">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

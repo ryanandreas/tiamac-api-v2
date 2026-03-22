@@ -26,8 +26,8 @@ export function SiteNavbar({
 
   const navClassName =
     mode === "sticky"
-      ? "sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md"
-      : "fixed z-50 w-full border-b bg-white/80 backdrop-blur-md"
+      ? "sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md"
+      : "fixed z-50 w-full bg-white/80 backdrop-blur-md"
 
   return (
     <header>
@@ -57,7 +57,7 @@ export function SiteNavbar({
               </button>
             </div>
 
-            <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-10 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
+            <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl p-6 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-10 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
               <div className="lg:pr-4">
                 <ul className="space-y-6 text-base lg:flex lg:gap-8 lg:space-y-0 lg:text-[14px]">
                   {menuItems.map((item, index) => (
@@ -79,7 +79,7 @@ export function SiteNavbar({
                 ) : (
                   <Link
                     href="/login"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-bold transition-all bg-[#66B21D] text-white hover:bg-[#4d9e0f] h-10 px-6 shadow-md shadow-green-600/20"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-bold transition-all bg-[#66B21D] text-white hover:bg-[#4d9e0f] h-10 px-6"
                   >
                     <span>Login</span>
                   </Link>

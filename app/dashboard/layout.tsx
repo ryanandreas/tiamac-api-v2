@@ -50,9 +50,9 @@ export default async function DashboardLayout({
         userEmail={user.email} 
         badgeCounts={badgeCounts}
       />
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
+      <div className="flex-1 flex flex-col min-w-0 bg-gradient-to-b from-[#66B21D]/15 via-slate-100 to-slate-200/30">
         <DashboardHeader user={user} />
-        <main className="p-8 animate-fade-in">
+        <main className="p-4 md:p-8 animate-fade-in">
           {children}
         </main>
       </div>

@@ -7,7 +7,7 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-coverflow'
 import Link from 'next/link'
-import { ArrowRight, Rocket, ShieldCheck, BadgeCheck } from 'lucide-react'
+import { ArrowRight, Rocket, ShieldCheck, BadgeCheck, Shield, UserCheck, Wallet, Zap } from 'lucide-react'
 import type { CurrentUser } from '@/app/actions/session'
 import { SiteNavbar } from "@/components/site-navbar"
 
@@ -26,15 +26,15 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                     <div className="mx-auto max-w-7xl px-6 md:px-12">
                         <div className="flex flex-col lg:flex-row items-center gap-16">
                             <div className="flex-1 text-center lg:text-left">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 border border-green-200 text-[#4d9e0f] text-xs font-bold mb-6 animate-fade-in">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#66B21D]/10 text-[#66B21D] text-xs font-bold mb-6 animate-fade-in">
                                     <span className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#66B21D] opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-2 w-2 bg-[#66B21D]"></span>
                                     </span>
                                     Buka Hari Ini: 08:00 - 17:00
                                 </div>
-                                <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tight">
-                                    Solusi <span className="text-[#66B21D]">Dingin & Hemat</span> <br className="hidden md:block" /> untuk AC Anda
+                                <h1 className="text-3xl md:text-5xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tight">
+                                    Solusi Dingin & Hemat untuk AC Anda
                                 </h1>
                                 <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
                                     Layanan cuci, perbaikan, dan bongkar pasang AC profesional dengan harga transparan dan teknisi berpengalaman. Nikmati udara bersih dan sejuk sekarang juga!
@@ -42,14 +42,14 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                                 <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                     <Link
                                         href={user?.isAuthenticated ? "/booking" : "/login"}
-                                        className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-[#66B21D] px-8 py-4 text-sm font-bold text-white shadow-xl shadow-green-500/25 transition-all hover:bg-[#4d9e0f] hover:scale-105 active:scale-95"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-[#66B21D] px-8 py-4 text-sm font-bold text-white transition-all hover:bg-[#4d9e0f] hover:scale-105 active:scale-95"
                                     >
                                         <Rocket className="mr-2 size-5" />
                                         Pesan Sekarang
                                     </Link>
                                     <Link
                                         href="#layanan"
-                                        className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border-2 border-slate-200 bg-white px-8 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-slate-100 px-8 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-200"
                                     >
                                         Lihat Layanan
                                     </Link>
@@ -61,8 +61,8 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                                             <ShieldCheck className="size-5" />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[11px] font-black text-slate-900 uppercase tracking-wider">Trusted Partner</span>
-                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Certified 2024</span>
+                                            <span className="text-[11px] font-black text-slate-900 tracking-wider">Trusted Partner</span>
+                                            <span className="text-[9px] font-bold text-slate-400 tracking-widest">Certified 2024</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 group cursor-default">
@@ -70,8 +70,8 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                                             <BadgeCheck className="size-5" />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[11px] font-black text-slate-900 uppercase tracking-wider">Verified Service</span>
-                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Quality Guaranteed</span>
+                                            <span className="text-[11px] font-black text-slate-900 tracking-wider">Verified Service</span>
+                                            <span className="text-[9px] font-bold text-slate-400 tracking-widest">Quality Guaranteed</span>
                                         </div>
                                     </div>
                                 </div>
@@ -79,7 +79,7 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
 
                             <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
                                 {/* Hero Image Illustration */}
-                                <div className="relative aspect-square w-full bg-linear-to-br from-green-50 to-green-100 rounded-[48px] overflow-hidden border-8 border-white shadow-[0_32px_64px_-16px_rgba(102,178,29,0.2)]">
+                                <div className="relative aspect-square w-full bg-linear-to-br from-green-50 to-green-100 rounded-[48px] overflow-hidden">
                                      <Image 
                                         src="/images/hero-illustration.png"
                                         alt="Technician Service"
@@ -87,25 +87,25 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                                         className="object-cover transition-transform duration-500 hover:scale-110"
                                      />
                                      <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-green-600/20 to-transparent pointer-events-none">
-                                         <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl flex items-center gap-4 border border-white">
+                                         <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl flex items-center gap-4">
                                              <div className="size-12 rounded-full bg-[#66B21D] flex items-center justify-center text-white">
                                                  <ArrowRight className="size-6" />
                                              </div>
                                              <div>
-                                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Jobs</div>
+                                                 <div className="text-[10px] font-bold text-slate-400 tracking-widest">Active Jobs</div>
                                                  <div className="text-lg font-black text-slate-900 tracking-tight">150+ Servis Hari Ini</div>
                                              </div>
                                          </div>
                                      </div>
                                 </div>
                                 {/* Floating Card */}
-                                <div className="absolute -top-6 -right-6 md:-right-12 bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 flex items-center gap-4 animate-bounce-slow">
+                                <div className="absolute -top-6 -right-6 md:-right-12 bg-white p-4 rounded-2xl flex items-center gap-4 animate-bounce-slow">
                                      <div className="p-2 bg-yellow-100 rounded-xl text-yellow-600">
                                          <svg className="size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                                      </div>
                                      <div>
                                          <div className="text-lg font-black text-slate-900">4.9/5</div>
-                                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Customer Satisfaction</div>
+                                         <div className="text-[10px] font-bold text-slate-400 tracking-widest">Customer Satisfaction</div>
                                      </div>
                                 </div>
                             </div>
@@ -113,20 +113,21 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                     </div>
                 </section>
 
-                {/* Benefits Section */}
-                <section className="py-12 bg-white border-y border-slate-100">
+                <section className="py-16 bg-slate-50">
                     <div className="mx-auto max-w-7xl px-6 md:px-12">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
                             {[
-                                { title: "Bergaransi", desc: "Garansi servis 30 hari", icon: "🛡️" },
-                                { title: "Teknisi Jujur", desc: "Profesional & Terverifikasi", icon: "👨‍🔧" },
-                                { title: "Harga Pas", desc: "Transparan tanpa biaya gaib", icon: "💰" },
-                                { title: "Cepat & Tepat", desc: "Datang sesuai jadwal", icon: "⚡" }
+                                { title: "Bergaransi", desc: "Garansi servis 30 hari", Icon: Shield, color: "text-blue-600 bg-blue-100/50" },
+                                { title: "Teknisi Jujur", desc: "Profesional & Terverifikasi", Icon: UserCheck, color: "text-[#66B21D] bg-green-100/50" },
+                                { title: "Harga Pas", desc: "Transparan tanpa biaya gaib", Icon: Wallet, color: "text-orange-600 bg-orange-100/50" },
+                                { title: "Cepat & Tepat", desc: "Datang sesuai jadwal", Icon: Zap, color: "text-purple-600 bg-purple-100/50" }
                             ].map((benefit, i) => (
-                                <div key={i} className="flex flex-col items-center text-center group">
-                                    <div className="text-3xl mb-4 transition-transform group-hover:scale-125 duration-300">{benefit.icon}</div>
+                                <div key={i} className="flex flex-col items-center lg:items-start text-center lg:text-left group">
+                                    <div className={`size-12 rounded-2xl ${benefit.color} flex items-center justify-center mb-5 transition-transform group-hover:scale-110 duration-500`}>
+                                        <benefit.Icon className="size-6 shrink-0" />
+                                    </div>
                                     <h3 className="font-extrabold text-slate-900 text-sm mb-1">{benefit.title}</h3>
-                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-tight">{benefit.desc}</p>
+                                    <p className="text-[11px] font-bold text-slate-400 tracking-tight">{benefit.desc}</p>
                                 </div>
                             ))}
                         </div>

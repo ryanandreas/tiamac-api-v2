@@ -1,10 +1,10 @@
 'use server'
 
-import { db } from "@/lib/db"
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { AuthService } from "@/lib/services/auth-service"
+import { cookies } from "next/headers"
 
-export type AuthActionState = { message: string } | null
+export type AuthActionState = { success: boolean; message: string } | null
 
 export async function login(
   _prevState: AuthActionState,
@@ -13,35 +13,11 @@ export async function login(
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
-  if (!email || !password) {
-    return { message: "Please fill in all fields" }
-  }
-
-  let redirectPath: string | null = null
-
   try {
-    const user = await db.users.findUnique({
-      where: { email },
-      include: { staffProfile: true, customerProfile: true },
-    })
-
-    if (!user) {
-      return { message: "User not found" }
-    }
-
-    if (user.status !== "ACTIVE") {
-      return { message: "Account is disabled" }
-    }
-
-    if (user.password !== password) {
-      return { message: "Wrong Password" }
-    }
-
-    await db.users.update({
-      where: { uuid: user.uuid },
-      data: { lastLogin: new Date() },
-    })
-
+    const user = await AuthService.validateUser({ email, password })
+    await AuthService.updateLastLogin(user.uuid)
+    
+    // Set Session Cookies (Action Layer responsibility)
     const cookieStore = await cookies()
     cookieStore.set("userId", user.uuid)
     cookieStore.set("name", user.name)
@@ -50,23 +26,23 @@ export async function login(
     if (user.staffProfile) {
       cookieStore.set("userType", "staff")
       cookieStore.set("role", user.staffProfile.role)
-      redirectPath = "/dashboard"
     } else if (user.customerProfile) {
       cookieStore.set("userType", "customer")
       cookieStore.set("customerId", user.uuid)
-      redirectPath = "/"
-    } else {
-      return { message: "User profile not configured" }
     }
-  } catch (error) {
-    console.error("Login error:", error)
-    return { message: error instanceof Error ? error.message : "An unknown error occurred" }
-  }
 
-  if (redirectPath) {
-    redirect(redirectPath)
+    if (user.staffProfile) {
+      redirect("/dashboard")
+    } else {
+      redirect("/")
+    }
+  } catch (error: any) {
+    if (error.digest?.startsWith("NEXT_REDIRECT")) throw error;
+    console.error("Login error:", error)
+    return { success: false, message: error.message || "Terjadi kesalahan internal" }
   }
 }
+
 
 export async function loginCustomer(
   _prevState: AuthActionState,
@@ -81,3 +57,4 @@ export async function loginStaff(
 ): Promise<AuthActionState> {
   return login(_prevState, formData)
 }
+

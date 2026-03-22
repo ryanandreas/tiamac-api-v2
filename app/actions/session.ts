@@ -3,6 +3,7 @@
 import { db } from "@/lib/db"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { AuthService } from "@/lib/services/auth-service"
 
 export type CurrentUser =
   | { isAuthenticated: true; type: "customer"; id: string; name?: string; email?: string }
@@ -70,3 +71,4 @@ export async function logout() {
   cookieStore.delete("email")
   redirect("/")
 }
+

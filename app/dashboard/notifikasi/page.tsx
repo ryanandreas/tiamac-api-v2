@@ -1,5 +1,4 @@
-import { DashboardHeader } from "@/components/dashboard/header"
-import { SidebarInset } from "@/components/ui/sidebar"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Bell, CheckCircle2, Clock, Package, Wrench, User, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,40 +39,42 @@ export default function NotifikasiPage() {
   ]
 
   return (
-    <SidebarInset>
-      <DashboardHeader title="Notifikasi" />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Bell className="h-6 w-6" />
-            <h2 className="text-2xl font-bold tracking-tight">Notifikasi Sistem</h2>
+    <div className="space-y-8 animate-fade-in max-w-3xl">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-4">
+          <DynamicBreadcrumbs />
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Notifikasi Sistem</h1>
+            <p className="text-slate-500 font-medium text-base">Pembaruan terkini dan peringatan dari seluruh aktivitas sistem.</p>
           </div>
-          <Button variant="outline" size="sm">Tandai Semua Dibaca</Button>
         </div>
+        <Button variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-none">
+          Tandai Semua Dibaca
+        </Button>
+      </div>
 
-        <div className="space-y-4 max-w-3xl">
-          {notifications.map((notif) => (
-            <Card key={notif.id} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 flex items-start gap-4">
-                <div className={`p-2 rounded-lg ${notif.bg} shrink-0`}>
-                  <notif.icon className={`h-5 w-5 ${notif.color}`} />
+      <div className="space-y-4">
+        {notifications.map((notif) => (
+          <Card key={notif.id} className="rounded-2xl border-0 shadow-none bg-white hover:bg-slate-50/50 transition-all cursor-pointer group">
+            <CardContent className="p-5 flex items-start gap-5">
+              <div className={`p-3 rounded-xl ${notif.bg} shrink-0 transition-transform group-hover:scale-110`}>
+                <notif.icon className={`h-5 w-5 ${notif.color}`} />
+              </div>
+              <div className="flex-1 space-y-1 mt-1">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <h4 className="font-bold text-slate-900 leading-tight">{notif.title}</h4>
+                  <span className="text-[11px] font-bold text-slate-400">{notif.time}</span>
                 </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-sm">{notif.title}</h4>
-                    <span className="text-xs text-muted-foreground">{notif.time}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{notif.message}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-          
-          <div className="text-center py-8">
-            <Button variant="ghost" className="text-muted-foreground">Lihat Notifikasi Lama</Button>
-          </div>
+                <p className="text-sm font-medium text-slate-500 leading-relaxed">{notif.message}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        <div className="text-center pt-8">
+          <Button variant="ghost" className="rounded-xl text-xs font-bold text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all">Lihat Notifikasi Lama</Button>
         </div>
       </div>
-    </SidebarInset>
+    </div>
   )
 }

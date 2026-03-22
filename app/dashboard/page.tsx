@@ -11,7 +11,7 @@ import {
   Wrench, 
   Clock, 
   AlertTriangle, 
-  DollarSign,
+  Banknote,
   TrendingUp,
   Activity,
   Briefcase,
@@ -64,31 +64,31 @@ export default async function Page() {
 
      return (
        <div className="space-y-10 animate-fade-in">
-           <div className="flex flex-col gap-1">
-             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Halo, {user.name}!</h1>
-             <DynamicBreadcrumbs />
-             <p className="text-slate-500 font-bold text-sm mt-1">Selamat bertugas. Pantau semua penugasan servis Anda di sini.</p>
-           </div>
+            <div className="space-y-4">
+              <DynamicBreadcrumbs />
+              <div className="space-y-2">
+                <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Halo, {user.name}! 👋</h1>
+                <p className="text-slate-500 font-medium text-base">Selamat bertugas. Pantau semua penugasan servis Anda di sini secara efisien.</p>
+              </div>
+            </div>
 
-           <div className="grid gap-6 md:grid-cols-3">
-             {techStats.map((stat, i) => (
-               <Card key={i} className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group hover:-translate-y-1 transition-all">
-                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-slate-50/30">
-                   <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.title}</CardTitle>
-                   <div className={`size-8 rounded-lg flex items-center justify-center ${stat.color}`}>
-                     <stat.icon className="h-4 w-4" />
-                   </div>
-                 </CardHeader>
-                 <CardContent className="pt-6">
-                   <div className="text-3xl font-black text-slate-900 tracking-tighter">{stat.value}</div>
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">{stat.desc}</p>
-                 </CardContent>
-               </Card>
-             ))}
-           </div>
+              {techStats.map((stat, i) => (
+                <div key={i} className="bg-white p-5 rounded-2xl flex flex-col gap-4 group transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className={`size-10 rounded-xl ${stat.color} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-500`}>
+                      <stat.icon className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-bold text-slate-600 tracking-tight leading-none mb-1.5">{stat.title}</p>
+                      <p className="text-[10px] font-medium text-slate-400 leading-tight line-clamp-1">{stat.desc}</p>
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
+                </div>
+              ))}
            
-           <div className="grid gap-8 lg:grid-cols-2">
-              <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
+           <div className="grid gap-6 lg:grid-cols-2">
+              <Card className="overflow-hidden bg-white">
                 <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-12">
                   <div className="size-20 bg-green-50 rounded-3xl flex items-center justify-center mb-8 text-[#66B21D] shadow-inner">
                     <Wrench className="h-10 w-10" />
@@ -97,7 +97,7 @@ export default async function Page() {
                   <p className="text-sm text-slate-400 font-bold max-w-sm mx-auto mt-4 leading-relaxed">
                     Pastikan unit sudah dicek dan biaya sudah disetujui pelanggan sebelum menekan tombol mulai pengerjaan.
                   </p>
-                  <Button className="mt-10 h-14 px-10 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-[#66B21D] transition-all shadow-2xl shadow-slate-900/20 group" asChild>
+                  <Button className="mt-10 h-14 px-10 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-[#66B21D] transition-all group" asChild>
                     <Link href="/dashboard/tugas">
                       Buka Daftar Tugas <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -105,7 +105,7 @@ export default async function Page() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-slate-900 text-white relative">
+              <Card className="overflow-hidden bg-slate-900 text-white relative">
                  <div className="absolute top-0 right-0 p-8 opacity-10">
                     <Settings className="h-32 w-32" />
                  </div>
@@ -221,7 +221,7 @@ export default async function Page() {
     {
       title: "Total Omzet",
       value: formatPrice(totalRevenue._sum.biaya || 0),
-      icon: DollarSign,
+      icon: Banknote,
       description: "Servis lunas hari ini",
       color: "bg-green-50 text-green-600"
     }
@@ -229,71 +229,68 @@ export default async function Page() {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Ringkasan Bisnis</h1>
+      <div className="space-y-4">
         <DynamicBreadcrumbs />
-        <p className="text-slate-500 font-bold text-sm mt-1">Update statistik operasional Tiam AC secara real-time.</p>
+        <div className="space-y-2">
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Ringkasan Bisnis</h1>
+          <p className="text-slate-500 font-medium text-base">Update statistik operasional Tiam AC secara real-time dan akurat.</p>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid gap-6 grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
         {stats.map((stat, index) => (
-          <Card key={index} className="border-none shadow-xl shadow-slate-200/50 overflow-hidden group hover:-translate-y-1 transition-all">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-slate-50/30">
-              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.title}</CardTitle>
-              <div className={`size-8 rounded-lg flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="h-4 w-4" />
+          <div key={index} className="bg-white p-5 rounded-2xl flex flex-col gap-4 group transition-all">
+            <div className="flex items-center gap-3">
+              <div className={`size-10 rounded-xl ${stat.color} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-500`}>
+                <stat.icon className="h-5 w-5" />
               </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">{stat.description}</p>
-            </CardContent>
-          </Card>
+              <div className="min-w-0">
+                <p className="text-[13px] font-bold text-slate-600 tracking-tight leading-none mb-1.5">{stat.title}</p>
+                <p className="text-[10px] font-medium text-slate-400 leading-tight line-clamp-1">{stat.description}</p>
+              </div>
+            </div>
+            <h3 className="text-xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
+          </div>
         ))}
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4 border-none shadow-xl shadow-slate-200/50 overflow-hidden">
-          <CardHeader className="p-6 border-b border-slate-50 flex flex-row items-center justify-between">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4 overflow-hidden bg-white border-0 shadow-none">
+          <CardHeader className="pt-2 px-6 pb-3 flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+              <CardTitle className="text-sm font-black text-slate-900 tracking-tight flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-[#66B21D]" /> Tren Pekerjaan
               </CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="h-[400px] flex flex-col items-center justify-center bg-slate-50/30 p-12 text-center">
-            <div className="size-16 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-slate-100 text-slate-200">
+          <CardContent className="h-[400px] flex flex-col items-center justify-center p-12 text-center">
+            <div className="size-16 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 text-slate-200">
               <Activity className="h-8 w-8" />
             </div>
             <p className="text-sm font-bold text-slate-400 max-w-xs">Grafik analisis performa akan muncul di sini secara periodik.</p>
           </CardContent>
         </Card>
 
-        <Card className="col-span-3 border-none shadow-xl shadow-slate-200/50 overflow-hidden">
-          <CardHeader className="p-6 border-b border-slate-50">
-            <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+        <Card className="col-span-3 overflow-hidden bg-white border-0 shadow-none">
+          <CardHeader className="pt-2 px-6 pb-3">
+            <CardTitle className="text-sm font-black text-slate-900 tracking-tight flex items-center gap-2">
               <Activity className="h-4 w-4 text-[#66B21D]" /> Aktivitas Terbaru
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0">
-            <div className="divide-y divide-slate-50">
+          <CardContent className="p-0 pb-4">
+            <div className="flex flex-col">
                {[1, 2, 3, 4].map((i) => (
-                 <div key={i} className="p-6 flex gap-4 hover:bg-slate-50/50 transition-colors">
-                   <div className="size-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                     <Clock className="h-5 w-5 text-slate-400" />
+                 <div key={i} className="px-6 py-3.5 flex items-center gap-4 hover:bg-slate-50/50 transition-colors">
+                   <div className="size-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                     <Clock className="h-4 w-4 text-slate-400" />
                    </div>
                    <div className="min-w-0 flex-1">
-                     <p className="text-xs font-black text-slate-900 line-clamp-1">Pembaruan status pesanan #AC-1928{i}</p>
-                     <p className="text-[11px] text-slate-400 font-bold mt-1">10 menit yang lalu</p>
+                     <p className="text-[13px] font-black text-slate-900 line-clamp-1">Pembaruan status pesanan #AC-1928{i}</p>
+                     <p className="text-[11px] text-slate-400 font-bold mt-0.5">10 menit yang lalu</p>
                    </div>
-                   <ArrowRight className="h-4 w-4 text-slate-200 shrink-0" />
+                   <ArrowRight className="h-3.5 w-3.5 text-slate-200 shrink-0" />
                  </div>
                ))}
-            </div>
-            <div className="p-4 bg-slate-50/50 border-t border-slate-50">
-              <Button variant="ghost" className="w-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[#66B21D] gap-2">
-                Lihat Semua Aktivitas <ArrowRight className="h-3 w-3" />
-              </Button>
             </div>
           </CardContent>
         </Card>

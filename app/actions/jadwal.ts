@@ -1,45 +1,30 @@
 "use server"
 
-import { db } from "@/lib/db"
-import { revalidatePath } from "next/cache"
+import { ServiceRequestService } from "@/lib/services/service-request-service"
+import { getCurrentUser } from "@/app/actions/session"
 
-function upsertJadwalLine(keluhan: string, jadwalTanggal: string) {
-  const lines = keluhan.split("\n")
-  const idx = lines.findIndex((line) => /^Jadwal:/i.test(line.trim()))
-  const nextLine = `Jadwal: ${jadwalTanggal}`
-  if (idx >= 0) {
-    lines[idx] = nextLine
-    return lines.join("\n")
-  }
-  return [keluhan.trimEnd(), nextLine].filter(Boolean).join("\n")
-}
+export type ActionResponse = { success: boolean; message: string } | null
 
 export async function updateJadwal(
   serviceId: string,
   teknisiId: string,
   jadwalTanggal: string
-) {
+): Promise<ActionResponse> {
   try {
-    const current = await db.services.findUnique({
-      where: { id: serviceId },
-      select: { keluhan: true },
-    })
+    const current = await getCurrentUser()
+    if (!current.isAuthenticated || current.type !== 'staff') {
+       return { success: false, message: "Unauthorized" }
+    }
 
-    const keluhanNext = upsertJadwalLine(current?.keluhan ?? "", jadwalTanggal)
-
-    await db.services.update({
-      where: { id: serviceId },
-      data: {
-        teknisiId,
-        status: "Teknisi Dikonfirmasi",
-        status_servis: "Teknisi Dikonfirmasi",
-        keluhan: keluhanNext,
-      },
+    await ServiceRequestService.updateSchedule({
+      serviceId,
+      teknisiId,
+      jadwalTanggal,
     })
-    revalidatePath("/dashboard/jadwal")
-    revalidatePath("/dashboard/servis")
-    return { success: true }
-  } catch {
-    return { success: false, message: "Gagal memperbarui jadwal." }
+    return { success: true, message: "Jadwal berhasil diperbarui" }
+  } catch (err: any) {
+    return { success: false, message: err.message || "Gagal memperbarui jadwal" }
   }
 }
+
+

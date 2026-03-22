@@ -1,5 +1,4 @@
-import { DashboardHeader } from "@/components/dashboard/header"
-import { SidebarInset } from "@/components/ui/sidebar"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Settings, User, Bell, Shield, Database, Layout, Mail, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -45,51 +44,51 @@ export default function PengaturanPage() {
   ]
 
   return (
-    <SidebarInset>
-      <DashboardHeader title="Pengaturan Sistem" />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-4 max-w-4xl">
-        <div className="flex items-center gap-2">
-          <Settings className="h-6 w-6" />
-          <h2 className="text-2xl font-bold tracking-tight">Pengaturan</h2>
-        </div>
-
-        <div className="space-y-6">
-          {sections.map((section) => (
-            <Card key={section.id}>
-              <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                <div className="p-2 rounded-lg bg-muted">
-                  <section.icon className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">{section.title}</CardTitle>
-                  <CardDescription>{section.description}</CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {section.fields.map((field, idx) => (
-                  <div key={idx} className="flex items-center justify-between">
-                    <Label className="flex-1">{field.label}</Label>
-                    {field.type === "switch" ? (
-                      <Switch checked={field.value as boolean} />
-                    ) : (
-                      <Input
-                        type={field.type}
-                        defaultValue={field.value as string}
-                        className="max-w-[250px]"
-                      />
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
-          
-          <div className="flex justify-end gap-2 py-4">
-            <Button variant="outline">Batalkan</Button>
-            <Button>Simpan Perubahan</Button>
-          </div>
+    <div className="space-y-8 animate-fade-in max-w-4xl">
+      <div className="space-y-4">
+        <DynamicBreadcrumbs />
+        <div className="space-y-2">
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Pengaturan Sistem</h1>
+          <p className="text-slate-500 font-medium text-base">Sesuaikan preferensi aplikasi, notifikasi, dan keamanan akun Anda.</p>
         </div>
       </div>
-    </SidebarInset>
+
+      <div className="space-y-6">
+        {sections.map((section) => (
+          <Card key={section.id} className="rounded-2xl border-0 shadow-none bg-white overflow-hidden">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-4 space-y-0 p-6 border-b border-slate-50/50">
+              <div className="p-3 rounded-xl bg-slate-50 text-slate-400">
+                <section.icon className="h-6 w-6" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-black text-slate-900">{section.title}</CardTitle>
+                <CardDescription className="text-sm font-medium text-slate-500 mt-1">{section.description}</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              {section.fields.map((field, idx) => (
+                <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <Label className="flex-1 text-sm font-bold text-slate-700">{field.label}</Label>
+                  {field.type === "switch" ? (
+                    <Switch checked={field.value as boolean} className="data-[state=checked]:bg-[#66B21D]" />
+                  ) : (
+                    <Input
+                      type={field.type}
+                      defaultValue={field.value as string}
+                      className="w-full sm:max-w-[300px] h-10 text-sm font-medium border-slate-200 rounded-xl focus-visible:ring-[#66B21D] shadow-none bg-slate-50/50"
+                    />
+                  )}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        ))}
+
+        <div className="flex justify-end gap-3 pt-6 pb-12">
+          <Button variant="outline" className="h-11 px-6 rounded-xl text-xs font-bold border-slate-200 text-slate-500 hover:text-slate-900 transition-all shadow-none">Batalkan</Button>
+          <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs border-none shadow-none transition-all active:scale-95">Simpan Perubahan</Button>
+        </div>
+      </div>
+    </div>
   )
 }

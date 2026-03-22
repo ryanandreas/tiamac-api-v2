@@ -128,10 +128,10 @@ export function AppSidebar({
   const pathname = usePathname()
 
   return (
-    <Sidebar {...props} className="border-r border-slate-100 bg-white">
+    <Sidebar {...props} className="border-none shadow-none">
       <SidebarHeader className="p-6">
         <Link href="/dashboard" className="flex items-center gap-3 group px-2 mb-4">
-          <div className="size-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm transition-all duration-300 group-hover:border-[#66B21D]/20 group-hover:shadow-md">
+          <div className="size-10 rounded-2xl bg-white flex items-center justify-center transition-all duration-300">
              <Image
                 src="/images/logo.png"
                 alt="Logo"
@@ -149,10 +149,10 @@ export function AppSidebar({
                 
       </SidebarHeader>
 
-      <SidebarContent className="px-4 pb-8">
+      <SidebarContent className="px-3 pb-4 space-y-2">
         {menuGroups.map((group) => (
-          <SidebarGroup key={group.title} className="mb-6">
-            <div className="px-3 pb-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] opacity-80">
+          <SidebarGroup key={group.title} className="p-1">
+            <div className="px-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] opacity-80">
               {group.title}
             </div>
             <SidebarMenu className="gap-1">
@@ -176,15 +176,15 @@ export function AppSidebar({
                     <SidebarMenuButton 
                       asChild 
                       isActive={isActive} 
-                      className={`h-11 rounded-xl px-4 transition-all duration-200 group relative ${
+                      className={`h-11 rounded-xl px-4 transition-all duration-200 group/menu-item relative ${
                         isActive 
-                        ? "bg-green-50 text-[#66B21D] shadow-sm shadow-green-500/5 hover:bg-green-50 hover:text-[#66B21D]" 
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                        ? "bg-[#66B21D]/5 text-[#66B21D] hover:bg-[#66B21D]/10 hover:text-[#66B21D]" 
+                        : "text-slate-500 hover:bg-[#66B21D]/5 hover:text-[#66B21D]"
                       }`}
                     >
                       <Link href={item.url} className="flex items-center gap-3 w-full">
-                        <item.icon className={`h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-[#66B21D]" : "text-slate-400 group-hover:text-slate-900"}`} />
-                        <span className={`text-[11px] font-black uppercase tracking-widest ${isActive ? "text-slate-900" : ""}`}>{item.title}</span>
+                        <item.icon className={`h-4.5 w-4.5 transition-transform duration-300 group-hover/menu-item:scale-110 ${isActive ? "text-[#66B21D]" : "text-slate-400 group-hover/menu-item:text-slate-900"}`} />
+                        <span className={`text-sm font-black tracking-tight ${isActive ? "text-slate-900" : ""}`}>{item.title}</span>
                         
                         {badge && (
                           <span className="ml-auto min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-[9px] font-black text-white px-1 leading-none animate-in zoom-in duration-300">
@@ -203,10 +203,10 @@ export function AppSidebar({
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="p-6 mt-auto border-t border-slate-50">
+      <SidebarFooter className="p-6 mt-auto">
         <button 
           onClick={() => logout()}
-          className="w-full h-12 rounded-2xl bg-slate-900 flex items-center justify-center gap-3 text-white hover:bg-red-600 transition-all duration-300 group shadow-lg shadow-slate-900/10 active:scale-95"
+          className="w-full h-12 rounded-2xl bg-slate-900 flex items-center justify-center gap-3 text-white hover:bg-red-600 transition-all duration-300 group active:scale-95"
         >
           <LogOut className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           <span className="text-[11px] font-black uppercase tracking-widest">Keluar Dashboard</span>
