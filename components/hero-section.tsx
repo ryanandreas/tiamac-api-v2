@@ -54,7 +54,7 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                                         Lihat Layanan
                                     </Link>
                                 </div>
-                                
+
                                 <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 opacity-80">
                                     <div className="flex items-center gap-2 group cursor-default">
                                         <div className="size-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 transition-transform group-hover:scale-110">
@@ -80,33 +80,33 @@ export default function HeroSection({ user }: { user?: CurrentUser }) {
                             <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
                                 {/* Hero Image Illustration */}
                                 <div className="relative aspect-square w-full bg-linear-to-b from-green-50 to-slate-50 rounded-[48px] overflow-hidden">
-                                     <Image 
-                                        src="/images/hero-illustration.png"
+                                    <Image
+                                        src="/images/hero.png"
                                         alt="Technician Service"
                                         fill
                                         className="object-cover transition-transform duration-500 hover:scale-110"
-                                     />
-                                     <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-green-600/20 to-transparent pointer-events-none">
-                                         <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl flex items-center gap-4">
-                                             <div className="size-12 rounded-full bg-[#66B21D] flex items-center justify-center text-white">
-                                                 <ArrowRight className="size-6" />
-                                             </div>
-                                             <div>
-                                                 <div className="text-[10px] font-bold text-slate-400 tracking-widest">Active Jobs</div>
-                                                 <div className="text-lg font-black text-slate-900 tracking-tight">150+ Servis Hari Ini</div>
-                                             </div>
-                                         </div>
-                                     </div>
+                                    />
+                                    <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-[#66B21D]/30 to-transparent pointer-events-none">
+                                        <div className="bg-linear-to-br from-[#66B21D]/40 via-white/40 to-white/10 backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 w-fit mr-auto md:mr-0">
+                                            <div className="size-12 rounded-full bg-[#66B21D] flex items-center justify-center text-white">
+                                                <ArrowRight className="size-6" />
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] font-extrabold text-white/80 uppercase tracking-widest">Active Jobs</div>
+                                                <div className="text-lg font-black text-white tracking-tight">150+ Servis Hari Ini</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 {/* Floating Card */}
-                                <div className="absolute -top-6 -right-6 md:-right-12 bg-white p-4 rounded-2xl flex items-center gap-4 animate-bounce-slow">
-                                     <div className="p-2 bg-yellow-100 rounded-xl text-yellow-600">
-                                         <svg className="size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                     </div>
-                                     <div>
-                                         <div className="text-lg font-black text-slate-900">4.9/5</div>
-                                         <div className="text-[10px] font-bold text-slate-400 tracking-widest">Customer Satisfaction</div>
-                                     </div>
+                                <div className="absolute -top-6 -right-6 md:-right-12 bg-linear-to-br from-[#66B21D]/40 via-white/40 to-white/10 backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 animate-bounce-slow">
+                                    <div className="p-2 bg-yellow-100 rounded-xl text-yellow-600">
+                                        <svg className="size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-lg font-black text-slate-950">4.9/5</div>
+                                        <div className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest">Satisfaction</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
