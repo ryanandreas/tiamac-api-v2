@@ -1,9 +1,9 @@
 'use server'
 
+import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { AuthService } from "@/lib/services/auth-service"
 
 export type CurrentUser =
   | { isAuthenticated: true; type: "customer"; id: string; name?: string; email?: string }
@@ -11,6 +11,43 @@ export type CurrentUser =
   | { isAuthenticated: false; type: null; id: null }
 
 export async function getCurrentUser(): Promise<CurrentUser> {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  if (session?.user) {
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        staffProfile: { select: { role: true } },
+        customerProfile: { select: { userId: true } },
+      },
+    })
+
+    if (user?.staffProfile) {
+        return {
+          isAuthenticated: true,
+          type: "staff",
+          id: user.id,
+          role: user.staffProfile.role,
+          name: user.name,
+          email: user.email,
+        }
+    }
+
+    return {
+        isAuthenticated: true,
+        type: "customer",
+        id: user?.id ?? session.user.id,
+        name: user?.name ?? session.user.name,
+        email: user?.email ?? session.user.email,
+    }
+  }
+
+  // FALLBACK: Keep manual cookies for now during transition 
   const cookieStore = await cookies()
   const customerId = cookieStore.get("customerId")
   const userId = cookieStore.get("userId")
@@ -69,6 +106,12 @@ export async function logout() {
   cookieStore.delete("role")
   cookieStore.delete("name")
   cookieStore.delete("email")
+  
+  // Also logout Better Auth
+  await auth.api.signOut({
+    headers: await headers()
+  });
+
   redirect("/")
 }
 
