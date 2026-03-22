@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import HeroSection from "@/components/hero-section";
 import FooterSection from "@/components/footer";
 import { LandingServices } from "@/components/landing/landing-services";
+import { LandingPromo } from "@/components/landing/landing-promo";
 import { LandingHowItWorks } from "@/components/landing/landing-how-it-works";
 import { LandingTestimonials } from "@/components/landing/landing-testimonials";
 import { getCurrentUser } from "@/app/actions/session";
@@ -21,6 +22,7 @@ export default async function Page() {
     <>
       <HeroSection user={user} />
       <LandingServices />
+      <LandingPromo />
       <LandingHowItWorks />
       <LandingTestimonials />
       <FooterSection />

@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableFooter, TableHead, TableHeader, TableRow, TableCell } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Plus } from "lucide-react"
 
 const BASE_VISIT_FEE = 50000
 
@@ -55,7 +57,7 @@ export function AcBookingForm({
   const formRef = React.useRef<HTMLFormElement | null>(null)
 
   const selectClassName =
-    "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    "flex h-10 w-full items-center justify-between rounded-xl border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-none"
 
   const [units, setUnits] = React.useState<UnitState[]>([{ pk: undefined, layanan: [] }])
   const [coords, setCoords] = React.useState<{ lat?: number; lng?: number }>({})
@@ -198,15 +200,15 @@ export function AcBookingForm({
         <p className="text-muted-foreground text-sm">Khusus untuk servis AC.</p>
       </div>
 
-      <Card className="border-primary/20 bg-primary/5">
+      <Card className="rounded-2xl border-primary/20 bg-primary/5 shadow-none">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">💰 Estimasi Biaya Dasar</CardTitle>
+          <CardTitle className="text-base">Estimasi Biaya Dasar</CardTitle>
           <CardDescription>Biaya kunjungan & diagnosa (wajib jelas).</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="flex items-center justify-between rounded-md border bg-background px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl border bg-background px-4 py-3 shadow-none">
             <div>
-              <div className="font-semibold">💵 Biaya Kunjungan & Diagnosa</div>
+              <div className="font-semibold">Biaya Kunjungan & Diagnosa</div>
               <div className="text-xs text-muted-foreground">
                 Biaya ini tetap dibayar jika perbaikan tidak dilanjutkan.
               </div>
@@ -216,20 +218,20 @@ export function AcBookingForm({
         </CardContent>
       </Card>
 
-      <Card className="border-primary/20 bg-primary/5">
+      <Card className="rounded-2xl border-primary/20 bg-primary/5 shadow-none">
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Total Estimasi</CardTitle>
           <CardDescription>Biaya kunjungan + layanan yang Anda pilih.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between rounded-md border bg-background px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl border bg-background px-4 py-3 shadow-none">
             <div className="text-sm text-muted-foreground">Total</div>
             <div className="text-lg font-bold">{formatRupiah(totalEstimasi)}</div>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-2xl border-primary/20 bg-primary/5 shadow-none">
         <CardHeader>
           <CardTitle>Form Booking</CardTitle>
           <CardDescription>Isi detail servis AC dan jadwal kedatangan.</CardDescription>
@@ -242,20 +244,20 @@ export function AcBookingForm({
             {clientMessage ? <div className="text-sm font-medium text-destructive">{clientMessage}</div> : null}
 
             {requireGuestIdentity ? (
-              <div className="rounded-lg border bg-card p-4">
+              <div className="rounded-lg border bg-background p-4">
                 <div className="text-sm font-medium">Data Pemesan</div>
                 <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="pemesan_nama">Nama</Label>
-                    <Input id="pemesan_nama" name="pemesan_nama" required />
+                    <Input id="pemesan_nama" name="pemesan_nama" className="bg-white rounded-xl shadow-none" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="pemesan_no_telp">Nomor HP</Label>
-                    <Input id="pemesan_no_telp" name="pemesan_no_telp" type="tel" required />
+                    <Input id="pemesan_no_telp" name="pemesan_no_telp" type="tel" className="bg-white rounded-xl shadow-none" required />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="pemesan_email">Email</Label>
-                    <Input id="pemesan_email" name="pemesan_email" type="email" required />
+                    <Input id="pemesan_email" name="pemesan_email" type="email" className="bg-white rounded-xl shadow-none" required />
                   </div>
                 </div>
               </div>
@@ -268,6 +270,7 @@ export function AcBookingForm({
                 name="keluhan"
                 placeholder="AC tidak dingin & berisik"
                 rows={4}
+                className="bg-white rounded-xl shadow-none"
                 required
               />
             </div>
@@ -276,10 +279,10 @@ export function AcBookingForm({
               <div className="flex items-center justify-between gap-3">
                 <Label>Alamat & Map Picker</Label>
                 <div className="flex items-center gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={detectLocation}>
+                  <Button type="button" variant="outline" size="sm" className="rounded-xl shadow-none" onClick={detectLocation}>
                     Auto-detect lokasi
                   </Button>
-                  <Button type="button" variant="outline" size="sm" asChild>
+                  <Button type="button" variant="outline" size="sm" className="rounded-xl shadow-none" asChild>
                     <a href={mapsHref} target="_blank" rel="noreferrer">
                       Pin titik rumah
                     </a>
@@ -287,7 +290,7 @@ export function AcBookingForm({
                 </div>
               </div>
               {geoError ? <div className="text-xs text-destructive">{geoError}</div> : null}
-              <Textarea id="alamat" name="alamat" placeholder="Alamat lengkap lokasi Anda" rows={3} required />
+              <Textarea id="alamat" name="alamat" placeholder="Alamat lengkap lokasi Anda" className="bg-white rounded-xl shadow-none" rows={3} required />
               <div className="text-xs text-muted-foreground">
                 Gunakan auto-detect lalu pin lokasi Anda di peta.
               </div>
@@ -296,7 +299,7 @@ export function AcBookingForm({
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="jadwal_tanggal">Pilih Hari Kedatangan</Label>
-                <Input id="jadwal_tanggal" name="jadwal_tanggal" type="date" required />
+                <Input id="jadwal_tanggal" name="jadwal_tanggal" type="date" className="bg-white rounded-xl shadow-none" required />
               </div>
             </div>
 
@@ -304,7 +307,7 @@ export function AcBookingForm({
               <input type="hidden" name="units_json" value={unitsJson} />
 
               {layananList.length === 0 ? (
-                <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
+                <div className="rounded-xl border bg-background p-3 text-sm text-muted-foreground">
                   Katalog layanan belum tersedia.
                 </div>
               ) : null}
@@ -316,11 +319,12 @@ export function AcBookingForm({
                 </div>
                 <Button
                   type="button"
-                  variant="outline"
-                  size="sm"
+                  variant="default"
+                  size="icon"
+                  className="rounded-full transition-all shadow-none"
                   onClick={() => setUnits((prev) => [...prev, { pk: undefined, layanan: [] }])}
                 >
-                  +
+                  <Plus className="h-5 w-5" />
                 </Button>
               </div>
 
@@ -330,13 +334,13 @@ export function AcBookingForm({
                   const unitTotal = calcUnitTotal(unit, catalog)
                   return (
                     <Dialog key={index}>
-                      <Card className="border-muted">
+                      <Card className="border-muted bg-background rounded-xl shadow-none">
                         <CardHeader className="pb-3">
                           <div className="flex items-center justify-between gap-3">
                             <CardTitle className="text-base">AC {index + 1}</CardTitle>
                             <div className="flex items-center gap-2">
                               <DialogTrigger asChild>
-                                <Button type="button" variant="outline" size="sm">
+                                <Button type="button" variant="outline" size="sm" className="rounded-xl shadow-none">
                                   Buka Form
                                 </Button>
                               </DialogTrigger>
@@ -345,6 +349,7 @@ export function AcBookingForm({
                                   type="button"
                                   variant="outline"
                                   size="sm"
+                                  className="rounded-xl text-destructive hover:bg-destructive/5 shadow-none"
                                   onClick={() => setUnits((prev) => prev.filter((_, i) => i !== index))}
                                 >
                                   Hapus
@@ -379,7 +384,7 @@ export function AcBookingForm({
                                         prev.map((u, i) => (i === index ? { ...u, pk: value, layanan: u.layanan } : u))
                                       )
                                     }
-                                    className={`rounded-lg border p-3 text-left text-sm transition-colors ${
+                                    className={`rounded-xl border p-3 text-left text-sm transition-colors ${
                                       selected ? "border-primary bg-primary/5" : "hover:bg-muted/40"
                                     }`}
                                   >
@@ -459,6 +464,7 @@ export function AcBookingForm({
                                               type="button"
                                               variant="outline"
                                               size="sm"
+                                              className="rounded-xl shadow-none"
                                               onClick={() =>
                                                 setUnits((prev) =>
                                                   prev.map((u, i) => {
@@ -495,7 +501,7 @@ export function AcBookingForm({
                                 </div>
                               </div>
                             ) : (
-                              <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
+                              <div className="rounded-md border bg-background p-3 text-sm text-muted-foreground">
                                 Pilih PK AC terlebih dahulu untuk menampilkan layanan.
                               </div>
                             )}
@@ -508,22 +514,21 @@ export function AcBookingForm({
               </div>
             </div>
 
-            <div className="flex items-start gap-3 rounded-md border bg-muted/30 p-3">
-              <input
+            <div className="flex items-center gap-3 rounded-xl border bg-background p-3">
+              <Checkbox
                 id="agree_biaya_kunjungan"
                 name="agree_biaya_kunjungan"
-                type="checkbox"
-                className="mt-1 h-4 w-4"
+                className="bg-white shadow-none"
                 required
               />
-              <Label htmlFor="agree_biaya_kunjungan" className="text-sm leading-5">
+              <Label htmlFor="agree_biaya_kunjungan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Saya menyetujui biaya kunjungan
               </Label>
             </div>
 
             <div className="flex justify-end">
               <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-                <Button type="button" disabled={isPending} onClick={openConfirm}>
+                <Button type="button" disabled={isPending} onClick={openConfirm} className="rounded-xl px-12 h-12 text-base font-semibold shadow-none">
                   {isPending ? "Memproses..." : "Booking Sekarang"}
                 </Button>
                 <DialogContent className="sm:max-w-4xl">
@@ -580,17 +585,17 @@ export function AcBookingForm({
 
                       <div className="mt-3">
                         <Table>
-                          <TableHeader>
-                            <TableRow>
+                          <TableHeader className="bg-white">
+                            <TableRow className="border-slate-100 hover:bg-transparent">
                               <TableHead className="w-[60px]">No</TableHead>
                               <TableHead>Deskripsi</TableHead>
                               <TableHead className="w-[120px]">PK</TableHead>
                               <TableHead className="w-[160px] text-right">Harga</TableHead>
                             </TableRow>
                           </TableHeader>
-                          <TableBody>
+                          <TableBody className="bg-white">
                             {receiptRows.map((row, idx) => (
-                              <TableRow key={row.id}>
+                              <TableRow key={row.id} className="border-slate-100 hover:bg-transparent">
                                 <TableCell>{idx + 1}</TableCell>
                                 <TableCell className="whitespace-normal">{row.deskripsi}</TableCell>
                                 <TableCell>{row.pk}</TableCell>
@@ -598,24 +603,24 @@ export function AcBookingForm({
                               </TableRow>
                             ))}
                           </TableBody>
-                          <TableFooter>
-                            <TableRow>
-                              <TableCell colSpan={3} className="text-right">
+                          <TableFooter className="bg-white">
+                            <TableRow className="border-slate-100 hover:bg-transparent">
+                              <TableCell colSpan={3} className="text-right font-bold h-12">
                                 Total layanan
                               </TableCell>
-                              <TableCell className="text-right">{formatRupiah(layananTotal)}</TableCell>
+                              <TableCell className="text-right font-bold">{formatRupiah(layananTotal)}</TableCell>
                             </TableRow>
-                            <TableRow>
-                              <TableCell colSpan={3} className="text-right">
+                            <TableRow className="border-slate-100 hover:bg-transparent">
+                              <TableCell colSpan={3} className="text-right font-bold h-12">
                                 Biaya kunjungan
                               </TableCell>
-                              <TableCell className="text-right">{formatRupiah(BASE_VISIT_FEE)}</TableCell>
+                              <TableCell className="text-right font-bold">{formatRupiah(BASE_VISIT_FEE)}</TableCell>
                             </TableRow>
-                            <TableRow>
-                              <TableCell colSpan={3} className="text-right">
+                            <TableRow className="border-slate-100 hover:bg-transparent border-t-2">
+                              <TableCell colSpan={3} className="text-right font-black text-lg h-16 text-[#66B21D]">
                                 Total estimasi
                               </TableCell>
-                              <TableCell className="text-right">{formatRupiah(totalEstimasi)}</TableCell>
+                              <TableCell className="text-right font-black text-lg text-[#66B21D]">{formatRupiah(totalEstimasi)}</TableCell>
                             </TableRow>
                           </TableFooter>
                         </Table>
@@ -623,10 +628,10 @@ export function AcBookingForm({
                     </div>
 
                     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                      <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)} disabled={isPending}>
+                      <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)} disabled={isPending} className="rounded-xl">
                         Cancel
                       </Button>
-                      <Button type="submit" form={formId} disabled={isPending}>
+                      <Button type="submit" form={formId} disabled={isPending} className="rounded-xl font-semibold">
                         Konfirmasi
                       </Button>
                     </div>

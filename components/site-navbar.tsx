@@ -9,10 +9,10 @@ import { UserDropdown } from "@/components/user-dropdown"
 import type { CurrentUser } from "@/app/actions/session"
 
 const menuItems = [
-  { name: "Layanan", href: "#layanan" },
-  { name: "Promo", href: "#promo" },
-  { name: "Harga", href: "#harga" },
-  { name: "Testimoni", href: "#testimoni" },
+  { name: "Layanan", href: "/#layanan" },
+  { name: "Promo", href: "/#promo" },
+  { name: "Harga", href: "/harga" },
+  { name: "Testimoni", href: "/#testimoni" },
 ]
 
 export function SiteNavbar({
