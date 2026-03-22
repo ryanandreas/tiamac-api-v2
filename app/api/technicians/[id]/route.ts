@@ -13,7 +13,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       include: {
         user: {
           select: {
-            uuid: true,
+            id: true,
             name: true,
             email: true,
             status: true,
@@ -56,7 +56,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       include: {
         user: {
           select: {
-            uuid: true,
+            id: true,
             name: true,
             email: true
           }

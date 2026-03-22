@@ -21,10 +21,10 @@ export async function getCurrentUser(): Promise<CurrentUser> {
 
   const id = userId?.value ?? customerId?.value
   if (id) {
-    const user = await db.users.findUnique({
-      where: { uuid: id },
+    const user = await db.user.findUnique({
+      where: { id: id },
       select: {
-        uuid: true,
+        id: true,
         name: true,
         email: true,
         staffProfile: { select: { role: true } },

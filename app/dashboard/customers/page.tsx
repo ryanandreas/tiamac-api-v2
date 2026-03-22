@@ -1,6 +1,6 @@
 import { UserListTable } from "@/components/dashboard/user-list-table"
 import { db } from "@/lib/db"
-import { Users, UserIcon } from "lucide-react"
+import { User, UserIcon } from "lucide-react"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
 export default async function CustomerListPage() {

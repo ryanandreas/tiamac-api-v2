@@ -1,5 +1,5 @@
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
-import { FileText, Download, TrendingUp, BarChart3, PieChart, Users } from "lucide-react"
+import { FileText, Download, TrendingUp, BarChart3, PieChart, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -22,7 +22,7 @@ export default function LaporanPage() {
     {
       title: "Laporan Performa Teknisi",
       description: "Statistik penyelesaian tugas dan rating per teknisi.",
-      icon: Users,
+      icon: User,
       color: "text-orange-600",
       bg: "bg-orange-50"
     },

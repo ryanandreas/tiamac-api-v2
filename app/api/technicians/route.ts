@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const technicians = await db.staffProfile.findMany({
       include: {
-        user: { select: { uuid: true, name: true, email: true } }
+        user: { select: { id: true, name: true, email: true } }
       }
     });
 

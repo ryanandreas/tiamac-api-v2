@@ -11,7 +11,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({
       success: true,
       data: {
-        id: user.uuid,
+        id: user.id,
         name: user.name,
         email: user.email,
         profile: user.customerProfile

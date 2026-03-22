@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const user = await AuthService.validateUser(body);
-    await AuthService.updateLastLogin(user.uuid);
+    await AuthService.updateLastLogin(user.id);
 
     // Return the user data and we expect the client (like Flutter) 
     // to handle session or we can also provide a JWT in future.
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       success: true,
       message: "Login successful",
       data: {
-        id: user.uuid,
+        id: user.id,
         name: user.name,
         email: user.email,
         type: user.staffProfile ? "staff" : "customer",

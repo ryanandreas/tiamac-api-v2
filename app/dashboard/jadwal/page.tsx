@@ -48,7 +48,7 @@ export default async function JadwalPage({
     where: {
       role: { in: ["karyawan", "teknisi"] },
     },
-    include: { user: { select: { uuid: true, name: true } } },
+    include: { user: { select: { id: true, name: true } } },
   })
 
   const teknisi = teknisiProfiles.map((row) => row.user)

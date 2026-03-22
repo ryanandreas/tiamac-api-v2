@@ -48,12 +48,12 @@ export async function createAcBooking(
         no_telp: pemesanNoTelp,
       })
       
-      customerId = user.uuid
+      customerId = user.id
       
       // Action responsibility: set cookies
       const cookieStore = await cookies()
-      cookieStore.set("userId", user.uuid)
-      cookieStore.set("customerId", user.uuid)
+      cookieStore.set("userId", user.id)
+      cookieStore.set("customerId", user.id)
       cookieStore.set("userType", "customer")
       cookieStore.set("name", user.name)
       cookieStore.set("email", user.email)

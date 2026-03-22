@@ -15,11 +15,11 @@ export async function login(
 
   try {
     const user = await AuthService.validateUser({ email, password })
-    await AuthService.updateLastLogin(user.uuid)
+    await AuthService.updateLastLogin(user.id)
     
     // Set Session Cookies (Action Layer responsibility)
     const cookieStore = await cookies()
-    cookieStore.set("userId", user.uuid)
+    cookieStore.set("userId", user.id)
     cookieStore.set("name", user.name)
     cookieStore.set("email", user.email)
 
@@ -28,7 +28,7 @@ export async function login(
       cookieStore.set("role", user.staffProfile.role)
     } else if (user.customerProfile) {
       cookieStore.set("userType", "customer")
-      cookieStore.set("customerId", user.uuid)
+      cookieStore.set("customerId", user.id)
     }
 
     if (user.staffProfile) {

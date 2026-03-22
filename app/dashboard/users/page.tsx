@@ -1,6 +1,6 @@
 import { UserListTable } from "@/components/dashboard/user-list-table"
 import { db } from "@/lib/db"
-import { Users } from "lucide-react"
+import { User } from "lucide-react"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Card } from "@/components/ui/card"
 

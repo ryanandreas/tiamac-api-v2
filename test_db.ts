@@ -2,14 +2,14 @@ import { db } from "./lib/db"
 
 async function main() {
   try {
-    const user = await db.users.findFirst({
+    const user = await db.user.findFirst({
       include: { staffProfile: true, customerProfile: true }
     })
     console.log("Found user:", user?.email)
     
     if (user) {
-      const updated = await db.users.update({
-        where: { uuid: user.uuid },
+      const updated = await db.user.update({
+        where: { id: user.id },
         data: { lastLogin: new Date() },
       })
       console.log("Update success, lastLogin:", updated.lastLogin)

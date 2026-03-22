@@ -18,8 +18,8 @@ export default async function SettingsPage() {
     redirect("/login")
   }
 
-  const user = await db.users.findUnique({
-    where: { uuid: current.id },
+  const user = await db.user.findUnique({
+    where: { id: current.id },
     select: {
       name: true,
       email: true,

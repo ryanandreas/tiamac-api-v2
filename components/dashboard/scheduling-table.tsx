@@ -37,7 +37,7 @@ type BaseService = Prisma.ServicesGetPayload<{
   }
 }>
 
-type Technician = { uuid: string; name: string }
+type Technician = { id: string; name: string }
 
 interface SchedulingTableProps {
   data: BaseService[]
@@ -287,7 +287,7 @@ export function SchedulingTable({ data, teknisi }: SchedulingTableProps) {
                       Pilih Teknisi
                     </option>
                     {teknisi.map((t) => (
-                      <option key={t.uuid} value={t.uuid}>
+                      <option key={t.id} value={t.id}>
                         {t.name}
                       </option>
                     ))}

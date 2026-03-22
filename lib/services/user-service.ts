@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client";
 
 export class UserService {
   static async findByEmail(email: string) {
-    return db.users.findUnique({
+    return db.user.findUnique({
       where: { email: email.toLowerCase() },
       include: { staffProfile: true, customerProfile: true },
     });
@@ -24,20 +24,20 @@ export class UserService {
 
     if (user) {
       await db.$transaction(async (tx) => {
-        await tx.users.update({
-          where: { uuid: user.uuid },
+        await tx.user.update({
+          where: { id: user.id },
           data: { name: data.name, email: normalizedEmail },
         });
         await tx.customerProfile.upsert({
-          where: { userId: user.uuid },
+          where: { userId: user.id },
           update: { no_telp: data.no_telp },
-          create: { userId: user.uuid, no_telp: data.no_telp },
+          create: { userId: user.id, no_telp: data.no_telp },
         });
       });
       return user;
     } else {
       const password = `guest_${randomUUID()}`;
-      return db.users.create({
+      return db.user.create({
         data: {
           name: data.name,
           email: normalizedEmail,
@@ -52,13 +52,13 @@ export class UserService {
     }
   }
 
-  static async getCustomerById(uuid: string) {
-    return db.users.findUnique({
-      where: { uuid },
+  static async getCustomerById(id: string) {
+    return db.user.findUnique({
+      where: { id },
       include: { customerProfile: true },
     });
   }
-  static async updateProfile(uuid: string, data: {
+  static async updateProfile(id: string, data: {
     name: string;
     email: string;
     no_telp: string;
@@ -67,8 +67,8 @@ export class UserService {
     password?: string;
   }) {
     return db.$transaction(async (tx) => {
-      await tx.users.update({
-        where: { uuid },
+      await tx.user.update({
+        where: { id },
         data: {
           name: data.name,
           email: data.email,
@@ -77,14 +77,14 @@ export class UserService {
       });
 
       await tx.customerProfile.upsert({
-        where: { userId: uuid },
+        where: { userId: id },
         update: {
           no_telp: data.no_telp,
           provinsi: data.provinsi || null,
           alamat: data.alamat || null,
         },
         create: {
-          userId: uuid,
+          userId: id,
           no_telp: data.no_telp,
           provinsi: data.provinsi || null,
           alamat: data.alamat || null,

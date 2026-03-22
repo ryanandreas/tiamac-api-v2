@@ -10,13 +10,11 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id           String   @id @default(uuid()) @map("uuid")
+model Users {
+  uuid         String   @id @default(uuid())
   name         String
   email        String   @unique
-  emailVerified Boolean  @default(false)
-  image         String?
-  password      String?
+  password     String
   status       UserStatus @default(ACTIVE)
   lastLogin    DateTime?
   createdAt    DateTime @default(now())
@@ -30,8 +28,6 @@ model User {
 
   stockMovements   StockMovement[]
   materialUsages   ServiceMaterialUsage[]
-  sessions        Session[]
-  accounts        Account[]
 
   @@map("users")
 }
@@ -43,7 +39,7 @@ enum UserStatus {
 
 model CustomerProfile {
   userId    String  @id
-  user      User   @relation(fields: [userId], references: [id])
+  user      Users   @relation(fields: [userId], references: [uuid])
   no_telp   String
   provinsi  String?
   alamat    String?
@@ -55,7 +51,7 @@ model CustomerProfile {
 
 model StaffProfile {
   userId      String @id
-  user        User  @relation(fields: [userId], references: [id])
+  user        Users  @relation(fields: [userId], references: [uuid])
   role        String
   permissions Json?
   createdAt   DateTime @default(now())
@@ -67,14 +63,14 @@ model StaffProfile {
 model Services {
   id              String   @id @default(uuid())
   customerId      String
-  customer        User @relation("CustomerServices", fields: [customerId], references: [id])
+  customer        Users @relation("CustomerServices", fields: [customerId], references: [uuid])
   jenis_servis    String
   keluhan         String
   status          String
   status_servis   String
   biaya           Int?
   teknisiId       String?
-  teknisi         User?    @relation("TeknisiServices", fields: [teknisiId], references: [id])
+  teknisi         Users?    @relation("TeknisiServices", fields: [teknisiId], references: [uuid])
   acUnits         ServiceAcUnit[]
   materialUsages  ServiceMaterialUsage[]
   
@@ -179,7 +175,7 @@ model StockMovement {
   referenceId     String?
   notes           String?
   createdByUserId String?
-  createdBy       User?             @relation(fields: [createdByUserId], references: [id])
+  createdBy       Users?             @relation(fields: [createdByUserId], references: [uuid])
   createdAt       DateTime           @default(now())
 
   @@index([itemId])
@@ -197,51 +193,10 @@ model ServiceMaterialUsage {
   harga_satuan    Int
   notes           String?
   createdByUserId String?
-  createdBy       User?        @relation(fields: [createdByUserId], references: [id])
+  createdBy       Users?        @relation(fields: [createdByUserId], references: [uuid])
   createdAt       DateTime      @default(now())
 
-  @@index([itemId])
   @@index([serviceId])
+  @@index([itemId])
   @@map("service_material_usages")
-}
-
-model Session {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  expiresAt DateTime
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("session")
-}
-
-model Account {
-  id           String    @id @default(uuid())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accountId    String
-  providerId   String
-  accessToken  String?
-  refreshToken String?
-  expiresAt    DateTime?
-  password     String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@map("account")
-}
-
-model Verification {
-  id         String   @id @default(uuid())
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
-
-  @@map("verification")
 }
