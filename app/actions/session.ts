@@ -6,9 +6,10 @@ import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 export type CurrentUser =
-  | { isAuthenticated: true; type: "customer"; id: string; name?: string; email?: string }
+  | { isAuthenticated: true; type: "customer"; id: string; name?: string; email?: string; profile?: any }
   | { isAuthenticated: true; type: "staff"; id: string; role?: string; name?: string; email?: string }
   | { isAuthenticated: false; type: null; id: null }
+
 
 export async function getCurrentUser(): Promise<CurrentUser> {
   const session = await auth.api.getSession({
@@ -23,7 +24,7 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         name: true,
         email: true,
         staffProfile: { select: { role: true } },
-        customerProfile: { select: { userId: true } },
+        customerProfile: { select: { no_telp: true, alamat: true, provinsi: true } },
       },
     })
 
@@ -44,7 +45,9 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         id: user?.id ?? session.user.id,
         name: user?.name ?? session.user.name,
         email: user?.email ?? session.user.email,
+        profile: user?.customerProfile,
     }
+
   }
 
   // FALLBACK: Keep manual cookies for now during transition 
@@ -65,7 +68,7 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         name: true,
         email: true,
         staffProfile: { select: { role: true } },
-        customerProfile: { select: { userId: true } },
+        customerProfile: { select: { no_telp: true, alamat: true, provinsi: true } },
       },
     })
 
@@ -87,8 +90,10 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         id,
         name: user?.name ?? name?.value,
         email: user?.email ?? email?.value,
+        profile: user?.customerProfile,
       }
     }
+
   }
 
   return {

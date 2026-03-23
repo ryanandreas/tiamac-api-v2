@@ -19,7 +19,14 @@ export async function POST(req: Request) {
         email: user.email,
         type: user.staffProfile ? "staff" : "customer",
         role: user.staffProfile?.role,
+        profile: {
+           no_telp: user.customerProfile?.no_telp || "",
+           alamat: user.customerProfile?.alamat || "",
+           provinsi: user.customerProfile?.provinsi || "",
+        }
       }
+
+
     });
 
   } catch (error: any) {
