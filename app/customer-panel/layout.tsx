@@ -72,13 +72,13 @@ export default async function CustomerPanelLayout({
                 
                 <div className="rounded-3xl border-none bg-white p-6 shadow-none relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-colors"></div>
-                  <h4 className="text-sm font-black text-slate-900 mb-2 relative z-10 flex items-center gap-2 uppercase tracking-widest">
+                  <h4 className="text-sm font-bold text-slate-900 mb-2 relative z-10 flex items-center gap-2 uppercase tracking-widest">
                      <div className="size-1.5 bg-[#66B21D] rounded-full"></div> Butuh Bantuan?
                   </h4>
                   <p className="text-xs text-slate-400 font-bold mb-4 relative z-10 leading-relaxed">
                     Hubungi customer service kami jika Anda memiliki kendala dengan pesanan Anda.
                   </p>
-                  <button className="w-full rounded-xl bg-slate-900 px-4 py-3 text-[10px] font-black text-white hover:bg-[#66B21D] transition-all relative z-10 uppercase tracking-widest shadow-lg shadow-slate-900/10">
+                  <button className="w-full rounded-xl bg-slate-900 px-4 py-3 text-[10px] font-bold text-white hover:bg-[#66B21D] transition-all relative z-10 uppercase tracking-widest shadow-lg shadow-slate-900/10">
                     Hubungi CS Kami
                   </button>
                 </div>

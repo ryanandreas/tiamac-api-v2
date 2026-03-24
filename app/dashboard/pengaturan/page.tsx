@@ -48,7 +48,7 @@ export default function PengaturanPage() {
       <div className="space-y-4">
         <DynamicBreadcrumbs />
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Pengaturan Sistem</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Pengaturan Sistem</h1>
           <p className="text-slate-500 font-medium text-base">Sesuaikan preferensi aplikasi, notifikasi, dan keamanan akun Anda.</p>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function PengaturanPage() {
                 <section.icon className="h-6 w-6" />
               </div>
               <div>
-                <CardTitle className="text-lg font-black text-slate-900">{section.title}</CardTitle>
+                <CardTitle className="text-lg font-bold text-slate-900">{section.title}</CardTitle>
                 <CardDescription className="text-sm font-medium text-slate-500 mt-1">{section.description}</CardDescription>
               </div>
             </CardHeader>
@@ -86,7 +86,7 @@ export default function PengaturanPage() {
 
         <div className="flex justify-end gap-3 pt-6 pb-12">
           <Button variant="outline" className="h-11 px-6 rounded-xl text-xs font-bold border-slate-200 text-slate-500 hover:text-slate-900 transition-all shadow-none">Batalkan</Button>
-          <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs border-none shadow-none transition-all active:scale-95">Simpan Perubahan</Button>
+          <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs border-none shadow-none transition-all active:scale-95">Simpan Perubahan</Button>
         </div>
       </div>
     </div>

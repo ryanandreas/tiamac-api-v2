@@ -51,12 +51,12 @@ export default async function LayananPage({
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Layanan & Harga</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Layanan & Harga</h1>
             <p className="text-slate-500 font-medium text-base">Atur daftar jasa servis AC dan penyesuaian harga terbaru.</p>
           </div>
         </div>
         {!isTechnician && (
-          <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs border-none shadow-none gap-2 transition-all active:scale-95">
+          <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs border-none shadow-none gap-2 transition-all active:scale-95">
             <Plus className="h-4 w-4" /> Tambah Layanan Baru
           </Button>
         )}
@@ -91,7 +91,7 @@ export default async function LayananPage({
                        <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-2">
                         <Tag className="h-6 w-6" />
                       </div>
-                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Belum ada data layanan</p>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Belum ada data layanan</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -100,17 +100,17 @@ export default async function LayananPage({
                   <TableRow key={item.uuid} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
                     <TableCell className="py-6 pl-8">
                       <div className="flex flex-col">
-                        <span className="text-sm font-black text-slate-900 group-hover:text-[#66B21D] transition-colors">{item.nama}</span>
+                        <span className="text-sm font-bold text-slate-900 group-hover:text-[#66B21D] transition-colors">{item.nama}</span>
                         <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-1">ID: {item.uuid.slice(0, 8)}</span>
                       </div>
                     </TableCell>
                     <TableCell className="py-6">
                        <div className="flex items-center">
-                          <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2 py-1 rounded-lg uppercase tracking-widest">{item.pk || "-"}</span>
+                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg uppercase tracking-widest">{item.pk || "-"}</span>
                        </div>
                     </TableCell>
                     <TableCell className="py-6 text-center">
-                       <span className="text-sm font-black text-slate-900">{formatPrice(item.harga)}</span>
+                       <span className="text-sm font-bold text-slate-900">{formatPrice(item.harga)}</span>
                     </TableCell>
                     <TableCell className="text-right py-6 pr-8">
                        {!isTechnician ? (
@@ -123,7 +123,7 @@ export default async function LayananPage({
                           </Button>
                         </div>
                        ) : (
-                         <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest pr-2">Read Only</span>
+                         <span className="text-[10px] font-bold text-slate-200 uppercase tracking-widest pr-2">Read Only</span>
                        )}
                     </TableCell>
                   </TableRow>

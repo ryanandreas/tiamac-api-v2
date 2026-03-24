@@ -71,7 +71,7 @@ export default async function JadwalSayaPage({
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Jadwal Servis</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Jadwal Servis</h1>
             <p className="text-slate-500 font-medium text-base">Daftar giliran kunjungan dan perbaikan unit AC pelanggan.</p>
           </div>
         </div>
@@ -82,11 +82,11 @@ export default async function JadwalSayaPage({
           <Table>
             <TableHeader className="bg-slate-50/30">
               <TableRow className="border-slate-50 hover:bg-transparent">
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 pl-8">Waktu & Jadwal</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12">Informasi Pelanggan</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12">Lokasi Tujuan</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Status</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 pr-8">Aksi</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 pl-8">Waktu & Jadwal</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Informasi Pelanggan</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Lokasi Tujuan</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Status</TableHead>
+                <TableHead className="text-right text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 pr-8">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -97,7 +97,7 @@ export default async function JadwalSayaPage({
                        <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-2">
                         <Calendar className="h-6 w-6" />
                       </div>
-                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Belum ada jadwal servis terdaftar</p>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Belum ada jadwal servis terdaftar</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -106,13 +106,13 @@ export default async function JadwalSayaPage({
                   <TableRow key={s.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
                     <TableCell className="py-6 pl-8">
                        <div className="flex flex-col">
-                          <span className="text-sm font-black text-slate-900">{s.jadwal || "-"}</span>
+                          <span className="text-sm font-bold text-slate-900">{s.jadwal || "-"}</span>
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Estimasi Kunjungan</span>
                        </div>
                     </TableCell>
                     <TableCell className="py-6">
                       <div className="flex flex-col">
-                        <span className="text-sm font-black text-slate-900">{s.customer?.name || "-"}</span>
+                        <span className="text-sm font-bold text-slate-900">{s.customer?.name || "-"}</span>
                         <div className="flex items-center gap-2 mt-1">
                            <Phone className="h-3 w-3 text-slate-300" />
                            <span className="text-[10px] font-bold text-slate-400">{s.customer?.customerProfile?.no_telp || "-"}</span>
@@ -126,12 +126,12 @@ export default async function JadwalSayaPage({
                        </div>
                     </TableCell>
                     <TableCell className="py-6 text-center">
-                       <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full whitespace-nowrap">
+                       <Badge variant="secondary" className="font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full whitespace-nowrap">
                         {s.status_servis}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right py-6 pr-8">
-                      <Button className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-[10px] uppercase tracking-widest gap-2 transition-all" asChild>
+                      <Button className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-widest gap-2 transition-all" asChild>
                         <Link href={actionForStatus(s.status_servis, s.id)}>
                           Buka Detail
                           <ArrowRight className="h-3.5 w-3.5 text-white" />

@@ -62,7 +62,7 @@ export default async function RiwayatTeknisiPage({
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Riwayat Kerja</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Riwayat Kerja</h1>
             <p className="text-slate-500 font-medium text-base">Daftar semua pekerjaan servis yang telah Anda selesaikan.</p>
           </div>
         </div>
@@ -73,12 +73,12 @@ export default async function RiwayatTeknisiPage({
           <Table>
             <TableHeader className="bg-slate-50/30">
               <TableRow className="border-slate-50 hover:bg-transparent">
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 pl-8">ID Servis</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12">Pelanggan</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12">Layanan</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Status</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12">Tgl Selesai</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 h-12 pr-8">Aksi</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 pl-8">ID Servis</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Pelanggan</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Layanan</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Status</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Tgl Selesai</TableHead>
+                <TableHead className="text-right text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 pr-8">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,7 +89,7 @@ export default async function RiwayatTeknisiPage({
                        <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-2">
                         <History className="h-6 w-6" />
                       </div>
-                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Belum ada riwayat pekerjaan selesai</p>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Belum ada riwayat pekerjaan selesai</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -97,16 +97,16 @@ export default async function RiwayatTeknisiPage({
                 tasks.map((task) => (
                   <TableRow key={task.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
                     <TableCell className="py-6 pl-8">
-                       <span className="text-xs font-black text-slate-900 group-hover:text-blue-600 transition-colors uppercase tracking-wider">#{task.id.slice(0, 8)}</span>
+                       <span className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors uppercase tracking-wider">#{task.id.slice(0, 8)}</span>
                     </TableCell>
                     <TableCell className="py-6">
                       <div className="flex flex-col">
-                        <span className="text-sm font-black text-slate-900">{task.customer.name}</span>
+                        <span className="text-sm font-bold text-slate-900">{task.customer.name}</span>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Identitas Member</span>
                       </div>
                     </TableCell>
                     <TableCell className="py-6">
-                       <Badge variant="outline" className="h-5 px-2 text-[9px] font-black uppercase tracking-widest border-slate-100 bg-slate-50 text-slate-500 rounded-lg">
+                       <Badge variant="outline" className="h-5 px-2 text-[9px] font-bold uppercase tracking-widest border-slate-100 bg-slate-50 text-slate-500 rounded-lg">
                         {task.jenis_servis}
                       </Badge>
                     </TableCell>
@@ -114,10 +114,10 @@ export default async function RiwayatTeknisiPage({
                        {task.status_servis === "Selesai (Garansi Aktif)" ? (
                         <div className="flex items-center justify-center gap-1.5 text-green-600">
                            <CheckCircle2 className="h-3.5 w-3.5" />
-                           <span className="text-[10px] font-black uppercase tracking-widest">Selesai</span>
+                           <span className="text-[10px] font-bold uppercase tracking-widest">Selesai</span>
                         </div>
                       ) : (
-                        <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full whitespace-nowrap bg-blue-50 text-blue-600">
+                        <Badge variant="secondary" className="font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full whitespace-nowrap bg-blue-50 text-blue-600">
                           {task.status_servis}
                         </Badge>
                       )}
@@ -125,7 +125,7 @@ export default async function RiwayatTeknisiPage({
                     <TableCell className="py-6">
                        <div className="flex items-center gap-2">
                           <Clock className="h-3.5 w-3.5 text-slate-300" />
-                          <span className="text-[11px] font-black text-slate-600 uppercase">{new Date(task.updatedAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          <span className="text-[11px] font-bold text-slate-600 uppercase">{new Date(task.updatedAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                        </div>
                     </TableCell>
                     <TableCell className="text-right py-6 pr-8">

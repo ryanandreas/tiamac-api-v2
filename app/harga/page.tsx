@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 export default async function HargaPage() {
   const current = await getCurrentUser()
-  
+
   const catalog = await db.acServiceCatalog.findMany({
     orderBy: [
       { nama: 'asc' },
@@ -27,14 +27,14 @@ export default async function HargaPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-100 via-green-100/15 to-slate-200/40">
       <SiteNavbar user={current} mode="sticky" />
-      
+
       <main className="mx-auto max-w-5xl px-6 py-16 md:px-12">
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
-            Daftar <span className="text-[#66B21D]">Harga Layanan</span>
+          <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
+            Daftar Harga Layanan
           </h1>
           <p className="text-lg text-slate-600 font-medium">
-            Tarif transparan dan kompetitif untuk semua kebutuhan perawatan AC Anda. Tidak ada biaya tersembunyi.
+            Tarif transparan dan kompetitif untuk semua kebutuhan perawatan AC Anda.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export default async function HargaPage() {
           {Object.entries(groupedServices).map(([serviceName, items]) => (
             <Card key={serviceName} className="rounded-3xl border-slate-100 bg-white shadow-none overflow-hidden">
               <CardHeader className="bg-white border-b border-slate-100 py-2">
-                <CardTitle className="text-xl font-black text-slate-900">{serviceName}</CardTitle>
+                <CardTitle className="text-xl font-bold text-slate-900">{serviceName}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -58,7 +58,7 @@ export default async function HargaPage() {
                         <TableCell className="px-6 py-4 font-medium text-slate-600">
                           {item.pk ? `${item.pk} PK` : "Semua Ukuran"}
                         </TableCell>
-                        <TableCell className="px-6 py-4 text-right font-black text-[#66B21D]">
+                        <TableCell className="px-6 py-4 text-right font-bold text-[#66B21D]">
                           Rp {item.harga.toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
@@ -74,16 +74,16 @@ export default async function HargaPage() {
           <div className="absolute top-0 right-0 -z-10 w-64 h-64 bg-green-100/30 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
             <div className="flex-1 text-center md:text-left">
-              <h3 className="text-2xl font-black text-slate-900 mb-4">Butuh Layanan Custom?</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Butuh Layanan Custom?</h3>
               <p className="text-slate-600 font-medium">
                 Kami juga melayani proyek instalasi besar atau perawatan gedung dan kantor dengan penawaran harga khusus.
               </p>
             </div>
-            <a 
-              href="https://wa.me/628123456789" 
-              target="_blank" 
+            <a
+              href="https://wa.me/628123456789"
+              target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-linear-to-r from-[#66B21D] to-[#4d9e0f] text-white font-black rounded-2xl hover:scale-105 active:scale-95 shadow-lg shadow-[#66B21D]/20 transition-all"
+              className="px-8 py-4 bg-linear-to-r from-[#66B21D] to-[#4d9e0f] text-white font-bold rounded-2xl hover:scale-105 active:scale-95 shadow-lg shadow-[#66B21D]/20 transition-all"
             >
               Hubungi via WhatsApp
             </a>

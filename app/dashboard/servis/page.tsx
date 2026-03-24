@@ -52,7 +52,7 @@ export default async function ServisPage({
       <div className="space-y-4">
         <DynamicBreadcrumbs />
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Servis Berjalan</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Servis Berjalan</h1>
           <p className="text-slate-500 font-medium text-base">Pantau perkembangan seluruh pesanan servis yang sedang aktif.</p>
         </div>
       </div>

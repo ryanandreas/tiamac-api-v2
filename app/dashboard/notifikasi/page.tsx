@@ -44,7 +44,7 @@ export default function NotifikasiPage() {
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Notifikasi Sistem</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Notifikasi Sistem</h1>
             <p className="text-slate-500 font-medium text-base">Pembaruan terkini dan peringatan dari seluruh aktivitas sistem.</p>
           </div>
         </div>

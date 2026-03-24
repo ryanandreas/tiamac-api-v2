@@ -63,7 +63,7 @@ export function UserListTable({ data, type }: UserListTableProps) {
             </TableHeader>
             <TableBody>
               {data.map((item) => (
-                <TableRow key={item.user.uuid} className="border-slate-50 hover:bg-slate-50/50 transition-colors group">
+                <TableRow key={item.user.id} className="border-slate-50 hover:bg-slate-50/50 transition-colors group">
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-4">
                       <Avatar className="h-10 w-10 rounded-lg border-white shadow-sm ring-0 group-hover:ring-[#66B21D]/20 transition-all">

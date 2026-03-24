@@ -40,7 +40,7 @@ export default function LaporanPage() {
       <div className="space-y-4">
         <DynamicBreadcrumbs />
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Laporan Sistem</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Laporan Sistem</h1>
           <p className="text-slate-500 font-medium text-base">Pantau performa bisnis dan operasional melalui laporan terpusat.</p>
         </div>
       </div>
@@ -53,7 +53,7 @@ export default function LaporanPage() {
                 <report.icon className={`h-6 w-6 ${report.color}`} />
               </div>
               <div>
-                <CardTitle className="text-xl font-black text-slate-900 tracking-tight">{report.title}</CardTitle>
+                <CardTitle className="text-xl font-bold text-slate-900 tracking-tight">{report.title}</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-6 px-6 pb-6 pt-0">

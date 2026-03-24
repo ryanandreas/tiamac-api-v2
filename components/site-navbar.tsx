@@ -4,9 +4,10 @@ import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Menu, X } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { UserDropdown } from "@/components/user-dropdown"
 import type { CurrentUser } from "@/app/actions/session"
+import { useLenis } from "lenis/react"
 
 const menuItems = [
   { name: "Layanan", href: "/#layanan" },
@@ -24,8 +25,23 @@ export function SiteNavbar({
 }) {
   const [menuState, setMenuState] = React.useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+  const lenis = useLenis()
   const isCustomerPanel = pathname.startsWith("/customer-panel")
   const isAuthenticated = !!user?.isAuthenticated
+
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+    // Only handle hash links on the home page or while currently on the home page
+    if (href.startsWith("/#") && pathname === "/") {
+      e.preventDefault()
+      const targetId = href.replace("/#", "")
+      const element = document.getElementById(targetId)
+      if (element && lenis) {
+        lenis.scrollTo(element, { offset: -80, duration: 1.5 })
+      }
+      setMenuState(false)
+    }
+  }
 
   const navClassName =
     mode === "sticky"
@@ -68,6 +84,7 @@ export function SiteNavbar({
                       <li key={index}>
                         <Link
                           href={item.href}
+                          onClick={(e) => handleScroll(e, item.href)}
                           className="text-slate-600 font-bold hover:text-[#66B21D] transition-colors"
                         >
                           <span>{item.name}</span>
@@ -84,7 +101,7 @@ export function SiteNavbar({
                     {!isCustomerPanel && (
                       <Link
                         href={user?.type === "customer" ? "/customer-panel/dashboard" : "/dashboard"}
-                        className="w-full sm:w-auto inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-bold transition-all bg-[#66B21D] text-white hover:bg-[#4d9e0f] h-10 px-6 shadow-sm"
+                        className="w-full sm:w-auto inline-flex items-center justify-center whitespace-nowrap rounded-2xl text-sm font-bold transition-all bg-[#66B21D] text-white hover:bg-[#4d9e0f] h-10 px-6 shadow-sm"
                       >
                         Buka Dashboard
                       </Link>
@@ -94,7 +111,7 @@ export function SiteNavbar({
                 ) : (
                   <Link
                     href="/login"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-bold transition-all bg-[#66B21D] text-white hover:bg-[#4d9e0f] h-10 px-6"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-2xl text-sm font-bold transition-all bg-[#66B21D] text-white hover:bg-[#4d9e0f] h-10 px-6"
                   >
                     <span>Login</span>
                   </Link>

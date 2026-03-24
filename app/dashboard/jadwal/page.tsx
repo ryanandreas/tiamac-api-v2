@@ -59,7 +59,7 @@ export default async function JadwalPage({
       <div className="space-y-4">
         <DynamicBreadcrumbs />
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Jadwal Perbaikan</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Jadwal Perbaikan</h1>
           <p className="text-slate-500 font-medium text-base">Tetapkan teknisi dan jadwal untuk pesanan baru yang telah dikonfirmasi.</p>
         </div>
       </div>

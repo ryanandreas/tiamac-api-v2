@@ -35,11 +35,11 @@ export default async function BookingPage({
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Manajemen Booking</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Manajemen Booking</h1>
             <p className="text-slate-500 font-medium text-base">Kelola daftar pesanan baru yang perlu segera dijadwalkan.</p>
           </div>
         </div>
-        <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-black text-xs border-none shadow-none gap-2 transition-all active:scale-95">
+        <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs border-none shadow-none gap-2 transition-all active:scale-95">
           <Plus className="h-4 w-4" /> Tambah Pesanan
         </Button>
       </div>

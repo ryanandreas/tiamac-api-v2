@@ -31,8 +31,8 @@ export function LandingTestimonials() {
     <section id="testimoni" className="py-24 bg-white relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-12">
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
-            Apa Kata <span className="text-[#66B21D]">Pelanggan Kami?</span>
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
+            Apa Kata Pelanggan Kami?
           </h2>
           <p className="text-lg text-slate-600 font-medium">
             Kepercayaan Anda adalah prioritas kami. Berikut adalah pengalaman dari mereka yang telah menggunakan layanan Tiam AC.
@@ -55,7 +55,7 @@ export function LandingTestimonials() {
                 ))}
               </div>
 
-              <p className="text-slate-600 font-bold leading-relaxed mb-8 relative z-10">
+              <p className="text-slate-600 font-semibold leading-relaxed mb-8 relative z-10">
                 "{t.content}"
               </p>
 
@@ -64,8 +64,8 @@ export function LandingTestimonials() {
                   <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <h4 className="font-black text-slate-900 text-sm">{t.name}</h4>
-                  <p className="text-[11px] font-bold text-slate-400">{t.role}</p>
+                  <h4 className="font-semibold text-slate-900 text-sm">{t.name}</h4>
+                  <p className="text-[11px] font-medium text-slate-400">{t.role}</p>
                 </div>
               </div>
             </div>

@@ -34,7 +34,7 @@ export default async function TransaksiPage() {
       <div className="space-y-4">
         <DynamicBreadcrumbs />
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Manajemen Transaksi</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Manajemen Transaksi</h1>
           <p className="text-slate-500 font-medium text-base">Pantau riwayat pembayaran dan status invoice pesanan servis.</p>
         </div>
       </div>
@@ -74,15 +74,15 @@ export default async function TransaksiPage() {
                 transactions.map((tr) => (
                   <TableRow key={tr.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
                     <TableCell className="py-4 pl-6">
-                      <span className="text-[10px] font-black text-slate-400 group-hover:text-[#66B21D] transition-colors leading-none tracking-widest">#{tr.id.slice(0, 8)}</span>
+                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#66B21D] transition-colors leading-none tracking-widest">#{tr.id.slice(0, 8)}</span>
                     </TableCell>
-                    <TableCell className="py-4 font-black text-sm text-slate-900 group-hover:text-[#66B21D] transition-colors">{tr.customer.name}</TableCell>
-                    <TableCell className="py-4 text-center font-black text-sm text-slate-900">{formatPrice(tr.biaya || 0)}</TableCell>
+                    <TableCell className="py-4 font-bold text-sm text-slate-900 group-hover:text-[#66B21D] transition-colors">{tr.customer.name}</TableCell>
+                    <TableCell className="py-4 text-center font-bold text-sm text-slate-900">{formatPrice(tr.biaya || 0)}</TableCell>
                     <TableCell className="py-4 text-center">
                       {tr.status_servis === "Selesai (Garansi Aktif)" ? (
-                        <Badge className="bg-green-50 text-green-600 border-none text-[9px] font-black uppercase tracking-widest rounded-lg px-2 py-1">LUNAS</Badge>
+                        <Badge className="bg-green-50 text-green-600 border-none text-[9px] font-bold uppercase tracking-widest rounded-lg px-2 py-1">LUNAS</Badge>
                       ) : (
-                        <Badge className="bg-yellow-50 text-yellow-600 border-none text-[9px] font-black uppercase tracking-widest rounded-lg px-2 py-1">MENUNGGU</Badge>
+                        <Badge className="bg-yellow-50 text-yellow-600 border-none text-[9px] font-bold uppercase tracking-widest rounded-lg px-2 py-1">MENUNGGU</Badge>
                       )}
                     </TableCell>
                     <TableCell className="py-4 text-center text-xs font-bold text-slate-500">{new Date(tr.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</TableCell>

@@ -72,13 +72,13 @@ Uncomment to import Google fonts if you want to use them in your project.
   --warning: oklch(0.769 0.288 70.08);
 
   /* Fonts */
-  --font-plus-jakarta-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-plus-jakarta-sans);
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-eb-garamond), "EB Garamond", ui-serif, Georgia, serif;
+  --font-lexend: var(--font-lexend), "Lexend", sans-serif;
 
-  --font-display: var(--font-plus-jakarta-sans);
-  --font-text: var(--font-plus-jakarta-sans);
+  --font-display: var(--font-lexend);
+  --font-text: var(--font-sans);
 
   --font-handwriting: "Caveat", cursive;
 

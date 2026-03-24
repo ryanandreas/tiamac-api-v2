@@ -77,7 +77,7 @@ export default async function TugasTeknisiPage({
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Tugas Servis</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Tugas Servis</h1>
             <p className="text-slate-500 font-medium text-base">Daftar semua tugas pengerjaan yang ditugaskan kepada Anda.</p>
           </div>
         </div>
