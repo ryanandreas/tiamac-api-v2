@@ -4,8 +4,10 @@ import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/app/actions/session"
 import { cookies } from "next/headers"
 import { randomUUID } from "crypto"
+import { UserService } from "@/lib/services/user-service"
+import { BookingService } from "@/lib/services/booking-service"
 
-export type CreateBookingState = { message: string } | null
+export type CreateBookingState = { success: boolean; message: string } | null
 
 type BookingUnit = { pk: number; layanan: string[] }
 
