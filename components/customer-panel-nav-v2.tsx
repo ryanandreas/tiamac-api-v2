@@ -36,7 +36,7 @@ export function CustomerPanelNavV2({
     }`
 
   return (
-    <nav className="space-y-1 rounded-xl border bg-card p-2 shadow-sm">
+    <nav className="space-y-1 rounded-2xl border-none bg-white p-2 shadow-none">
       <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
         Utama
       </div>
@@ -50,28 +50,17 @@ export function CustomerPanelNavV2({
       <div className="px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
         Pesanan Saya
       </div>
-      <Link href="/customer-panel/pesanan?tab=ongoing" className={linkClass("/customer-panel/pesanan?tab=ongoing")}>
+      <Link href="/customer-panel/pesanan" className={linkClass("/customer-panel/pesanan")}>
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4" />
-          <span>Sedang Berjalan</span>
+          <span>Daftar Pesanan</span>
         </div>
         {typeof ongoingCount === "number" && ongoingCount > 0 ? (
           <Badge
-            variant={isActive("/customer-panel/pesanan?tab=ongoing") ? "secondary" : "default"}
+            variant={isActive("/customer-panel/pesanan") ? "secondary" : "default"}
             className="h-5 px-1.5 min-w-[1.25rem] flex items-center justify-center font-normal"
           >
             {ongoingCount}
-          </Badge>
-        ) : null}
-      </Link>
-      <Link href="/customer-panel/pesanan?tab=history" className={linkClass("/customer-panel/pesanan?tab=history")}>
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4" />
-          <span>Riwayat & Selesai</span>
-        </div>
-        {typeof historyCount === "number" && historyCount > 0 ? (
-          <Badge variant="secondary" className="h-5 px-1.5 min-w-[1.25rem] flex items-center justify-center font-normal">
-            {historyCount}
           </Badge>
         ) : null}
       </Link>

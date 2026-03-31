@@ -10,11 +10,13 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Users {
-  uuid         String   @id @default(uuid())
+model User {
+  id           String   @id @default(uuid()) @map("uuid")
   name         String
   email        String   @unique
-  password     String
+  emailVerified Boolean  @default(false)
+  image         String?
+  password      String?
   status       UserStatus @default(ACTIVE)
   lastLogin    DateTime?
   createdAt    DateTime @default(now())
@@ -26,8 +28,12 @@ model Users {
   customerServices Services[] @relation("CustomerServices")
   teknisiServices  Services[] @relation("TeknisiServices")
 
+  statusChanges    ServiceStatusHistory[]
+
   stockMovements   StockMovement[]
   materialUsages   ServiceMaterialUsage[]
+  sessions        Session[]
+  accounts        Account[]
 
   @@map("users")
 }
@@ -39,7 +45,7 @@ enum UserStatus {
 
 model CustomerProfile {
   userId    String  @id
-  user      Users   @relation(fields: [userId], references: [uuid])
+  user      User   @relation(fields: [userId], references: [id])
   no_telp   String
   provinsi  String?
   alamat    String?
@@ -51,7 +57,7 @@ model CustomerProfile {
 
 model StaffProfile {
   userId      String @id
-  user        Users  @relation(fields: [userId], references: [uuid])
+  user        User  @relation(fields: [userId], references: [id])
   role        String
   permissions Json?
   createdAt   DateTime @default(now())
@@ -63,14 +69,14 @@ model StaffProfile {
 model Services {
   id              String   @id @default(uuid())
   customerId      String
-  customer        Users @relation("CustomerServices", fields: [customerId], references: [uuid])
+  customer        User @relation("CustomerServices", fields: [customerId], references: [id])
   jenis_servis    String
   keluhan         String
   status          String
   status_servis   String
   biaya           Int?
   teknisiId       String?
-  teknisi         Users?    @relation("TeknisiServices", fields: [teknisiId], references: [uuid])
+  teknisi         User?    @relation("TeknisiServices", fields: [teknisiId], references: [id])
   acUnits         ServiceAcUnit[]
   materialUsages  ServiceMaterialUsage[]
   
@@ -85,6 +91,8 @@ model Services {
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  statusHistory   ServiceStatusHistory[]
 
   @@map("services")
 }
@@ -175,7 +183,7 @@ model StockMovement {
   referenceId     String?
   notes           String?
   createdByUserId String?
-  createdBy       Users?             @relation(fields: [createdByUserId], references: [uuid])
+  createdBy       User?             @relation(fields: [createdByUserId], references: [id])
   createdAt       DateTime           @default(now())
 
   @@index([itemId])
@@ -193,10 +201,66 @@ model ServiceMaterialUsage {
   harga_satuan    Int
   notes           String?
   createdByUserId String?
-  createdBy       Users?        @relation(fields: [createdByUserId], references: [uuid])
+  createdBy       User?        @relation(fields: [createdByUserId], references: [id])
   createdAt       DateTime      @default(now())
 
-  @@index([serviceId])
   @@index([itemId])
+  @@index([serviceId])
   @@map("service_material_usages")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("session")
+}
+
+model Account {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId    String
+  providerId   String
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  password     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
+
+model ServiceStatusHistory {
+  id              String   @id @default(uuid())
+  serviceId       String
+  service         Services @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  status          String
+  status_servis   String
+  notes           String?
+  changedByUserId String?
+  changedBy       User?    @relation(fields: [changedByUserId], references: [id])
+  createdAt       DateTime @default(now())
+
+  @@index([serviceId])
+  @@map("service_status_history")
 }

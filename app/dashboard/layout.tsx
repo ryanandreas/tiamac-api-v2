@@ -1,9 +1,15 @@
+import type { Metadata } from "next"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { getCurrentUser } from "@/app/actions/session"
 import { redirect } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { db } from "@/lib/db"
+
+export const metadata: Metadata = {
+  title: "Dashboard Admin",
+  description: "Sistem manajemen operasional Tiam AC untuk pengelolaan tugas, jadwal, dan inventaris.",
+}
 
 export default async function DashboardLayout({
   children,
@@ -50,9 +56,9 @@ export default async function DashboardLayout({
         userEmail={user.email} 
         badgeCounts={badgeCounts}
       />
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
+      <div className="flex-1 flex flex-col min-w-0 bg-gradient-to-b from-[#66B21D]/15 via-slate-100 to-slate-200/30">
         <DashboardHeader user={user} />
-        <main className="p-8 animate-fade-in">
+        <main className="p-4 md:p-8 animate-fade-in">
           {children}
         </main>
       </div>

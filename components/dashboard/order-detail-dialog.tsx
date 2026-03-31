@@ -57,7 +57,7 @@ export function OrderDetailDialog({
           </Button>
         </DialogTrigger>
       ) : null}
-      <DialogContent className="max-w-2xl p-0 overflow-hidden border-none rounded-3xl shadow-2xl">
+      <DialogContent className="max-w-4xl p-0 overflow-hidden border-none rounded-3xl shadow-2xl">
         <div className="flex flex-col max-h-[90vh]">
           {/* Header */}
           <div className="p-8 border-b border-slate-100 flex items-center justify-between">

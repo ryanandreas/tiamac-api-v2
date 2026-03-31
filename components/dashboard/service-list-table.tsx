@@ -31,7 +31,7 @@ import { useMemo, useState } from "react"
 import { MoreHorizontal, Plus, Filter, Receipt, Copy, Check, Search, Edit2, Trash2 } from "lucide-react"
 import type { Prisma } from "@prisma/client"
 import { cancelServiceEstimate, confirmServiceEstimate } from "@/app/actions/customer"
-import { OrderDetailDialog } from "./order-detail-dialog"
+import { ServiceStatusHistoryDialog } from "./service-status-history-dialog"
 
 type BaseService = Prisma.ServicesGetPayload<{
   include: { customer: true; teknisi: true }
@@ -102,10 +102,10 @@ export function ServiceListTable({
   const [copiedId, setCopiedId] = useState<string | null>(null)
   
   const [detailOpen, setDetailOpen] = useState(false)
-  const [selectedDetailService, setSelectedDetailService] = useState<ServiceListItem | null>(null)
+  const [selectedDetailServiceId, setSelectedDetailServiceId] = useState<string | null>(null)
 
   const openDetail = (service: ServiceListItem) => {
-    setSelectedDetailService(service)
+    setSelectedDetailServiceId(service.id)
     setDetailOpen(true)
   }
 
@@ -237,7 +237,7 @@ export function ServiceListTable({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none" />
             <Input
               placeholder="Cari pesanan..."
-              className="pl-10 h-10 text-[11px] font-black uppercase tracking-widest border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none placeholder:text-slate-300 bg-slate-50/50"
+              className="pl-10 h-10 text-[11px] font-semibold border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none placeholder:text-slate-300 bg-slate-50/50"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -252,17 +252,17 @@ export function ServiceListTable({
         <Table>
           <TableHeader className={isCustomerView ? "" : "bg-slate-50/30"}>
             <TableRow className="border-slate-50 hover:bg-transparent">
-              <TableHead className={`h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ${isCustomerView ? "pl-6" : "pl-8"}`}>
+              <TableHead className={`h-12 text-[10px] font-bold text-slate-400 ${isCustomerView ? "pl-6" : "pl-8"}`}>
                 {isCustomerView ? "No. Pesanan" : "ID Pesanan"}
               </TableHead>
               {!isCustomerView && (
-                <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Customer</TableHead>
+                <TableHead className="h-12 text-[10px] font-bold text-slate-400">Customer</TableHead>
               )}
-              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Teknisi</TableHead>
-              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tanggal</TableHead>
-              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Status</TableHead>
-              {!isCustomerView && showNextStep ? <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Next Step</TableHead> : null}
-              <TableHead className="h-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right pr-8">Aksi</TableHead>
+              <TableHead className="h-12 text-[10px] font-bold text-slate-400">Teknisi</TableHead>
+              <TableHead className="h-12 text-[10px] font-bold text-slate-400">Tanggal</TableHead>
+              <TableHead className="h-12 text-[10px] font-bold text-slate-400 text-center">Status</TableHead>
+              {!isCustomerView && showNextStep ? <TableHead className="h-12 text-[10px] font-bold text-slate-400">Next Step</TableHead> : null}
+              <TableHead className="h-12 text-[10px] font-bold text-slate-400 text-right pr-8">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -307,8 +307,8 @@ export function ServiceListTable({
                         {item.teknisi.name?.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className="font-black text-sm text-slate-900 truncate">{item.teknisi.name}</span>
-                        <span className="text-[10px] font-bold text-[#66B21D] uppercase tracking-widest">Teknisi</span>
+                        <span className="font-bold text-sm text-slate-900 truncate">{item.teknisi.name}</span>
+                        <span className="text-[10px] font-bold text-[#66B21D]">Teknisi</span>
                       </div>
                     </div>
                   ) : (
@@ -324,7 +324,7 @@ export function ServiceListTable({
                     <span className="text-xs font-black text-slate-900">
                       {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">
+                    <span className="text-[10px] font-bold text-slate-400">
                       {new Date(item.createdAt).getFullYear()}
                     </span>
                   </div>
@@ -332,7 +332,7 @@ export function ServiceListTable({
 
                 <TableCell className="py-6 text-center">
                    <Badge 
-                    className={`px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border-none ${
+                    className={`px-3 py-1 rounded-lg font-bold text-[9px] border-none ${
                       item.status_servis === "Booking" 
                         ? "bg-blue-100 text-blue-600" 
                         : item.status_servis.startsWith("Selesai")
@@ -346,7 +346,7 @@ export function ServiceListTable({
 
                 {!isCustomerView && showNextStep ? (
                   <TableCell className="py-6">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight block max-w-[120px]">
+                    <span className="text-[10px] font-bold text-slate-400 leading-tight block max-w-[120px]">
                       {nextStepLabel(item.status_servis)}
                     </span>
                   </TableCell>
@@ -371,7 +371,7 @@ export function ServiceListTable({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="rounded-xl border-slate-100 shadow-xl shadow-slate-200/50">
-                          <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-slate-400">Opsi Pesanan</DropdownMenuLabel>
+                          <DropdownMenuLabel className="text-[10px] font-bold text-slate-400">Opsi Pesanan</DropdownMenuLabel>
                           {enableCustomerApproval && item.status_servis === "Menunggu Persetujuan Customer" ? (
                             <DropdownMenuItem onClick={() => openConfirm(item)} className="text-xs font-bold text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
                               Konfirmasi Estimasi
@@ -398,7 +398,7 @@ export function ServiceListTable({
                     <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-200 mb-2">
                       <Search className="h-5 w-5" />
                     </div>
-                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Tidak ada pesanan ditemukan</p>
+                    <p className="text-[11px] font-bold text-slate-400">Tidak ada pesanan ditemukan</p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -487,22 +487,11 @@ export function ServiceListTable({
         </DialogContent>
       </Dialog>
 
-      {selectedDetailService && (
-        <OrderDetailDialog
-          open={detailOpen}
-          onOpenChange={setDetailOpen}
-          orderId={selectedDetailService.id}
-          units={selectedDetailService.acUnits?.map((unit) => ({
-            id: unit.id,
-            name: `Unit AC ${unit.pk} PK`,
-            pk: String(unit.pk),
-            serviceName: unit.layanan.map((l) => l.nama).join(", ") || "Servis Routine",
-            price: unit.layanan.reduce((sum, l) => sum + l.harga, 0),
-          })) || []}
-          biayaDasar={selectedDetailService.biaya_dasar ?? 50000}
-          totalBiaya={selectedDetailService.biaya ?? selectedDetailService.estimasi_biaya ?? (selectedDetailService.biaya_dasar ?? 50000)}
-        />
-      )}
+      <ServiceStatusHistoryDialog
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        serviceId={selectedDetailServiceId}
+      />
     </div>
   )
 }

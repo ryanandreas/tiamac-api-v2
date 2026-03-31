@@ -37,17 +37,17 @@ async function main() {
     prisma.acServiceCatalog.deleteMany(),
     prisma.customerProfile.deleteMany(),
     prisma.staffProfile.deleteMany(),
-    prisma.users.deleteMany(),
+    prisma.user.deleteMany(),
   ])
 
-  const admin = await prisma.users.create({
+  const admin = await prisma.user.create({
     data: { name: 'Admin TIAMAC', email: 'admin@tiamac.id', password: 'pass1234', status: 'ACTIVE' },
   })
-  await prisma.staffProfile.create({ data: { userId: admin.uuid, role: 'admin' } })
+  await prisma.staffProfile.create({ data: { userId: admin.id, role: 'admin' } })
 
   const staffUsers = await Promise.all(
     ['adi', 'bima', 'citra'].map((name, idx) =>
-      prisma.users.create({
+      prisma.user.create({
         data: {
           name: `Teknisi ${name.toUpperCase()}`,
           email: `teknisi${idx + 1}@tiamac.id`,
@@ -58,7 +58,7 @@ async function main() {
     )
   )
   await prisma.staffProfile.createMany({
-    data: staffUsers.map((u) => ({ userId: u.uuid, role: 'karyawan' })),
+    data: staffUsers.map((u) => ({ userId: u.id, role: 'karyawan' })),
   })
 
   const customerUsers = await Promise.all(
@@ -67,16 +67,16 @@ async function main() {
       { name: 'Rama Hidayat', email: 'rama@customer.id', telp: '081234000002', alamat: 'Jl. Puri Indah Blok A3' },
       { name: 'Sari Wulandari', email: 'sari@customer.id', telp: '081234000003', alamat: 'Jl. Kedoya Raya No. 7' },
     ].map((c) =>
-      prisma.users.create({
+      prisma.user.create({
         data: { name: c.name, email: c.email, password: 'pass1234', status: 'ACTIVE' },
       })
     )
   )
   await prisma.customerProfile.createMany({
     data: [
-      { userId: customerUsers[0].uuid, no_telp: '081234000001', provinsi: 'DKI Jakarta', alamat: 'Jl. Meruya Utara No. 10' },
-      { userId: customerUsers[1].uuid, no_telp: '081234000002', provinsi: 'DKI Jakarta', alamat: 'Jl. Puri Indah Blok A3' },
-      { userId: customerUsers[2].uuid, no_telp: '081234000003', provinsi: 'DKI Jakarta', alamat: 'Jl. Kedoya Raya No. 7' },
+      { userId: customerUsers[0].id, no_telp: '081234000001', provinsi: 'DKI Jakarta', alamat: 'Jl. Meruya Utara No. 10' },
+      { userId: customerUsers[1].id, no_telp: '081234000002', provinsi: 'DKI Jakarta', alamat: 'Jl. Puri Indah Blok A3' },
+      { userId: customerUsers[2].id, no_telp: '081234000003', provinsi: 'DKI Jakarta', alamat: 'Jl. Kedoya Raya No. 7' },
     ],
   })
 
@@ -119,7 +119,7 @@ async function main() {
       qty: it.qtyOnHand,
       referenceType: 'STOCK_OPNAME',
       notes: 'Seed awal inventory',
-      createdByUserId: admin.uuid,
+      createdByUserId: admin.id,
     })),
   })
 
@@ -132,6 +132,62 @@ async function main() {
 
   const buildKeluhan = (text: string, alamat: string, jadwal: string) =>
     [`Keluhan: ${text}`, `Alamat: ${alamat}`, `Jadwal: ${jadwal}`].join('\n')
+
+const ALUR_SERVIS = [
+    { id: 1, value: 'Booking', label: 'Booking', role: 'customer' },
+    { id: 2, value: 'Menunggu Jadwal', label: 'Menunggu Jadwal', role: 'admin' },
+    { id: 3, value: 'Konfirmasi Teknisi', label: 'Konfirmasi Teknisi', role: 'teknisi' },
+    { id: 4, value: 'Pengecekan Unit', label: 'Pengecekan Unit', role: 'teknisi' },
+    { id: 5, value: 'Menunggu Persetujuan Customer', label: 'Menunggu Persetujuan Customer', role: 'teknisi' }, // Tech inputs, waiting for customer
+    { id: 6, value: 'Sedang Dikerjakan', label: 'Sedang Dikerjakan', role: 'teknisi' },
+    { id: 7, value: 'Menunggu Pembayaran', label: 'Menunggu Pembayaran', role: 'teknisi' }, // Invoice generated
+    { id: 8, value: 'Selesai (Garansi Aktif)', label: 'Selesai (Garansi Aktif)', role: 'admin' }, // Verifies payment
+    { id: 9, value: 'Dibatalkan', label: 'Dibatalkan', role: 'customer' },
+];
+
+const getAlurNotes = (status: string) => {
+    const notes: Record<string, string> = {
+        'Booking': 'Pesanan baru dibuat dengan biaya kunjungan disetujui.',
+        'Menunggu Jadwal': 'Admin telah mengonfirmasi booking dan sedang mengatur jadwal.',
+        'Konfirmasi Teknisi': 'Teknisi telah dikonfirmasi untuk pesanan ini.',
+        'Pengecekan Unit': 'Teknisi sedang melakukan pengecekan unit di lokasi.',
+        'Menunggu Persetujuan Customer': 'Teknisi telah mengajukan detail rincian biaya servis. Menunggu persetujuan customer.',
+        'Sedang Dikerjakan': 'Customer menyetujui biaya. Teknisi mulai melakukan pengerjaan.',
+        'Menunggu Pembayaran': 'Pekerjaan selesai. Menunggu customer melakukan pembayaran.',
+        'Selesai (Garansi Aktif)': 'Pembayaran telah dikonfirmasi. Layanan selesai dan garansi diaktifkan.',
+        'Dibatalkan': 'Pesanan telah dibatalkan.'
+    };
+    return notes[status] || 'Pencatatan status otomatis.';
+};
+
+const seedStatusHistoryForService = async (serviceId: string, currentStatus: string, customerId: string, teknisiId: string | null, adminId: string) => {
+    const currentIndex = ALUR_SERVIS.findIndex(step => step.value === currentStatus);
+    
+    // If it's cancelled, we might have passed through several steps first.
+    // For this seed, we'll assume it was cancelled after Step 1 or Step 5.
+    let stepsToSeed = [];
+    if (currentIndex === -1 && currentStatus === 'Dibatalkan') {
+        stepsToSeed = ALUR_SERVIS.slice(0, 1); // Only booking then cancelled
+        stepsToSeed.push(ALUR_SERVIS[ALUR_SERVIS.length - 1]);
+    } else if (currentIndex !== -1) {
+        stepsToSeed = ALUR_SERVIS.slice(0, currentIndex + 1);
+    }
+
+    for (const [idx, step] of stepsToSeed.entries()) {
+        const actorId = step.role === 'customer' ? customerId : step.role === 'teknisi' ? (teknisiId || adminId) : adminId;
+        
+        await prisma.serviceStatusHistory.create({
+            data: {
+                serviceId,
+                status: step.value, // Keep both fields consistent as per schema
+                status_servis: step.value,
+                notes: getAlurNotes(step.value),
+                changedByUserId: actorId,
+                createdAt: new Date(Date.now() - ( (stepsToSeed.length - idx) * 3600000)) // Sequential hours apart
+            }
+        });
+    }
+};
 
   const createService = async (input: ServiceInput) => {
     const service = await prisma.services.create({
@@ -153,6 +209,15 @@ async function main() {
       },
     })
 
+    // Seed automatic history lineage
+    await seedStatusHistoryForService(
+        service.id, 
+        input.status_servis, 
+        input.customerId, 
+        input.teknisiId ?? null, 
+        admin.id
+    );
+
     for (const unit of input.units) {
       const createdUnit = await prisma.serviceAcUnit.create({
         data: { serviceId: service.id, pk: unit.pk },
@@ -173,6 +238,7 @@ async function main() {
 
     return service
   }
+
 
   const addMaterialUsage = async (serviceId: string, itemSku: string, qty: number, createdBy: string) => {
     const item = await prisma.inventoryItem.findUnique({ where: { sku: itemSku }, select: { id: true, harga: true } })
@@ -209,7 +275,7 @@ async function main() {
   }
 
   const serviceBooking = await createService({
-    customerId: customerUsers[0].uuid,
+    customerId: customerUsers[0].id,
     status_servis: 'Booking',
     status: 'Booking',
     biaya_dasar: 50000,
@@ -218,7 +284,7 @@ async function main() {
   })
 
   const serviceMenungguJadwal = await createService({
-    customerId: customerUsers[1].uuid,
+    customerId: customerUsers[1].id,
     status_servis: 'Menunggu Jadwal',
     status: 'Menunggu Jadwal',
     biaya_dasar: 50000,
@@ -227,10 +293,10 @@ async function main() {
   })
 
   const serviceTeknisi = await createService({
-    customerId: customerUsers[2].uuid,
-    teknisiId: staffUsers[0].uuid,
-    status_servis: 'Teknisi Dikonfirmasi',
-    status: 'Teknisi Dikonfirmasi',
+    customerId: customerUsers[2].id,
+    teknisiId: staffUsers[0].id,
+    status_servis: 'Konfirmasi Teknisi',
+    status: 'Konfirmasi Teknisi',
     biaya_dasar: 50000,
     keluhan: buildKeluhan('AC tidak dingin sama sekali', 'Jl. Kedoya Raya No. 7', '2026-03-22 13:00'),
     units: [
@@ -240,8 +306,8 @@ async function main() {
   })
 
   const serviceMenungguPersetujuan = await createService({
-    customerId: customerUsers[0].uuid,
-    teknisiId: staffUsers[1].uuid,
+    customerId: customerUsers[0].id,
+    teknisiId: staffUsers[1].id,
     status_servis: 'Menunggu Persetujuan Customer',
     status: 'Menunggu Persetujuan Customer',
     biaya_dasar: 50000,
@@ -254,8 +320,8 @@ async function main() {
   })
 
   const serviceSedangDikerjakan = await createService({
-    customerId: customerUsers[1].uuid,
-    teknisiId: staffUsers[1].uuid,
+    customerId: customerUsers[1].id,
+    teknisiId: staffUsers[1].id,
     status_servis: 'Sedang Dikerjakan',
     status: 'Sedang Dikerjakan',
     biaya_dasar: 50000,
@@ -269,8 +335,8 @@ async function main() {
   })
 
   const serviceMenungguPembayaran = await createService({
-    customerId: customerUsers[2].uuid,
-    teknisiId: staffUsers[2].uuid,
+    customerId: customerUsers[2].id,
+    teknisiId: staffUsers[2].id,
     status_servis: 'Menunggu Pembayaran',
     status: 'Menunggu Pembayaran',
     biaya_dasar: 50000,
@@ -284,8 +350,8 @@ async function main() {
   })
 
   const serviceSelesai = await createService({
-    customerId: customerUsers[0].uuid,
-    teknisiId: staffUsers[0].uuid,
+    customerId: customerUsers[0].id,
+    teknisiId: staffUsers[0].id,
     status_servis: 'Selesai (Garansi Aktif)',
     status: 'Selesai (Garansi Aktif)',
     biaya_dasar: 50000,
@@ -300,8 +366,8 @@ async function main() {
   })
 
   await createService({
-    customerId: customerUsers[1].uuid,
-    teknisiId: staffUsers[2].uuid,
+    customerId: customerUsers[1].id,
+    teknisiId: staffUsers[2].id,
     status_servis: 'Dibatalkan',
     status: 'Dibatalkan',
     biaya_dasar: 50000,
@@ -310,10 +376,10 @@ async function main() {
     units: [{ pk: 1, layanan: ['Isi Freon'] }],
   })
 
-  await addMaterialUsage(serviceMenungguPersetujuan.id, 'CHEM-CLEANER-1L', 2, staffUsers[1].uuid)
-  await addMaterialUsage(serviceMenungguPersetujuan.id, 'PIPA-1/4-M', 3, staffUsers[1].uuid)
-  await addMaterialUsage(serviceSedangDikerjakan.id, 'KAPASITOR-35UF', 1, staffUsers[1].uuid)
-  await addMaterialUsage(serviceMenungguPembayaran.id, 'INSULASI-ROLL', 1, staffUsers[2].uuid)
+  await addMaterialUsage(serviceMenungguPersetujuan.id, 'CHEM-CLEANER-1L', 2, staffUsers[1].id)
+  await addMaterialUsage(serviceMenungguPersetujuan.id, 'PIPA-1/4-M', 3, staffUsers[1].id)
+  await addMaterialUsage(serviceSedangDikerjakan.id, 'KAPASITOR-35UF', 1, staffUsers[1].id)
+  await addMaterialUsage(serviceMenungguPembayaran.id, 'INSULASI-ROLL', 1, staffUsers[2].id)
 
   console.log('Seed selesai:', {
     booking: serviceBooking.id,

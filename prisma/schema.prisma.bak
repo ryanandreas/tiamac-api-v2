@@ -1,0 +1,202 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Users {
+  uuid         String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  status       UserStatus @default(ACTIVE)
+  lastLogin    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customerProfile CustomerProfile?
+  staffProfile    StaffProfile?
+
+  customerServices Services[] @relation("CustomerServices")
+  teknisiServices  Services[] @relation("TeknisiServices")
+
+  stockMovements   StockMovement[]
+  materialUsages   ServiceMaterialUsage[]
+
+  @@map("users")
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+model CustomerProfile {
+  userId    String  @id
+  user      Users   @relation(fields: [userId], references: [uuid])
+  no_telp   String
+  provinsi  String?
+  alamat    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customer_profiles")
+}
+
+model StaffProfile {
+  userId      String @id
+  user        Users  @relation(fields: [userId], references: [uuid])
+  role        String
+  permissions Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("staff_profiles")
+}
+
+model Services {
+  id              String   @id @default(uuid())
+  customerId      String
+  customer        Users @relation("CustomerServices", fields: [customerId], references: [uuid])
+  jenis_servis    String
+  keluhan         String
+  status          String
+  status_servis   String
+  biaya           Int?
+  teknisiId       String?
+  teknisi         Users?    @relation("TeknisiServices", fields: [teknisiId], references: [uuid])
+  acUnits         ServiceAcUnit[]
+  materialUsages  ServiceMaterialUsage[]
+  
+  // New fields for optimized process
+  biaya_dasar     Int?      @default(50000)
+  estimasi_biaya  Int?
+  biaya_disetujui Boolean   @default(false)
+  bukti_foto_before String?
+  bukti_foto_after  String?
+  garansi_aktif_sampai DateTime?
+  alasan_batal    String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("services")
+}
+
+model ServiceAcUnit {
+  id        String   @id @default(uuid())
+  serviceId String
+  service   Services @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  pk        Float
+  layanan   ServiceAcUnitLayanan[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([serviceId])
+  @@map("service_ac_units")
+}
+
+model ServiceAcUnitLayanan {
+  id        String          @id @default(uuid())
+  unitId    String
+  unit      ServiceAcUnit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  catalogId String?
+  catalog   AcServiceCatalog? @relation(fields: [catalogId], references: [uuid])
+  nama      String
+  harga     Int
+  createdAt DateTime @default(now())
+
+  @@index([unitId])
+  @@index([catalogId])
+  @@map("service_ac_unit_layanans")
+}
+
+model AcServiceCatalog {
+  uuid      String   @id @default(uuid())
+  nama      String
+  pk        String?
+  harga     Int
+  unitLayanans ServiceAcUnitLayanan[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([nama, pk])
+  @@map("ac_service_catalog")
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+}
+
+enum StockReferenceType {
+  ADMIN_ADD
+  SERVICE_USAGE
+  STOCK_OPNAME
+}
+
+enum InventoryUom {
+  pcs
+  meter
+  botol
+  tabung
+}
+
+model InventoryItem {
+  id        String   @id @default(uuid())
+  sku       String   @unique
+  nama      String
+  uom       InventoryUom
+  harga     Int
+  qtyOnHand Int      @default(0)
+  minStock  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movements StockMovement[]
+  materialUsages ServiceMaterialUsage[]
+
+  @@map("inventory_items")
+}
+
+model StockMovement {
+  id              String             @id @default(uuid())
+  itemId          String
+  item            InventoryItem      @relation(fields: [itemId], references: [id])
+  type            StockMovementType
+  qty             Int
+  referenceType   StockReferenceType
+  referenceId     String?
+  notes           String?
+  createdByUserId String?
+  createdBy       Users?             @relation(fields: [createdByUserId], references: [uuid])
+  createdAt       DateTime           @default(now())
+
+  @@index([itemId])
+  @@index([referenceType, referenceId])
+  @@map("stock_movements")
+}
+
+model ServiceMaterialUsage {
+  id              String        @id @default(uuid())
+  serviceId       String
+  service         Services      @relation(fields: [serviceId], references: [id])
+  itemId          String
+  item            InventoryItem @relation(fields: [itemId], references: [id])
+  qty             Int
+  harga_satuan    Int
+  notes           String?
+  createdByUserId String?
+  createdBy       Users?        @relation(fields: [createdByUserId], references: [uuid])
+  createdAt       DateTime      @default(now())
+
+  @@index([serviceId])
+  @@index([itemId])
+  @@map("service_material_usages")
+}

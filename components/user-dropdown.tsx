@@ -32,32 +32,32 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
     user?.isAuthenticated ? (user.email ?? "") : ""
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-12 gap-3 rounded-2xl px-2 hover:bg-slate-50 transition-all group">
           <div className="relative">
-            <Avatar className="h-9 w-9 rounded-xl border-2 border-white shadow-sm ring-2 ring-slate-100 group-hover:ring-[#66B21D]/20 transition-all">
+            <Avatar className="h-9 w-9 rounded-xl shadow-sm group-hover:scale-105 transition-all">
               <AvatarImage src="/images/avatar.png" alt={displayName} />
               <AvatarFallback className="bg-slate-100 text-slate-400 font-black text-xs">{getInitials(displayName)}</AvatarFallback>
             </Avatar>
             <div className="absolute -bottom-0.5 -right-0.5 size-3 bg-green-500 border-2 border-white rounded-full"></div>
           </div>
           <div className="hidden md:flex flex-col items-start leading-tight">
-            <span className="max-w-[140px] truncate text-sm font-black text-slate-900">
+            <span className="max-w-[140px] truncate text-sm font-semibold text-slate-900">
               {displayName}
             </span>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">
               {user?.isAuthenticated && user.type === "staff" ? user.role : "Customer"}
             </span>
           </div>
           <ChevronDown className="h-4 w-4 text-slate-300 group-hover:text-slate-600 transition-colors" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 p-2 border-none shadow-2xl rounded-2xl overflow-hidden mt-2" align="end">
+      <DropdownMenuContent className="w-64 p-2 border-none shadow-none rounded-2xl overflow-hidden mt-2 bg-white" align="end">
         <DropdownMenuLabel className="p-4 font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-black text-slate-900 leading-none">{displayName}</p>
-            <p className="text-xs text-slate-400 font-bold truncate leading-tight mt-1">{displayEmail}</p>
+            <p className="text-sm font-semibold text-slate-900 leading-none">{displayName}</p>
+            <p className="text-xs text-slate-400 font-medium truncate leading-tight mt-1">{displayEmail}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-slate-50" />
@@ -70,7 +70,7 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
               <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center group-focus:bg-white group-focus:shadow-sm transition-all text-slate-400 group-focus:text-[#66B21D]">
                 <ShoppingBag className="h-4 w-4" />
               </div>
-              <span className="text-sm font-black">Dashboard</span>
+              <span className="text-sm font-medium">Dashboard</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-green-50 focus:text-[#66B21D] transition-colors group">
@@ -81,7 +81,7 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
               <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center group-focus:bg-white group-focus:shadow-sm transition-all text-slate-400 group-focus:text-[#66B21D]">
                 <History className="h-4 w-4" />
               </div>
-              <span className="text-sm font-black">Riwayat</span>
+              <span className="text-sm font-medium">Riwayat</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-green-50 focus:text-[#66B21D] transition-colors group">
@@ -92,20 +92,20 @@ export function UserDropdown({ user }: { user?: CurrentUser }) {
               <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center group-focus:bg-white group-focus:shadow-sm transition-all text-slate-400 group-focus:text-[#66B21D]">
                 <User className="h-4 w-4" />
               </div>
-              <span className="text-sm font-black">Profil Akun</span>
+              <span className="text-sm font-medium">Profil Akun</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="bg-slate-50" />
         <div className="p-1">
           <DropdownMenuItem 
-            className="rounded-xl p-2.5 cursor-pointer text-red-600 focus:text-white focus:bg-red-500 transition-all gap-3 group"
+            className="rounded-xl p-2.5 cursor-pointer text-red-600 focus:text-white focus:bg-red-500 hover:text-white hover:bg-red-500 data-[highlighted]:bg-red-500 data-[highlighted]:text-white transition-all gap-3 group"
             onClick={() => logout()}
           >
-            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center group-focus:bg-white/20 transition-all text-red-500 group-focus:text-white">
+            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center group-focus:bg-white/20 group-hover:bg-white/20 transition-all text-red-500 group-focus:text-white group-hover:text-white group-data-[highlighted]:bg-white/20 group-data-[highlighted]:text-white">
               <LogOut className="h-4 w-4" />
             </div>
-            <span className="text-sm font-black">Keluar Sesi</span>
+            <span className="text-sm font-medium group-focus:text-white group-hover:text-white group-data-[highlighted]:text-white">Keluar Sesi</span>
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>

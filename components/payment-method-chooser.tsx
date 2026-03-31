@@ -14,11 +14,11 @@ const METHODS: Array<{
   description: string
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
 }> = [
-  { id: "qris", label: "QRIS", description: "Scan QR via aplikasi bank/e-wallet.", Icon: QrCode },
-  { id: "ewallet", label: "E-Wallet", description: "GoPay / OVO / DANA (otomatis).", Icon: Wallet },
-  { id: "va", label: "Virtual Account", description: "BCA / BNI / Mandiri / BRIVA.", Icon: Landmark },
-  { id: "bank_transfer", label: "Transfer Bank", description: "Manual transfer via ATM / m-banking.", Icon: CreditCard },
-]
+    { id: "qris", label: "QRIS", description: "Scan QR via aplikasi bank/e-wallet.", Icon: QrCode },
+    { id: "ewallet", label: "E-Wallet", description: "GoPay / OVO / DANA (otomatis).", Icon: Wallet },
+    { id: "va", label: "Virtual Account", description: "BCA / BNI / Mandiri / BRIVA.", Icon: Landmark },
+    { id: "bank_transfer", label: "Transfer Bank", description: "Manual transfer via ATM / m-banking.", Icon: CreditCard },
+  ]
 
 function formatRupiah(amount: number) {
   return new Intl.NumberFormat("id-ID", {
@@ -47,11 +47,11 @@ export function PaymentMethodChooser({
   const selectedMethod = METHODS.find((m) => m.id === selected) ?? METHODS[0]
 
   return (
-    <div className="space-y-3">
-      <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-        Metode Pembayaran
+    <div className="space-y-2">
+      <div className="text-[11px] font-bold text-muted-foreground tracking-wide">
+        Pilih Metode Pembayaran
       </div>
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-1.5">
         {METHODS.map((m) => {
           const active = m.id === selected
           return (

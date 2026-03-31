@@ -37,7 +37,7 @@ type BaseService = Prisma.ServicesGetPayload<{
   }
 }>
 
-type Technician = { uuid: string; name: string }
+type Technician = { id: string; name: string }
 
 interface SchedulingTableProps {
   data: BaseService[]
@@ -196,7 +196,7 @@ export function SchedulingTable({ data, teknisi }: SchedulingTableProps) {
         </Table>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-4xl lg:max-w-5xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-5xl lg:max-w-6xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Jadwalkan Perbaikan</DialogTitle>
           </DialogHeader>
@@ -287,7 +287,7 @@ export function SchedulingTable({ data, teknisi }: SchedulingTableProps) {
                       Pilih Teknisi
                     </option>
                     {teknisi.map((t) => (
-                      <option key={t.uuid} value={t.uuid}>
+                      <option key={t.id} value={t.id}>
                         {t.name}
                       </option>
                     ))}

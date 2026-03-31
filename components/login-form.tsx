@@ -3,9 +3,10 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { login } from "@/app/actions/auth"
-import { ArrowRight, Eye, Mail, Lock } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { ArrowRight, Eye, EyeOff, Mail, Lock } from "lucide-react"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -15,16 +16,17 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [state, formAction, isPending] = useActionState(login, null)
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <div className={cn("flex flex-col gap-10 w-full", className)} {...props}>
       {/* Brand Logo */}
       <Link href="/" className="flex items-center gap-3 w-fit">
-        <Image 
-          src="/images/logo.png" 
-          alt="Tiam AC Logo" 
-          width={40} 
-          height={40} 
+        <Image
+          src="/images/logo.png"
+          alt="Tiam AC Logo"
+          width={40}
+          height={40}
           className="h-10 w-auto object-contain"
         />
         <span className="text-2xl font-black text-slate-900 tracking-tight">AC Tiam</span>
@@ -34,24 +36,6 @@ export function LoginForm({
       <div className="space-y-2">
         <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">Selamat Datang Kembali</h1>
         <p className="text-slate-500 font-bold">Silakan masuk untuk mengelola pesanan AC Anda.</p>
-      </div>
-
-      {/* Social Login */}
-      <div className="space-y-4">
-        <Button 
-          variant="outline" 
-          type="button"
-          className="w-full h-12 rounded-xl border-slate-200 font-bold text-slate-700 hover:bg-slate-50 transition-all gap-3"
-        >
-          <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="size-5" alt="Google" />
-          <span>Masuk dengan Google</span>
-        </Button>
-        
-        <div className="flex items-center gap-4 py-2">
-          <div className="flex-1 h-px bg-slate-100" />
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Atau dengan Email</span>
-          <div className="flex-1 h-px bg-slate-100" />
-        </div>
       </div>
 
       {/* Login Form */}
@@ -65,7 +49,7 @@ export function LoginForm({
         <div className="space-y-5">
           {/* Email Field */}
           <div className="space-y-2">
-            <label htmlFor="email" className="text-xs font-black text-slate-900 uppercase tracking-widest ml-1">Alamat Email</label>
+            <label htmlFor="email" className="text-xs font-black text-slate-900 tracking-widest ml-1">Alamat Email</label>
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within:text-[#66B21D] transition-colors" />
               <Input
@@ -74,7 +58,7 @@ export function LoginForm({
                 type="email"
                 placeholder="nama@email.com"
                 required
-                className="pl-11 h-12 bg-slate-50/50 border-slate-100 rounded-xl focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
+                className="pl-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
               />
             </div>
           </div>
@@ -82,35 +66,40 @@ export function LoginForm({
           {/* Password Field */}
           <div className="space-y-2">
             <div className="flex justify-between items-center px-1">
-              <label htmlFor="password" className="text-xs font-black text-slate-900 uppercase tracking-widest">Kata Sandi</label>
+              <label htmlFor="password" className="text-xs font-black text-slate-900 tracking-widest">Kata Sandi</label>
               <a href="#" className="text-xs font-bold text-[#66B21D] hover:underline underline-offset-4 transition-all">Lupa sandi?</a>
             </div>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within:text-[#66B21D] transition-colors" />
-              <Input 
-                id="password" 
-                name="password" 
-                type="password" 
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                required 
-                className="pl-11 pr-11 h-12 bg-slate-50/50 border-slate-100 rounded-xl focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
+                required
+                className="pl-11 pr-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
               />
-              <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors">
-                <Eye className="size-4" />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-3 px-1">
-          <input type="checkbox" id="remember" className="size-4 rounded border-slate-200 text-[#66B21D] focus:ring-[#66B21D]" />
+          <Checkbox id="remember" className="data-[state=checked]:bg-[#66B21D] data-[state=checked]:border-[#66B21D] border-slate-300" />
           <label htmlFor="remember" className="text-sm font-bold text-slate-500 cursor-pointer select-none">Ingat saya di perangkat ini</label>
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={isPending}
-          className="w-full h-14 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-xl shadow-green-600/20 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:hover:scale-100 gap-2"
+          className="w-full h-12 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-black text-sm tracking-widest border-none shadow-none transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:hover:scale-100 gap-2"
         >
           {isPending ? "Memproses..." : (
             <>
@@ -120,6 +109,24 @@ export function LoginForm({
           )}
         </Button>
       </form>
+
+      {/* Social Login (Moved to bottom) */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 py-2">
+          <div className="flex-1 h-px bg-slate-100" />
+          <span className="text-[10px] font-black text-slate-400 tracking-widest whitespace-nowrap">Atau Lanjutkan Dengan</span>
+          <div className="flex-1 h-px bg-slate-100" />
+        </div>
+
+        <Button
+          variant="outline"
+          type="button"
+          className="w-full h-12 rounded-xl bg-slate-50 hover:bg-slate-100 border-none shadow-none font-bold text-slate-700 transition-all gap-3"
+        >
+          <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="size-5" alt="Google" />
+          <span>Masuk dengan Google</span>
+        </Button>
+      </div>
 
       {/* Footer */}
       <p className="text-center text-sm font-bold text-slate-500">

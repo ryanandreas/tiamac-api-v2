@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Prisma } from "@prisma/client"
+import { ServiceStatusHistoryDialog } from "./service-status-history-dialog"
 
 
 type KanbanItem = Prisma.ServicesGetPayload<{
@@ -30,6 +31,14 @@ const STATUS_COLUMNS = [
 ]
 
 export function KanbanBoard({ data }: KanbanBoardProps) {
+  const [selectedId, setSelectedId] = React.useState<string | null>(null)
+  const [open, setOpen] = React.useState(false)
+
+  const handleCardClick = (id: string) => {
+    setSelectedId(id)
+    setOpen(true)
+  }
+
   // Group data by status
   const groupedData = React.useMemo(() => {
     const groups: Record<string, KanbanItem[]> = {}
@@ -58,7 +67,12 @@ export function KanbanBoard({ data }: KanbanBoardProps) {
           <ScrollArea className="h-full pr-2">
             <div className="flex flex-col gap-2">
               {groupedData[column.id]?.map((item) => (
-                <Card key={item.id} className="cursor-pointer hover:shadow-sm transition-all border-l-2" style={{ borderLeftColor: item.teknisi ? '#3b82f6' : '#e5e7eb' }}>
+                <Card 
+                  key={item.id} 
+                  className="cursor-pointer hover:shadow-sm transition-all border-l-2" 
+                  style={{ borderLeftColor: item.teknisi ? '#3B82F6' : '#e5e7eb' }}
+                  onClick={() => handleCardClick(item.id)}
+                >
                   <CardContent className="p-3 space-y-2">
                     <div className="flex justify-between items-start gap-2">
                       <span className="font-medium text-xs leading-none line-clamp-1" title={item.jenis_servis}>
@@ -104,6 +118,12 @@ export function KanbanBoard({ data }: KanbanBoardProps) {
           </ScrollArea>
         </div>
       ))}
+
+      <ServiceStatusHistoryDialog 
+        open={open}
+        onOpenChange={setOpen}
+        serviceId={selectedId}
+      />
     </div>
   )
 }

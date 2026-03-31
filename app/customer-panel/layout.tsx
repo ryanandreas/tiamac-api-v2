@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/app/actions/session"
 import { CustomerPanelNavV2 } from "@/components/customer-panel-nav-v2"
@@ -17,6 +18,11 @@ const ONGOING_STATUSES = [
 ]
 
 const HISTORY_STATUSES = ["Selesai (Garansi Aktif)", "Selesai", "Dibatalkan"]
+
+export const metadata: Metadata = {
+  title: "Customer Panel",
+  description: "Kelola pesanan servis AC, pantau status pengerjaan, dan lakukan pembayaran dengan mudah di Tiam AC.",
+}
 
 export default async function CustomerPanelLayout({
   children,
@@ -48,7 +54,7 @@ export default async function CustomerPanelLayout({
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-slate-50/50 w-full font-sans">
+      <div className="min-h-screen bg-[#f4faef] w-full font-sans">
         <SiteNavbar user={user} mode="sticky" />
         
         <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 w-full pt-10">
@@ -64,15 +70,15 @@ export default async function CustomerPanelLayout({
                   />
                 </Suspense>
                 
-                <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/50 relative overflow-hidden group">
+                <div className="rounded-3xl border-none bg-white p-6 shadow-none relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-colors"></div>
-                  <h4 className="text-sm font-black text-slate-900 mb-2 relative z-10 flex items-center gap-2 uppercase tracking-widest">
+                  <h4 className="text-sm font-bold text-slate-900 mb-2 relative z-10 flex items-center gap-2 uppercase tracking-widest">
                      <div className="size-1.5 bg-[#66B21D] rounded-full"></div> Butuh Bantuan?
                   </h4>
                   <p className="text-xs text-slate-400 font-bold mb-4 relative z-10 leading-relaxed">
                     Hubungi customer service kami jika Anda memiliki kendala dengan pesanan Anda.
                   </p>
-                  <button className="w-full rounded-xl bg-slate-900 px-4 py-3 text-[10px] font-black text-white hover:bg-[#66B21D] transition-all relative z-10 uppercase tracking-widest shadow-lg shadow-slate-900/10">
+                  <button className="w-full rounded-xl bg-slate-900 px-4 py-3 text-[10px] font-bold text-white hover:bg-[#66B21D] transition-all relative z-10 uppercase tracking-widest shadow-lg shadow-slate-900/10">
                     Hubungi CS Kami
                   </button>
                 </div>

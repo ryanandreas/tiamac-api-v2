@@ -3,7 +3,7 @@
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/app/actions/session"
 import { redirect, notFound } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,6 +11,10 @@ import {
   MapPin,
   Package,
   Smartphone,
+  ArrowLeft,
+  Calendar,
+  ShieldCheck,
+  CreditCard
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -54,10 +58,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   const keluhanText = service.keluhan || ""
   const keluhanLines = keluhanText.split("\n")
-  const firstEmptyLineIdx = keluhanLines.findIndex((line) => line.trim() === "")
-  // const keluhanMain =
-  //   firstEmptyLineIdx >= 0 ? keluhanLines.slice(0, firstEmptyLineIdx).join("\n").trim() : keluhanText.trim()
-
+  
   const alamatLine = keluhanLines.find((line) => line.startsWith("Alamat:"))
   const alamat = alamatLine ? alamatLine.replace(/^Alamat:\s*/, "").trim() : undefined
 
@@ -84,7 +85,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const totalEstimasi = biayaKunjungan + layananTotal
   const totalFinal = service.biaya ?? totalEstimasi
 
-  // Map units for the Detail Dialog
   const orderUnits: OrderUnit[] = service.acUnits.map((unit) => ({
     id: unit.id,
     name: `Unit AC ${unit.pk} PK`,
@@ -102,45 +102,46 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const amountToPay = isPendingInitial ? dpAmount : pelunasanAmount
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-4 animate-fade-in">
       {/* Header Section */}
-      <div className="space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Pembayaran Pesanan</h1>
-            <Badge className={cn(
-              "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
-              isPendingInitial || isFinalPayment 
-                ? "bg-orange-50 text-orange-600 hover:bg-orange-100" 
-                : "bg-green-50 text-green-600 hover:bg-green-100"
-            )}>
-              {service.status_servis}
+      <div className="bg-white px-6 py-4 rounded-3xl space-y-3 border-none shadow-none">
+        <div className="flex items-center gap-3">
+           <Link href="/customer-panel/pesanan">
+             <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl bg-slate-50 text-slate-400 hover:text-slate-900 transition-all">
+                <ArrowLeft className="h-4 w-4" />
+             </Button>
+           </Link>
+           <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Detail Pesanan</h1>
+           <Badge className={cn(
+                  "px-3 py-1 rounded-lg text-[10px] font-bold border-none shadow-none",
+                  isPendingInitial || isFinalPayment 
+                    ? "bg-orange-50 text-orange-600" 
+                    : "bg-green-50 text-[#66B21D]"
+                )}>
+                  {service.status_servis}
             </Badge>
-          </div>
         </div>
-
-        <DynamicBreadcrumbs />
-        
-        <p className="text-sm font-bold text-slate-400 mt-2 max-w-2xl">
-          Silakan selesaikan pembayaran untuk mengonfirmasi pesanan Anda agar teknisi kami dapat segera meluncur ke lokasi Anda.
-        </p>
+        <div className="flex flex-col gap-1 pl-1">
+          <DynamicBreadcrumbs />
+          <p className="text-slate-500 font-medium text-sm mt-1">Selesaikan administrasi Anda untuk mempercepat proses pengerjaan unit AC.</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 relative items-start">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 items-start">
         {/* Left Content */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-4">
           {/* Order Summary Card */}
-          <Card className="rounded-[32px] border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden bg-white group py-0 gap-0">
-            <div className="p-8 pt-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-6 group-hover:bg-slate-50/50 transition-colors">
+          <Card className="rounded-3xl border-none shadow-none overflow-hidden bg-white !py-0 gap-0">
+            <CardHeader className="px-6 pt-5 pb-5 border-b border-slate-50 flex flex-row items-center justify-between">
               <div className="space-y-1">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nomor Pesanan</span>
-                <p className="text-lg font-black text-slate-900">#{orderIdShort}</p>
+                <span className="text-[10px] font-semibold text-slate-400">Nomor Pesanan</span>
+                <p className="text-lg font-bold text-slate-900 leading-none">#{orderIdShort}</p>
               </div>
               
-              <div className="flex items-center gap-8">
+              <div className="flex items-center gap-6">
                 <div className="text-right space-y-1">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal Pesanan</span>
-                  <p className="text-sm font-black text-slate-900">
+                  <span className="text-[10px] font-semibold text-slate-400">Tanggal Pesanan</span>
+                  <p className="text-sm font-bold text-slate-900 leading-none">
                     {new Date(service.createdAt).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "short",
@@ -154,64 +155,75 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   units={orderUnits}
                   biayaDasar={biayaKunjungan}
                   totalBiaya={totalFinal}
+                  trigger={
+                    <Button variant="outline" className="h-9 rounded-xl font-bold text-xs gap-2 border-slate-200">
+                      <CreditCard className="size-3.5" /> Lihat Rincian
+                    </Button>
+                  }
                 />
               </div>
-            </div>
+            </CardHeader>
 
-            <CardContent className="p-8 space-y-8">
-              {/* Main Service Icon & Name */}
-              <div className="flex items-center gap-5 p-6 rounded-3xl bg-slate-50 border border-slate-100 group/item">
-                <div className="size-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-xl shadow-slate-900/10 group-hover/item:bg-[#66B21D] transition-all">
-                  <Package className="h-7 w-7" />
+            <CardContent className="p-6 space-y-6">
+              {/* Main Service Info Row */}
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/50 group/item">
+                <div className="size-12 rounded-xl bg-slate-900 text-white flex items-center justify-center group-hover/item:bg-[#66B21D] transition-all">
+                  <Package className="h-6 w-6" />
                 </div>
-                <div className="space-y-1">
-                  <h4 className="text-base font-black text-slate-900">Servis AC Routine (Cleaning)</h4>
-                  <p className="text-xs font-bold text-slate-400">Layanan perawatan berkala untuk {service.acUnits.length} unit AC</p>
+                <div className="space-y-0.5">
+                  <h4 className="text-base font-bold text-slate-900">Servis AC Routine (Cleaning)</h4>
+                  <p className="text-xs font-medium text-slate-400">Layanan perawatan berkala untuk {service.acUnits.length} unit AC favorit Anda.</p>
                 </div>
               </div>
 
-              {/* Items Placeholder Breakdown */}
-              <div className="space-y-4 px-2">
+              {/* Items Summary */}
+              <div className="space-y-3 px-1">
                 <div className="flex justify-between items-center group/line">
-                   <span className="text-sm font-bold text-slate-500 group-hover/line:text-slate-900 transition-colors">Cuci AC Routine ({service.acUnits.length} Unit)</span>
-                   <span className="text-sm font-black text-slate-900">{formatRupiah(layananTotal)}</span>
+                   <div className="flex items-center gap-3">
+                      <div className="size-1.5 rounded-full bg-slate-200 group-hover/line:bg-[#66B21D] transition-colors" />
+                      <span className="text-sm font-medium text-slate-500 group-hover/line:text-slate-900 transition-colors">Cuci AC Routine ({service.acUnits.length} Unit)</span>
+                   </div>
+                   <span className="text-sm font-bold text-slate-900">{formatRupiah(layananTotal)}</span>
                 </div>
                 <div className="flex justify-between items-center group/line">
-                   <span className="text-sm font-bold text-slate-500 group-hover/line:text-slate-900 transition-colors">Biaya Kunjungan & Transport</span>
-                   <span className="text-sm font-black text-slate-900">{formatRupiah(biayaKunjungan)}</span>
+                   <div className="flex items-center gap-3">
+                      <div className="size-1.5 rounded-full bg-slate-200 group-hover/line:bg-[#66B21D] transition-colors" />
+                      <span className="text-sm font-medium text-slate-500 group-hover/line:text-slate-900 transition-colors">Biaya Kunjungan & Diagnosa</span>
+                   </div>
+                   <span className="text-sm font-bold text-slate-900">{formatRupiah(biayaKunjungan)}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Location & Contact Section */}
-          <Card className="rounded-[32px] border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden bg-white py-0 gap-0">
-            <CardHeader className="p-8 pt-8 pb-0">
+          <Card className="rounded-3xl border-none shadow-none overflow-hidden bg-white py-0 gap-0">
+            <CardHeader className="px-6 pt-5 pb-2">
               <div className="flex items-center gap-3">
                  <div className="size-10 rounded-xl bg-green-50 flex items-center justify-center text-[#66B21D]">
                     <MapPin className="h-5 w-5" />
                  </div>
-                 <h3 className="text-lg font-black text-slate-900 tracking-tight">Informasi Lokasi & Kontak</h3>
+                 <h3 className="text-lg font-bold text-slate-900 tracking-tight">Lokasi & Kontak Pengerjaan</h3>
               </div>
             </CardHeader>
-            <CardContent className="p-8 mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-4">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Alamat Pengerjaan</span>
-                  <p className="text-sm font-black text-slate-600 leading-relaxed">
-                    {alamatText || "Alamat belum lengkap"}
-                  </p>
+            <CardContent className="px-6 pt-0 pb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <span className="text-[10px] font-bold text-slate-400 block px-1">Alamat Lengkap</span>
+                  <div className="p-4 rounded-2xl bg-slate-50/50 border-none font-medium text-sm text-slate-600 leading-relaxed">
+                    {alamatText || "Alamat belum lengkap atau tidak ditemukan."}
+                  </div>
                 </div>
                 
-                <div className="space-y-4">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Kontak Pelanggan</span>
-                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 w-fit">
-                    <div className="size-11 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-[#66B21D] shadow-sm">
+                <div className="space-y-3">
+                  <span className="text-[10px] font-bold text-slate-400 block px-1">Informasi Pelanggan</span>
+                  <div className="flex items-center gap-4 p-3 rounded-2xl bg-slate-50/50 border-none w-full">
+                    <div className="size-11 rounded-xl bg-white border-none flex items-center justify-center text-[#66B21D] shadow-sm">
                       <Smartphone className="h-5 w-5" />
                     </div>
-                    <div className="space-y-1">
-                       <p className="text-sm font-black text-slate-900">{phoneText}</p>
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{service.customer?.name}</p>
+                    <div className="space-y-0.5">
+                       <p className="text-sm font-bold text-slate-900">{phoneText}</p>
+                       <p className="text-[10px] font-semibold text-slate-400">{service.customer?.name}</p>
                     </div>
                   </div>
                 </div>
@@ -220,31 +232,35 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </Card>
         </div>
 
-        {/* Right Sidebar - Sticky Payment Card */}
-        <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
+        {/* Right Sidebar - Sticky Method Selection */}
+        <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
           {/* Payment Method Selector */}
-          <Card className="rounded-[32px] border-slate-100 shadow-xl shadow-slate-200/50 bg-white p-8 pt-8 space-y-6">
-            <h3 className="text-lg font-black text-slate-900 tracking-tight">Metode Pembayaran</h3>
+          <Card className="rounded-3xl border-none shadow-none bg-white p-6 pt-5 space-y-0">
+            <div className="space-y-0.5 mb-2">
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Metode Pembayaran</h3>
+              <p className="text-xs font-medium text-slate-400">Pilih kanal pembayaran praktis Anda.</p>
+            </div>
             
             <PaymentMethodChooser
               orderId={orderIdShort}
               amount={amountToPay}
-              title={isPendingInitial ? "Pembayaran Biaya Awal (DP)" : "Pembayaran Pelunasan"}
+              title={isPendingInitial ? "Biaya Awal (DP)" : "Pelunasan Hasil Servis"}
               buttonText="Bayar Sekarang"
               buttonClassName="hidden" 
               triggerId="custom-pay-button"
             />
           </Card>
-
-          {/* Total Summary Card */}
-          <PaymentSummaryCard 
-            amount={amountToPay}
-            label={isPendingInitial ? "Biaya Kunjungan (DP)" : "Pelunasan Pesanan"}
-            isCompleted={isCompleted}
-            triggerId="custom-pay-button"
-          />
         </div>
       </div>
+
+      {/* Moved Summary Card outside the grid to make it full width */}
+      <PaymentSummaryCard 
+        amount={amountToPay}
+        label={isPendingInitial ? "Biaya Kunjungan (DP)" : "Pelunasan Pesanan"}
+        isCompleted={isCompleted}
+        triggerId="custom-pay-button"
+        variant="horizontal"
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { UserListTable } from "@/components/dashboard/user-list-table"
-import { DashboardHeader } from "@/components/dashboard/header"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { db } from "@/lib/db"
+import { User, UserIcon } from "lucide-react"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
 export default async function CustomerListPage() {
   const customers = await db.customerProfile.findMany({
@@ -10,23 +10,18 @@ export default async function CustomerListPage() {
   })
 
   return (
-    <SidebarInset>
-      <DashboardHeader title="List Customer" />
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Customer List</h2>
-        </div>
-        <div className="hidden h-full flex-1 flex-col space-y-8 md:flex">
-          <div className="flex items-center justify-between space-y-2">
-            <div>
-              <p className="text-muted-foreground">
-                Manage your customers and their contact information.
-              </p>
-            </div>
-          </div>
-          <UserListTable data={customers} type="customer" />
+    <div className="space-y-8 animate-fade-in">
+      <div className="space-y-4">
+        <DynamicBreadcrumbs />
+        <div className="space-y-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Data Pelanggan</h1>
+          <p className="text-slate-500 font-medium text-base">Kelola informasi profil dan riwayat aktivitas para pelanggan Anda.</p>
         </div>
       </div>
-    </SidebarInset>
+
+      <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
+        <UserListTable data={customers} type="customer" />
+      </div>
+    </div>
   )
 }

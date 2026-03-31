@@ -52,7 +52,7 @@ export function ServiceReceiptDialog({
           {triggerText}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-5xl">
         <DialogHeader className="text-center">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
