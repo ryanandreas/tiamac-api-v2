@@ -3,11 +3,35 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/app/actions/session"
 import { cookies } from "next/headers"
-import { BookingService } from "@/lib/services/booking-service"
-import { UserService } from "@/lib/services/user-service"
-import { db } from "@/lib/db"
+import { randomUUID } from "crypto"
 
-export type CreateBookingState = { success: boolean; message: string } | null
+export type CreateBookingState = { message: string } | null
+
+type BookingUnit = { pk: number; layanan: string[] }
+
+const BASE_VISIT_FEE = 50000
+
+type CatalogIndex = Record<
+  string,
+  { default?: { harga: number; uuid: string }; byPk: Record<string, { harga: number; uuid: string }> }
+>
+
+function buildCatalogIndex(rows: Array<{ uuid: string; nama: string; pk: string | null; harga: number }>) {
+  const idx: CatalogIndex = {}
+  for (const row of rows) {
+    if (!idx[row.nama]) idx[row.nama] = { byPk: {} }
+    if (row.pk) idx[row.nama].byPk[row.pk] = { harga: row.harga, uuid: row.uuid }
+    else idx[row.nama].default = { harga: row.harga, uuid: row.uuid }
+  }
+  return idx
+}
+
+function getCatalogEntry(catalog: CatalogIndex, layananName: string, pk: number) {
+  const item = catalog[layananName]
+  if (!item) return undefined
+  const pkKey = String(pk)
+  return item.byPk[pkKey] ?? item.default
+}
 
 export async function createAcBooking(
   _prevState: CreateBookingState,
@@ -24,7 +48,7 @@ export async function createAcBooking(
   const jadwalTanggal = (formData.get("jadwal_tanggal") as string | null)?.trim() || ""
   const agree = formData.get("agree_biaya_kunjungan") === "on"
   const unitsJson = (formData.get("units_json") as string | null)?.trim() || "[]"
-  
+
   const pemesanNama = (formData.get("pemesan_nama") as string | null)?.trim()
   const pemesanEmail = (formData.get("pemesan_email") as string | null)?.trim()
   const pemesanNoTelp = (formData.get("pemesan_no_telp") as string | null)?.trim()
@@ -39,7 +63,7 @@ export async function createAcBooking(
   } else {
     // Guest flow
     if (!pemesanNama || !pemesanEmail || !pemesanNoTelp) {
-        return { success: false, message: "Lengkapi data pemesan (nama, email, nomor HP)." }
+      return { success: false, message: "Lengkapi data pemesan (nama, email, nomor HP)." }
     }
 
     try {
@@ -48,9 +72,9 @@ export async function createAcBooking(
         email: pemesanEmail,
         no_telp: pemesanNoTelp,
       })
-      
+
       customerId = user.id
-      
+
       // Action responsibility: set cookies
       const cookieStore = await cookies()
       cookieStore.set("userId", user.id)
@@ -80,29 +104,3 @@ export async function createAcBooking(
 
   redirect("/customer-panel/pesanan")
 }
-
-export async function getServiceDetail(serviceId: string) {
-  return await db.services.findUnique({
-    where: { id: serviceId },
-    include: {
-      customer: {
-        include: {
-          customerProfile: true
-        }
-      },
-      teknisi: true,
-      acUnits: {
-        include: {
-          layanan: true
-        }
-      },
-      statusHistory: {
-        orderBy: {
-          createdAt: "desc"
-        }
-      }
-    }
-  })
-}
-
-
