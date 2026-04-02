@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useActionState, useState } from "react"
+import { useActionState, useState, useEffect } from "react"
 import { login } from "@/app/actions/auth"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowRight, Eye, EyeOff, Mail, Lock } from "lucide-react"
@@ -17,6 +17,15 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [state, formAction, isPending] = useActionState(login, null)
   const [showPassword, setShowPassword] = useState(false)
+  const [showError, setShowError] = useState(false)
+
+  useEffect(() => {
+    if (state && !state.success) {
+      setShowError(true)
+      const timer = setTimeout(() => setShowError(false), 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [state])
 
   return (
     <div className={cn("flex flex-col gap-10 w-full", className)} {...props}>
@@ -35,16 +44,11 @@ export function LoginForm({
       {/* Heading */}
       <div className="space-y-2">
         <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">Selamat Datang Kembali</h1>
-        <p className="text-slate-500 font-bold">Silakan masuk untuk mengelola pesanan AC Anda.</p>
+        <p className="text-slate-500 font-bold tracking-tight">Senang melihat Anda kembali! Masuk untuk memastikan AC Anda tetap dingin dan terawat.</p>
       </div>
 
       {/* Login Form */}
       <form action={formAction} className="space-y-6">
-        {state?.message && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-xs font-bold animate-shake">
-            {state.message}
-          </div>
-        )}
 
         <div className="space-y-5">
           {/* Email Field */}
@@ -56,7 +60,7 @@ export function LoginForm({
                 id="email"
                 name="email"
                 type="email"
-                placeholder="nama@email.com"
+                placeholder="Email"
                 required
                 className="pl-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
               />
@@ -75,7 +79,7 @@ export function LoginForm({
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
+                placeholder="Password"
                 required
                 className="pl-11 pr-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
               />
@@ -99,9 +103,14 @@ export function LoginForm({
         <Button
           type="submit"
           disabled={isPending}
-          className="w-full h-12 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-black text-sm tracking-widest border-none shadow-none transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:hover:scale-100 gap-2"
+          className="w-full h-12 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-black text-sm uppercase tracking-widest border-none shadow-none transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:hover:scale-100 gap-2"
         >
-          {isPending ? "Memproses..." : (
+          {isPending ? (
+            <span className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              Memproses...
+            </span>
+          ) : (
             <>
               <span>Masuk ke Akun</span>
               <ArrowRight className="size-4" />
@@ -109,6 +118,28 @@ export function LoginForm({
           )}
         </Button>
       </form>
+
+      {/* Floating Error Alert */}
+      {state && !state.success && showError && (
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4 animate-in fade-in slide-in-from-top-8 duration-500">
+          <div className="p-5 rounded-[24px] bg-white border border-rose-100 flex items-center gap-4 shadow-2xl shadow-rose-200/40 ring-4 ring-rose-50/50">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 shrink-0">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <div className="text-left flex-1">
+              <p className="text-[9px] font-black text-rose-400 uppercase tracking-widest mb-1">Login Gagal</p>
+              <p className="text-xs font-bold text-slate-800 leading-tight uppercase tracking-tight">{state.message}</p>
+            </div>
+            <button 
+              type="button"
+              onClick={() => setShowError(false)}
+              className="p-1.5 hover:bg-slate-50 rounded-lg transition-colors text-slate-300"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Social Login (Moved to bottom) */}
       <div className="space-y-4">

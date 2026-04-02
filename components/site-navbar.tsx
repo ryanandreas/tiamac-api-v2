@@ -24,6 +24,9 @@ export function SiteNavbar({
   mode?: "fixed" | "sticky"
 }) {
   const [menuState, setMenuState] = React.useState(false)
+  const pathname = usePathname()
+  const lenis = useLenis()
+  const isCustomerPanel = pathname?.startsWith("/customer-panel")
   const isAuthenticated = !!user?.isAuthenticated
 
   const navClassName =

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { AuthLoginSchema } from "@/lib/validations/schemas";
+import { AuthLoginSchema, AuthSignupSchema } from "@/lib/validations/schemas";
 import bcrypt from "bcryptjs";
 
 export class AuthService {
@@ -54,6 +54,51 @@ export class AuthService {
       where: { id },
       data: { lastLogin: new Date() },
     });
+  }
+
+  static async registerCustomer(input: any) {
+    // 1. Validation
+    const result = AuthSignupSchema.safeParse(input);
+    if (!result.success) {
+      const firstError = result.error.issues[0]?.message || "Input tidak valid";
+      throw new Error(firstError);
+    }
+
+    const { name, email, no_telp, provinsi, alamat, password } = result.data;
+
+    // 2. Check if email exists
+    const existing = await db.user.findUnique({
+      where: { email: email.toLowerCase() }
+    });
+    if (existing) throw new Error("Email sudah terdaftar");
+
+    // 3. Hash Password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 4. Create User & Profile in Transaction
+    const user = await db.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          name,
+          email: email.toLowerCase(),
+          password: hashedPassword,
+          status: "ACTIVE",
+          customerProfile: {
+            create: {
+              no_telp,
+              provinsi,
+              alamat
+            }
+          }
+        },
+        include: {
+          customerProfile: true
+        }
+      });
+      return newUser;
+    });
+
+    return user;
   }
 }
 

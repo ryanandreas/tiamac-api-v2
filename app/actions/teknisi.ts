@@ -59,6 +59,20 @@ export async function addUnitLayanan(input: { unitId: string; catalogId: string 
   }
 }
 
+export async function addAcUnit(input: { serviceId: string; pk: number }): Promise<ActionResponse> {
+  try {
+    const current = await getCurrentUser()
+    ensureTechnician(current)
+    await TechnicianService.addAcUnit({
+      ...input,
+      technicianId: current.id!,
+    })
+    return { success: true, message: "Unit AC berhasil ditambahkan" }
+  } catch (err: any) {
+    return { success: false, message: err.message || "Gagal memproses" }
+  }
+}
+
 export async function removeUnitLayanan(input: { unitLayananId: string }): Promise<ActionResponse> {
   try {
     const current = await getCurrentUser()
@@ -89,7 +103,7 @@ export async function removeMaterialUsage(input: { usageId: string }): Promise<A
 
 export async function submitPengecekan(input: {
   serviceId: string
-  diagnosa: string
+  diagnosa?: string
   jasaTambahan: number
 }): Promise<ActionResponse> {
   try {

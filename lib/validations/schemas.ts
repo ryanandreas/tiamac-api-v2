@@ -26,3 +26,18 @@ export const AuthLoginSchema = z.object({
 });
 
 export type AuthLoginInput = z.infer<typeof AuthLoginSchema>;
+
+export const AuthSignupSchema = z.object({
+  name: z.string().min(2, "Nama minimal 2 karakter"),
+  email: z.string().email("Email tidak valid"),
+  no_telp: z.string().min(10, "Nomor WhatsApp minimal 10 digit"),
+  provinsi: z.string().min(1, "Provinsi wajib dipilih"),
+  alamat: z.string().min(5, "Alamat minimal 5 karakter"),
+  password: z.string().min(8, "Password minimal 8 karakter"),
+  confirmPassword: z.string().min(8, "Konfirmasi password minimal 8 karakter"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Konfirmasi password tidak cocok",
+  path: ["confirmPassword"],
+});
+
+export type AuthSignupInput = z.infer<typeof AuthSignupSchema>;

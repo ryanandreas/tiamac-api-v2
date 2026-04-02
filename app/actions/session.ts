@@ -6,8 +6,8 @@ import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 export type CurrentUser =
-  | { isAuthenticated: true; type: "customer"; id: string; name?: string; email?: string; profile?: any }
-  | { isAuthenticated: true; type: "staff"; id: string; role?: string; name?: string; email?: string }
+  | { isAuthenticated: true; type: "customer"; id: string; name?: string; email?: string; image?: string | null; profile?: any }
+  | { isAuthenticated: true; type: "staff"; id: string; role?: string; name?: string; email?: string; image?: string | null; profile?: any }
   | { isAuthenticated: false; type: null; id: null }
 
 
@@ -23,8 +23,9 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         id: true,
         name: true,
         email: true,
-        staffProfile: { select: { role: true } },
-        customerProfile: { select: { no_telp: true, alamat: true, provinsi: true } },
+        image: true,
+        staffProfile: { select: { role: true, no_telp: true, wilayah: true, bio: true } as any },
+        customerProfile: { select: { no_telp: true, alamat: true, provinsi: true } as any },
       },
     })
 
@@ -36,6 +37,8 @@ export async function getCurrentUser(): Promise<CurrentUser> {
           role: user.staffProfile.role,
           name: user.name,
           email: user.email,
+          image: user.image,
+          profile: user.staffProfile,
         }
     }
 
@@ -45,6 +48,7 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         id: user?.id ?? session.user.id,
         name: user?.name ?? session.user.name,
         email: user?.email ?? session.user.email,
+        image: user?.image,
         profile: user?.customerProfile,
     }
 
@@ -67,8 +71,9 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         id: true,
         name: true,
         email: true,
-        staffProfile: { select: { role: true } },
-        customerProfile: { select: { no_telp: true, alamat: true, provinsi: true } },
+        image: true,
+        staffProfile: { select: { role: true, no_telp: true, wilayah: true, bio: true } as any },
+        customerProfile: { select: { no_telp: true, alamat: true, provinsi: true } as any },
       },
     })
 
@@ -80,6 +85,8 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         role: user?.staffProfile?.role ?? role?.value,
         name: user?.name ?? name?.value,
         email: user?.email ?? email?.value,
+        image: user?.image,
+        profile: user?.staffProfile,
       }
     }
 
@@ -90,6 +97,7 @@ export async function getCurrentUser(): Promise<CurrentUser> {
         id,
         name: user?.name ?? name?.value,
         email: user?.email ?? email?.value,
+        image: user?.image,
         profile: user?.customerProfile,
       }
     }

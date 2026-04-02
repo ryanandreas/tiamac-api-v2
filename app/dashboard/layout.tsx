@@ -23,21 +23,34 @@ export default async function DashboardLayout({
   }
 
   // Fetch counts for sidebar badges
-  const [bookingCount, jadwalCount, servisCount] = await Promise.all([
+  const [bookingCount, jadwalCount, servisCount, tugasCount, ongoingCount] = await Promise.all([
     db.services.count({ where: { status_servis: "Booking" } }),
     db.services.count({ where: { status_servis: "Menunggu Jadwal" } }),
     db.services.count({ 
       where: { 
         status_servis: { 
           in: [
-            "Teknisi Dikonfirmasi", 
-            "Dalam Pengecekan", 
+            "Konfirmasi Teknisi", 
+            "Pengecekan Unit", 
             "Menunggu Persetujuan Customer", 
             "Sedang Dikerjakan", 
-            "Pekerjaan Selesai", 
             "Menunggu Pembayaran"
           ] 
         } 
+      } 
+    }),
+    db.services.count({ 
+      where: { 
+        teknisiId: user.id || undefined,
+        status_servis: "Konfirmasi Teknisi" 
+      } 
+    }),
+    db.services.count({ 
+      where: { 
+        teknisiId: user.id || undefined,
+        status_servis: {
+          in: ["Pengecekan Unit", "Menunggu Persetujuan Customer", "Sedang Dikerjakan", "Menunggu Pembayaran"]
+        }
       } 
     })
   ])
@@ -45,7 +58,9 @@ export default async function DashboardLayout({
   const badgeCounts = {
     booking: bookingCount,
     jadwal: jadwalCount,
-    servis: servisCount
+    servis: servisCount,
+    tugas: tugasCount,
+    ongoing: ongoingCount
   }
 
   return (

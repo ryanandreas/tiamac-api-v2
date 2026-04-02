@@ -1,268 +1,268 @@
-import { Shield, Key, Trash2 } from "lucide-react";
+'use client'
 
+import { Shield, Key, Trash2, ArrowRight, MapPin, Mail, Phone, User as UserIcon, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import type { CurrentUser } from "@/app/actions/session";
+import { useState, useTransition, useEffect } from "react";
+import { updateStaffProfile } from "@/app/actions/profile";
 
-export default function ProfileContent() {
+export default function ProfileContent({ user }: { user: CurrentUser }) {
+  const [isPending, startTransition] = useTransition();
+  const [state, setState] = useState<{ success: boolean; message: string } | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+
+  if (!user.isAuthenticated) return null;
+
+  const staff = user.type === "staff" ? user : null;
+  const profile = staff?.profile || {};
+
+  const getInitials = (name?: string) => {
+    if (!name) return "??";
+    const names = name.split(" ");
+    if (names.length >= 2) {
+      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  async function handleSubmit(formData: FormData) {
+    startTransition(async () => {
+      const result = await updateStaffProfile(formData);
+      setState(result);
+      setShowAlert(true);
+    });
+  }
+
+  useEffect(() => {
+    if (showAlert) {
+      const timer = setTimeout(() => setShowAlert(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert]);
+
   return (
-    <Tabs defaultValue="personal" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="personal">Personal</TabsTrigger>
-        <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
-      </TabsList>
+    <div className="max-w-[1400px] mx-auto space-y-8 pb-20 relative font-outfit">
+      {/* Floating Alert */}
+      {showAlert && state && (
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4 animate-in fade-in slide-in-from-top-8 duration-500">
+          <div className={`p-5 rounded-[24px] bg-white border ${state.success ? 'border-emerald-100 shadow-emerald-200/40 ring-emerald-50/50' : 'border-rose-100 shadow-rose-200/40 ring-rose-50/50'} flex items-center gap-4 shadow-2xl ring-4`}>
+            <div className={`w-12 h-12 rounded-2xl ${state.success ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'} flex items-center justify-center shrink-0`}>
+              {state.success ? <CheckCircle2 className="size-6" /> : <AlertCircle className="size-6" />}
+            </div>
+            <div className="text-left flex-1">
+              <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${state.success ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {state.success ? 'Berhasil' : 'Gagal'}
+              </p>
+              <p className="text-sm font-bold text-slate-700 leading-tight">
+                {state.message}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Personal Information */}
-      <TabsContent value="personal" className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-            <CardDescription>Update your personal details and profile information.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" defaultValue="John" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" defaultValue="Doe" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue="john.doe@example.com" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" defaultValue="+1 (555) 123-4567" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="jobTitle">Job Title</Label>
-                <Input id="jobTitle" defaultValue="Senior Product Designer" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="company">Company</Label>
-                <Input id="company" defaultValue="Acme Inc." />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                placeholder="Tell us about yourself..."
-                defaultValue="Passionate product designer with 8+ years of experience creating user-centered digital experiences. I love solving complex problems and turning ideas into beautiful, functional products."
-                rows={4}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input id="location" defaultValue="San Francisco, CA" />
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
+      <Tabs defaultValue="personal" className="space-y-8">
+        {/* Modern Segmented Controller (Pill Style) */}
+        <div className="flex justify-start px-2">
+          <TabsList className="bg-slate-100/50 p-1.5 rounded-[22px] h-auto gap-1 border border-slate-200/50 backdrop-blur-sm">
+            <TabsTrigger 
+              value="personal" 
+              className="rounded-[18px] px-8 py-2.5 text-[11px] font-black uppercase tracking-widest data-[state=active]:bg-[#66B21D] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-[#66B21D]/20 transition-all duration-300"
+            >
+              Personal
+            </TabsTrigger>
+            <TabsTrigger 
+              value="security" 
+              className="rounded-[18px] px-8 py-2.5 text-[11px] font-black uppercase tracking-widest data-[state=active]:bg-[#66B21D] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-[#66B21D]/20 transition-all duration-300"
+            >
+              Keamanan
+            </TabsTrigger>
+            <TabsTrigger 
+              value="notifications" 
+              className="rounded-[18px] px-8 py-2.5 text-[11px] font-black uppercase tracking-widest data-[state=active]:bg-[#66B21D] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-[#66B21D]/20 transition-all duration-300"
+            >
+              Notifikasi
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      {/* Account Settings */}
-      <TabsContent value="account" className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
-            <CardDescription>Manage your account preferences and subscription.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-base">Account Status</Label>
-                <p className="text-muted-foreground text-sm">Your account is currently active</p>
-              </div>
-              <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
-                Active
-              </Badge>
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-base">Subscription Plan</Label>
-                <p className="text-muted-foreground text-sm">Pro Plan - $29/month</p>
-              </div>
-              <Button variant="outline">Manage Subscription</Button>
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-base">Account Visibility</Label>
-                <p className="text-muted-foreground text-sm">
-                  Make your profile visible to other users
-                </p>
-              </div>
-              <Switch defaultChecked />
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-base">Data Export</Label>
-                <p className="text-muted-foreground text-sm">Download a copy of your data</p>
-              </div>
-              <Button variant="outline">Export Data</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-destructive/50">
-          <CardHeader>
-            <CardTitle className="text-destructive">Danger Zone</CardTitle>
-            <CardDescription>Irreversible and destructive actions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-base">Delete Account</Label>
-                <p className="text-muted-foreground text-sm">
-                  Permanently delete your account and all data
-                </p>
-              </div>
-              <Button variant="destructive">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete Account
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      {/* Security Settings */}
-      <TabsContent value="security" className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Security Settings</CardTitle>
-            <CardDescription>Manage your account security and authentication.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Password</Label>
-                  <p className="text-muted-foreground text-sm">Last changed 3 months ago</p>
+        {/* Card Wrapper following /dashboard/tugas */}
+        <div className="bg-white rounded-3xl border-0 shadow-none overflow-hidden pb-12">
+          <div className="p-8">
+            <TabsContent value="personal" className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 m-0">
+              <form action={handleSubmit} className="space-y-10">
+                {/* Compact Profile Identity */}
+                <div className="flex items-center gap-5 p-6 rounded-3xl bg-slate-50/50 border border-slate-100 shadow-sm shadow-slate-200/20">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white border-2 border-white shadow-md flex items-center justify-center">
+                    {user.image ? (
+                      <img 
+                        src={user.image} 
+                        className="w-full h-full object-cover" 
+                        alt="Avatar" 
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#66B21D]/10 flex items-center justify-center text-[#66B21D] text-xl font-black">
+                        {getInitials(user.name)}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">{user.name}</h2>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[9px] font-black text-[#66B21D] uppercase tracking-wider px-1.5 py-0.5 bg-[#66B21D]/10 rounded-md">
+                        {staff?.role || 'Staff'}
+                      </span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                        <MapPin className="size-3" /> {profile.wilayah || 'Wilayah belum diatur'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <Button variant="outline">
-                  <Key className="mr-2 h-4 w-4" />
-                  Change Password
-                </Button>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Two-Factor Authentication</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Add an extra layer of security to your account
-                  </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Nama Lengkap */}
+                  <div className="space-y-3 group">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1 group-focus-within:text-[#66B21D] transition-colors">Nama Lengkap</Label>
+                    <div className="relative">
+                      <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors" />
+                      <Input 
+                        name="name"
+                        defaultValue={user.name || ""} 
+                        className="h-14 pl-11 bg-white border-2 border-slate-50 rounded-2xl focus-visible:ring-0 focus-visible:border-[#66B21D]/30 focus-visible:bg-white shadow-sm shadow-slate-100/50 transition-all font-bold text-slate-700" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div className="space-y-3 group">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1 group-focus-within:text-[#66B21D] transition-colors">Alamat Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors" />
+                      <Input 
+                        defaultValue={user.email || ""} 
+                        disabled
+                        className="h-14 pl-11 bg-slate-50 border-2 border-slate-50 rounded-2xl cursor-not-allowed font-bold text-slate-400" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Phone */}
+                  <div className="space-y-3 group">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1 group-focus-within:text-[#66B21D] transition-colors">Nomor WhatsApp</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors" />
+                      <Input 
+                        name="no_telp"
+                        defaultValue={profile.no_telp || ""} 
+                        placeholder="0812-..."
+                        className="h-14 pl-11 bg-white border-2 border-slate-50 rounded-2xl focus-visible:ring-0 focus-visible:border-[#66B21D]/30 focus-visible:bg-white shadow-sm shadow-slate-100/50 transition-all font-bold text-slate-700" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div className="space-y-3 group">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1 group-focus-within:text-[#66B21D] transition-colors">Wilayah</Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors" />
+                      <Input 
+                        name="wilayah"
+                        defaultValue={profile.wilayah || ""} 
+                        placeholder="Contoh: Jakarta Selatan"
+                        className="h-14 pl-11 bg-white border-2 border-slate-50 rounded-2xl focus-visible:ring-0 focus-visible:border-[#66B21D]/30 focus-visible:bg-white shadow-sm shadow-slate-100/50 transition-all font-bold text-slate-700" 
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
-                    Enabled
-                  </Badge>
-                  <Button variant="outline" size="sm">
-                    Configure
+
+                {/* Bio */}
+                <div className="space-y-3 group">
+                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1 group-focus-within:text-[#66B21D] transition-colors">Bio</Label>
+                  <Textarea 
+                    name="bio"
+                    defaultValue={profile.bio || ""} 
+                    placeholder="Tuliskan sedikit tentang Anda..."
+                    className="min-h-[120px] p-4 bg-white border-2 border-slate-50 rounded-2xl focus-visible:ring-0 focus-visible:border-[#66B21D]/30 focus-visible:bg-white shadow-sm shadow-slate-100/50 transition-all font-bold text-slate-600 line-height-relaxed" 
+                  />
+                </div>
+
+                <div className="flex justify-end pt-6">
+                  <Button 
+                    type="submit"
+                    disabled={isPending}
+                    className="h-14 px-10 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-2xl font-black text-sm uppercase tracking-widest border-none shadow-xl shadow-[#66B21D]/20 transition-all hover:scale-[1.02] active:scale-95 gap-3 disabled:opacity-70 disabled:hover:scale-100"
+                  >
+                    {isPending ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        Memproses...
+                      </span>
+                    ) : (
+                      <>
+                        <span>Simpan Profil</span>
+                        <ArrowRight className="size-5" />
+                      </>
+                    )}
                   </Button>
                 </div>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Login Notifications</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Get notified when someone logs into your account
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Active Sessions</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Manage devices that are logged into your account
-                  </p>
-                </div>
-                <Button variant="outline">
-                  <Shield className="mr-2 h-4 w-4" />
-                  View Sessions
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
+              </form>
+            </TabsContent>
 
-      {/* Notification Settings */}
-      <TabsContent value="notifications" className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Notification Preferences</CardTitle>
-            <CardDescription>Choose what notifications you want to receive.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Email Notifications</Label>
-                  <p className="text-muted-foreground text-sm">Receive notifications via email</p>
+            <TabsContent value="security" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 m-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="p-6 rounded-3xl bg-slate-50/50 border-2 border-slate-100 shadow-sm space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="size-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-[#66B21D] shadow-sm">
+                      <Key className="size-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-slate-900 tracking-tight">Kata Sandi</h3>
+                      <p className="text-xs font-bold text-slate-400">Terakhir diubah 3 bulan yang lalu</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="w-full h-12 rounded-xl font-bold text-slate-600 hover:bg-white border-slate-100 shadow-none">Ubah Sandi</Button>
                 </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Push Notifications</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Receive push notifications in your browser
-                  </p>
+
+                <div className="p-6 rounded-3xl bg-slate-50/50 border-2 border-slate-100 shadow-sm space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="size-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-[#66B21D] shadow-sm">
+                      <Shield className="size-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-slate-900 tracking-tight">Otentikasi 2 Faktor</h3>
+                      <p className="text-xs font-bold text-[#66B21D]">Status: Aktif</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="w-full h-12 rounded-xl font-bold text-slate-600 hover:bg-white border-slate-100 shadow-none">Konfigurasi</Button>
                 </div>
-                <Switch />
               </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Marketing Emails</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Receive emails about new features and updates
-                  </p>
-                </div>
-                <Switch defaultChecked />
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 m-0">
+              <div className="bg-slate-50/50 rounded-3xl border-2 border-slate-100 shadow-sm overflow-hidden">
+                {[
+                  { label: "Email Pesanan", desc: "Dapatkan email saat ada pesanan baru", active: true },
+                  { label: "Notifikasi WA", desc: "Terima update status via WhatsApp", active: true },
+                  { label: "Alert Stok", desc: "Peringatan saat stok inventory menipis", active: false }
+                ].map((item, i) => (
+                  <div key={i} className={`p-6 flex items-center justify-between ${i !== 2 ? 'border-b border-slate-100' : ''}`}>
+                    <div className="space-y-1">
+                      <Label className="text-[13px] font-black text-slate-900 tracking-tight">{item.label}</Label>
+                      <p className="text-xs font-bold text-slate-400">{item.desc}</p>
+                    </div>
+                    <Switch defaultChecked={item.active} className="data-[state=checked]:bg-[#66B21D]" />
+                  </div>
+                ))}
               </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Weekly Summary</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Get a weekly summary of your activity
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">Security Alerts</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Important security notifications (always enabled)
-                  </p>
-                </div>
-                <Switch checked disabled />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+            </TabsContent>
+          </div>
+        </div>
+      </Tabs>
+    </div>
   );
 }

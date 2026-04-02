@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useActionState, useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,11 +15,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { signup } from "@/app/actions/auth"
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [state, formAction, isPending] = useActionState(signup, null)
+  const [showError, setShowError] = useState(false)
+
+  useEffect(() => {
+    if (state && !state.success) {
+      setShowError(true)
+      const timer = setTimeout(() => setShowError(false), 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [state])
   return (
     <div className={cn("flex flex-col gap-6 w-full", className)} {...props}>
       {/* Brand Logo */}
@@ -38,7 +50,7 @@ export function SignupForm({
         <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">Buat Akun Baru</h1>
       </div>
 
-      <form className="space-y-6">
+      <form action={formAction} className="space-y-6">
         <div className="space-y-5">
           {/* Name & Phone Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -51,7 +63,7 @@ export function SignupForm({
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="Budi Santoso"
+                  placeholder="Nama Lengkap"
                   required
                   className="pl-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
                 />
@@ -65,9 +77,9 @@ export function SignupForm({
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within:text-[#66B21D] transition-colors" />
                 <Input
                   id="no_telp"
-                  name="tel"
+                  name="no_telp"
                   type="tel"
-                  placeholder="081234567890"
+                  placeholder="Nomor WhatsApp"
                   required
                   className="pl-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
                 />
@@ -86,7 +98,7 @@ export function SignupForm({
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="nama@email.com"
+                  placeholder="Email"
                   required
                   className="pl-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
                 />
@@ -119,9 +131,9 @@ export function SignupForm({
             <textarea
               id="alamat"
               name="alamat"
-              placeholder="Masukkan alamat lengkap rumah atau kantor Anda"
+              placeholder="Alamat Lengkap"
               required
-              className="w-full p-4 min-h-[100px] bg-slate-50 border-none shadow-none rounded-xl focus:ring-1 focus:ring-[#66B21D] focus:outline-none transition-all font-bold text-sm resize-none"
+              className="w-full p-4 min-h-[100px] bg-slate-50 border-none shadow-none rounded-xl focus:ring-1 focus:ring-[#66B21D] focus:outline-none transition-all font-bold text-sm resize-none placeholder:text-slate-400"
             />
           </div>
 
@@ -135,7 +147,7 @@ export function SignupForm({
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="Minimal 8 Karakter"
                   required
                   className="pl-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
                 />
@@ -149,7 +161,7 @@ export function SignupForm({
                   id="confirm-password"
                   name="confirm-password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="Ulangi Sandi"
                   required
                   className="pl-11 h-12 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm"
                 />
@@ -171,12 +183,44 @@ export function SignupForm({
 
         <Button
           type="submit"
+          disabled={isPending}
           className="w-full h-12 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-black text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 gap-2"
         >
-          <span>Daftar Akun</span>
-          <ArrowRight className="size-4" />
+          {isPending ? (
+            <span className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              Memproses...
+            </span>
+          ) : (
+            <>
+              <span>Daftar Akun</span>
+              <ArrowRight className="size-4" />
+            </>
+          )}
         </Button>
       </form>
+
+      {/* Floating Error Alert */}
+      {state && !state.success && showError && (
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4 animate-in fade-in slide-in-from-top-8 duration-500">
+          <div className="p-5 rounded-[24px] bg-white border border-rose-100 flex items-center gap-4 shadow-2xl shadow-rose-200/40 ring-4 ring-rose-50/50">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 shrink-0">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <div className="text-left flex-1">
+              <p className="text-[9px] font-black text-rose-400 uppercase tracking-widest mb-1">Pendaftaran Gagal</p>
+              <p className="text-xs font-bold text-slate-800 leading-tight uppercase tracking-tight">{state.message}</p>
+            </div>
+            <button 
+              type="button"
+              onClick={() => setShowError(false)}
+              className="p-1.5 hover:bg-slate-50 rounded-lg transition-colors text-slate-300"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Social Register */}
       <div className="space-y-4">

@@ -1,13 +1,11 @@
 import type { Metadata } from "next"
 import { db } from "@/lib/db"
-import { History, Eye, Search, MapPin, Calendar, CheckCircle2, Clock } from "lucide-react"
+import { History } from "lucide-react"
 import { getCurrentUser } from "@/app/actions/session"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import Link from "next/link"
+import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { RiwayatTableBody } from "./riwayat-table-body"
 
 export const metadata: Metadata = {
   title: "Riwayat Kerja",
@@ -35,7 +33,7 @@ export default async function RiwayatTeknisiPage({
   const whereClause = {
     teknisiId: user.id,
     status_servis: {
-      in: ["Pekerjaan Selesai", "Menunggu Pembayaran", "Selesai (Garansi Aktif)"]
+      in: ["Pekerjaan Selesai", "Menunggu Pembayaran", "Selesai", "Selesai (Garansi Aktif)"]
     }
   }
 
@@ -57,7 +55,7 @@ export default async function RiwayatTeknisiPage({
   const totalPages = Math.ceil(totalCount / pageSize)
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in font-outfit">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-4">
           <DynamicBreadcrumbs />
@@ -68,79 +66,24 @@ export default async function RiwayatTeknisiPage({
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
+      <div className="bg-white rounded-[32px] border-0 shadow-none overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50/30">
-              <TableRow className="border-slate-50 hover:bg-transparent">
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 pl-8">ID Servis</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Pelanggan</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Layanan</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 text-center">Status</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12">Tgl Selesai</TableHead>
-                <TableHead className="text-right text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 h-12 pr-8">Aksi</TableHead>
+            <TableHeader className="bg-slate-50/50">
+              <TableRow className="border-slate-50 hover:bg-transparent h-14">
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pl-8">ID Servis</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Pelanggan</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Layanan</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-center">Status</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Tgl Selesai</TableHead>
+                <TableHead className="text-right text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pr-8">Aksi</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {tasks.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="py-24 text-center">
-                    <div className="flex flex-col items-center gap-2">
-                       <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-2">
-                        <History className="h-6 w-6" />
-                      </div>
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Belum ada riwayat pekerjaan selesai</p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                tasks.map((task) => (
-                  <TableRow key={task.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
-                    <TableCell className="py-6 pl-8">
-                       <span className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors uppercase tracking-wider">#{task.id.slice(0, 8)}</span>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-900">{task.customer.name}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Identitas Member</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-6">
-                       <Badge variant="outline" className="h-5 px-2 text-[9px] font-bold uppercase tracking-widest border-slate-100 bg-slate-50 text-slate-500 rounded-lg">
-                        {task.jenis_servis}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="py-6 text-center">
-                       {task.status_servis === "Selesai (Garansi Aktif)" ? (
-                        <div className="flex items-center justify-center gap-1.5 text-green-600">
-                           <CheckCircle2 className="h-3.5 w-3.5" />
-                           <span className="text-[10px] font-bold uppercase tracking-widest">Selesai</span>
-                        </div>
-                      ) : (
-                        <Badge variant="secondary" className="font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full whitespace-nowrap bg-blue-50 text-blue-600">
-                          {task.status_servis}
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="py-6">
-                       <div className="flex items-center gap-2">
-                          <Clock className="h-3.5 w-3.5 text-slate-300" />
-                          <span className="text-[11px] font-bold text-slate-600 uppercase">{new Date(task.updatedAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                       </div>
-                    </TableCell>
-                    <TableCell className="text-right py-6 pr-8">
-                      <Button variant="ghost" size="sm" className="h-9 w-9 p-0 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition-colors" title="Lihat Detail">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
+            <RiwayatTableBody tasks={tasks} />
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="p-6 bg-slate-50/20">
+          <div className="p-8 bg-slate-50/20 border-t border-slate-50/50">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

@@ -1,22 +1,17 @@
 import type { Metadata } from "next"
 import { db } from "@/lib/db"
-import { Calendar } from "lucide-react"
+import { Truck } from "lucide-react"
 import { getCurrentUser } from "@/app/actions/session"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { JadwalTableBody } from "./jadwal-table-body"
+import { OngoingTableBody } from "./ongoing-table-body"
 
 export const metadata: Metadata = {
-  title: "Jadwal Servis",
+  title: "Ongoing Servis",
 }
 
-function extractJadwal(keluhan: string) {
-  const match = keluhan.match(/^Jadwal:\s*(.+)$/im)
-  return match?.[1]?.trim()
-}
-
-export default async function JadwalSayaPage({
+export default async function OngoingServisPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string }>
@@ -35,9 +30,17 @@ export default async function JadwalSayaPage({
   const pageSize = 10
   const skip = (currentPage - 1) * pageSize
 
+  // Step 4 to Step 7 as requested to show all technician work already accepted
+  const statusOngoing = [
+    "Pengecekan Unit", 
+    "Menunggu Persetujuan Customer", 
+    "Sedang Dikerjakan", 
+    "Menunggu Pembayaran"
+  ]
+
   const whereClause = {
     teknisiId: user.id,
-    status_servis: { in: ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Sedang Dikerjakan"] },
+    status_servis: { in: statusOngoing }
   }
 
   const [services, totalCount] = await Promise.all([
@@ -53,18 +56,14 @@ export default async function JadwalSayaPage({
 
   const totalPages = Math.ceil(totalCount / pageSize)
 
-  const rows = services
-    .map((s) => ({ ...s, jadwal: extractJadwal(s.keluhan ?? "") }))
-    .sort((a, b) => (a.jadwal ?? "").localeCompare(b.jadwal ?? ""))
-
   return (
     <div className="space-y-8 animate-fade-in font-outfit">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Jadwal Servis</h1>
-            <p className="text-slate-500 font-medium text-base">Daftar giliran kunjungan dan perbaikan unit AC pelanggan.</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Ongoing Servis</h1>
+            <p className="text-slate-500 font-medium text-base">Pantau semua pekerjaan yang sedang aktif, mulai dari pengecekan hingga proses pengerjaan.</p>
           </div>
         </div>
       </div>
@@ -74,14 +73,13 @@ export default async function JadwalSayaPage({
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-slate-50 hover:bg-transparent h-14">
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pl-8">Waktu & Jadwal</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Informasi Pelanggan</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Lokasi Tujuan</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-center">Status</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pl-8">Jadwal & Unit</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Pelanggan</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-center">Status Tracking</TableHead>
                 <TableHead className="text-right text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pr-8">Aksi</TableHead>
               </TableRow>
             </TableHeader>
-            <JadwalTableBody rows={rows} />
+            <OngoingTableBody services={services} />
           </Table>
         </div>
         {totalPages > 1 && (
@@ -89,7 +87,7 @@ export default async function JadwalSayaPage({
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              baseUrl="/dashboard/jadwal-saya"
+              baseUrl="/dashboard/ongoing"
             />
           </div>
         )}
@@ -97,4 +95,3 @@ export default async function JadwalSayaPage({
     </div>
   )
 }
-

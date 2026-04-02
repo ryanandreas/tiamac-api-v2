@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreditCard, Receipt, AlertCircle, CheckCircle2, Clock, ArrowRight } from "lucide-react"
+import { CreditCard, Receipt, AlertCircle, CheckCircle2, Clock, ArrowRight, Eye } from "lucide-react"
 import Link from "next/link"
 import { OrderDetailDialog } from "@/components/dashboard/order-detail-dialog"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
@@ -151,7 +151,7 @@ export default async function BillingPage({
                             {formatRupiah(sisaPembayaran)}
                           </div>
                           <div className="flex items-center gap-2">
-                            <OrderDetailDialog
+                             <OrderDetailDialog
                               orderId={service.id}
                               units={service.acUnits.map((unit) => ({
                                 id: unit.id,
@@ -164,7 +164,7 @@ export default async function BillingPage({
                               totalBiaya={service.biaya ?? totalEstimasi}
                               trigger={
                                 <Button variant="secondary" size="icon" className="h-10 w-10 rounded-xl border-none bg-slate-50 hover:bg-green-50 hover:text-[#66B21D] transition-all">
-                                  <Receipt className="h-4.5 w-4.5" />
+                                  <Eye className="h-4.5 w-4.5" />
                                 </Button>
                               }
                             />

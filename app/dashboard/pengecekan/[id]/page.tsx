@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation"
 
 import { getCurrentUser } from "@/app/actions/session"
-import { PengecekanDetail } from "@/components/technician/pengecekan-detail"
-import { DashboardHeader } from "@/components/dashboard/header"
-import { SidebarInset } from "@/components/ui/sidebar"
+import { PengecekanWorkstation } from "@/components/technician/pengecekan-workstation"
 import { db } from "@/lib/db"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
 function extractJadwal(keluhan: string) {
   const match = keluhan.match(/^Jadwal:\s*(.+)$/im)
@@ -30,6 +29,8 @@ export default async function PengecekanDetailPage({
     where: { id },
     include: {
       customer: { include: { customerProfile: true } },
+      teknisi: true,
+      statusHistory: { orderBy: { createdAt: "desc" } },
       materialUsages: { include: { item: { select: { nama: true, uom: true } } }, orderBy: { createdAt: "desc" } },
       acUnits: { include: { layanan: true } },
     },
@@ -50,22 +51,25 @@ export default async function PengecekanDetailPage({
   })
 
   return (
-    <SidebarInset>
-      <DashboardHeader title="Pengecekan" />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-        <PengecekanDetail
-          serviceId={service.id}
-          statusServis={service.status_servis}
-          customerName={service.customer?.name ?? "-"}
-          customerAlamat={service.customer?.customerProfile?.alamat ?? "-"}
-          jadwal={extractJadwal(service.keluhan ?? "") ?? null}
-          biayaDasar={service.biaya_dasar ?? 50000}
-          acUnits={service.acUnits}
-          catalogRows={catalogRows}
-          inventoryItems={inventoryItems}
-          usages={service.materialUsages}
-        />
+    <div className="space-y-4 animate-fade-in font-outfit">
+      <div className="px-2">
+        <DynamicBreadcrumbs />
       </div>
-    </SidebarInset>
+
+      <PengecekanWorkstation
+        serviceId={service.id}
+        statusServis={service.status_servis}
+        customerName={service.customer?.name ?? "-"}
+        customerAlamat={service.customer?.customerProfile?.alamat ?? "-"}
+        teknisiName={service.teknisi?.name ?? "-"}
+        statusHistory={service.statusHistory}
+        jadwal={extractJadwal(service.keluhan ?? "") ?? null}
+        biayaDasar={service.biaya_dasar ?? 50000}
+        acUnits={service.acUnits}
+        catalogRows={catalogRows}
+        inventoryItems={inventoryItems}
+        usages={service.materialUsages}
+      />
+    </div>
   )
 }

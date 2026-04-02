@@ -1,19 +1,23 @@
 import ProfileContent from "@/components/profile-page/components/profile-content"
-import { DashboardHeader } from "@/components/dashboard/header"
-import { SidebarInset } from "@/components/ui/sidebar"
+import { getCurrentUser } from "@/app/actions/session"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const user = await getCurrentUser()
+
   return (
-    <SidebarInset>
-      <DashboardHeader title="Profile" />
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Profile</h2>
-        </div>
-        <div className="hidden h-full flex-1 flex-col space-y-8 md:flex">
-          <ProfileContent />
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-4">
+          <DynamicBreadcrumbs />
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Profil Pengguna</h1>
+            <p className="text-slate-500 font-medium text-base">Kelola informasi pribadi dan pengaturan keamanan akun Anda.</p>
+          </div>
         </div>
       </div>
-    </SidebarInset>
+
+      <ProfileContent user={user} />
+    </div>
   )
 }

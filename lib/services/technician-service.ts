@@ -11,13 +11,13 @@ export class TechnicianService {
       select: { id: true, teknisiId: true, status_servis: true },
     });
 
-    if (!service || service.teknisiId !== technicianId || service.status_servis !== "Teknisi Dikonfirmasi") {
+    if (!service || service.teknisiId !== technicianId || service.status_servis !== "Konfirmasi Teknisi") {
       throw new Error("Servis tidak dapat diproses.");
     }
 
     await db.services.update({
       where: { id: serviceId },
-      data: { status: "Dalam Pengecekan", status_servis: "Dalam Pengecekan" },
+      data: { status: "Pengecekan Unit", status_servis: "Pengecekan Unit" },
     });
 
     this.revalidateServicePaths(serviceId);
@@ -84,11 +84,11 @@ export class TechnicianService {
 
   static async submitPengecekan(data: {
     serviceId: string;
-    diagnosa: string;
+    diagnosa?: string;
     jasaTambahan: number;
     technicianId: string;
   }) {
-    const { serviceId, diagnosa, jasaTambahan, technicianId } = data;
+    const { serviceId, diagnosa = "-", jasaTambahan, technicianId } = data;
 
     const service = await db.services.findUnique({
       where: { id: serviceId },
@@ -228,6 +228,27 @@ export class TechnicianService {
     revalidatePath(`/dashboard/pengecekan/${unit.service.id}`);
   }
 
+  static async addAcUnit(data: { serviceId: string; pk: number; technicianId: string }) {
+    const { serviceId, pk, technicianId } = data;
+    const service = await db.services.findUnique({
+      where: { id: serviceId },
+      select: { id: true, teknisiId: true, status_servis: true },
+    });
+
+    if (!service || service.teknisiId !== technicianId || !this.isEditableStatus(service.status_servis)) {
+      throw new Error("Servis tidak dapat diproses.");
+    }
+
+    await db.serviceAcUnit.create({
+      data: {
+        serviceId,
+        pk,
+      },
+    });
+
+    revalidatePath(`/dashboard/pengecekan/${serviceId}`);
+  }
+
   static async removeUnitLayanan(data: { unitLayananId: string; technicianId: string }) {
     const { unitLayananId, technicianId } = data;
     const layanan = await db.serviceAcUnitLayanan.findUnique({
@@ -279,7 +300,7 @@ export class TechnicianService {
   }
 
   private static isEditableStatus(status: string | null | undefined) {
-    return status === "Teknisi Dikonfirmasi" || status === "Dalam Pengecekan";
+    return status === "Konfirmasi Teknisi" || status === "Pengecekan Unit" || status === "Dalam Pengecekan" || status === "Teknisi Dikonfirmasi";
   }
 
   private static upsertLine(text: string, prefix: string, value: string) {

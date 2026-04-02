@@ -36,6 +36,10 @@ export async function updateCustomerProfile(
         alamat,
         password
     })
+    
+    revalidatePath("/customer-panel/settings")
+    revalidatePath("/customer-panel/dashboard")
+    
     return { success: true, message: "Profil berhasil disimpan." }
   } catch (err: any) {
     return { success: false, message: err.message || "Gagal menyimpan profil." }

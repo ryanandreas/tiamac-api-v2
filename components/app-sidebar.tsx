@@ -93,8 +93,7 @@ const karyawanMenu = [
     items: [
       { title: "Penugasan Baru", url: "/dashboard/tugas", icon: Bell },
       { title: "Jadwal Servis", url: "/dashboard/jadwal-saya", icon: Calendar },
-      { title: "Pengecekan & Diagnosa", url: "/dashboard/pengecekan", icon: Search },
-      { title: "Proses Pengerjaan", url: "/dashboard/pengerjaan", icon: Wrench },
+      { title: "Ongoing Servis", url: "/dashboard/ongoing", icon: Truck },
     ]
   },
   {
@@ -120,6 +119,8 @@ export function AppSidebar({
     booking: number;
     jadwal: number;
     servis: number;
+    tugas: number;
+    ongoing: number;
   }
 }) {
   const role = userRole?.toLowerCase()
@@ -159,7 +160,7 @@ export function AppSidebar({
               {group.items.map((item) => {
                 const isActive = pathname === item.url
                 
-                // Badge Logic for Admin
+                // Badge Logic
                 let badge = null
                 if (role === "admin") {
                   if (item.url === "/dashboard/booking" && badgeCounts?.booking) {
@@ -168,6 +169,12 @@ export function AppSidebar({
                     badge = badgeCounts.jadwal
                   } else if (item.url === "/dashboard/servis" && badgeCounts?.servis) {
                     badge = badgeCounts.servis
+                  }
+                } else if (isTechnician) {
+                  if (item.url === "/dashboard/tugas" && badgeCounts?.tugas) {
+                    badge = badgeCounts.tugas
+                  } else if (item.url === "/dashboard/ongoing" && badgeCounts?.ongoing) {
+                    badge = badgeCounts.ongoing
                   }
                 }
 

@@ -106,3 +106,7 @@ export async function createAcBooking(
 
   redirect("/customer-panel/pesanan")
 }
+
+export async function getServiceDetail(id: string) {
+  return BookingService.getServiceDetail(id)
+}

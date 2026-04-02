@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { randomUUID } from "crypto";
 import { Prisma } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 export class UserService {
   static async findByEmail(email: string) {
@@ -66,13 +67,15 @@ export class UserService {
     alamat?: string;
     password?: string;
   }) {
+    const hashedPassword = data.password ? await bcrypt.hash(data.password, 10) : undefined;
+
     return db.$transaction(async (tx) => {
       await tx.user.update({
         where: { id },
         data: {
           name: data.name,
           email: data.email,
-          ...(data.password ? { password: data.password } : {}),
+          ...(hashedPassword ? { password: hashedPassword } : {}),
         },
       });
 

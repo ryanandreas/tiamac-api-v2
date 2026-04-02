@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
-import { MoreHorizontal, Plus, Filter, Receipt, Copy, Check, Search, Edit2, Trash2 } from "lucide-react"
+import { MoreHorizontal, Plus, Filter, Receipt, Copy, Check, Search, Edit2, Trash2, Eye, XCircle, CreditCard } from "lucide-react"
 import type { Prisma } from "@prisma/client"
 import { cancelServiceEstimate, confirmServiceEstimate } from "@/app/actions/customer"
 import { ServiceStatusHistoryDialog } from "./service-status-history-dialog"
@@ -87,11 +87,11 @@ function nextStepLabel(status: string) {
   }
 }
 
-export function ServiceListTable({ 
-  data, 
-  showNextStep, 
+export function ServiceListTable({
+  data,
+  showNextStep,
   enableCustomerApproval,
-  isCustomerView = false 
+  isCustomerView = false
 }: ServiceListTableProps) {
   const emptyColSpan = isCustomerView ? (showNextStep ? 6 : 5) : (showNextStep ? 8 : 7)
   const router = useRouter()
@@ -100,7 +100,7 @@ export function ServiceListTable({
   const [actionBusy, setActionBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  
+
   const [detailOpen, setDetailOpen] = useState(false)
   const [selectedDetailServiceId, setSelectedDetailServiceId] = useState<string | null>(null)
 
@@ -269,21 +269,21 @@ export function ServiceListTable({
             {data.map((item) => (
               <TableRow key={item.id} className="border-slate-50 group hover:bg-slate-50/30 transition-colors">
                 <TableCell className={`${isCustomerView ? "pl-6 py-6" : "pl-8 py-6"}`}>
-                   <div className="flex items-center gap-2">
-                       <span className={`font-black tracking-tight ${isCustomerView ? "text-slate-900" : "text-slate-500 text-xs"}`}>
-                        #{item.id.slice(0, 8).toUpperCase()}
-                      </span>
-                      {isCustomerView && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-slate-300 hover:text-slate-600 transition-colors"
-                          onClick={() => copyToClipboard(item.id)}
-                        >
-                          {copiedId === item.id ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
-                        </Button>
-                      )}
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`font-black tracking-tight ${isCustomerView ? "text-slate-900" : "text-slate-500 text-xs"}`}>
+                      #{item.id.slice(0, 8).toUpperCase()}
+                    </span>
+                    {isCustomerView && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-slate-300 hover:text-slate-600 transition-colors"
+                        onClick={() => copyToClipboard(item.id)}
+                      >
+                        {copiedId === item.id ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
 
                 {!isCustomerView && (
@@ -331,14 +331,13 @@ export function ServiceListTable({
                 </TableCell>
 
                 <TableCell className="py-6 text-center">
-                   <Badge 
-                    className={`px-3 py-1 rounded-lg font-bold text-[9px] border-none ${
-                      item.status_servis === "Booking" 
-                        ? "bg-blue-100 text-blue-600" 
+                  <Badge
+                    className={`px-3 py-1 rounded-lg font-bold text-[9px] border-none ${item.status_servis === "Booking"
+                        ? "bg-blue-100 text-blue-600"
                         : item.status_servis.startsWith("Selesai")
                           ? "bg-green-100 text-[#66B21D]"
                           : "bg-orange-100 text-orange-600"
-                    }`}
+                      }`}
                   >
                     {item.status_servis}
                   </Badge>
@@ -370,20 +369,40 @@ export function ServiceListTable({
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="rounded-xl border-slate-100 shadow-xl shadow-slate-200/50">
-                          <DropdownMenuLabel className="text-[10px] font-bold text-slate-400">Opsi Pesanan</DropdownMenuLabel>
-                          {enableCustomerApproval && item.status_servis === "Menunggu Persetujuan Customer" ? (
-                            <DropdownMenuItem onClick={() => openConfirm(item)} className="text-xs font-bold text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
-                              Konfirmasi Estimasi
-                            </DropdownMenuItem>
-                          ) : null}
-                          {isCustomerView && (
-                            <DropdownMenuItem onClick={() => openDetail(item)} className="text-xs font-bold text-slate-600">
-                              <Receipt className="mr-2 h-3.5 w-3.5" />
-                              <span>Detail Servis</span>
+                        <DropdownMenuContent align="end" className="rounded-2xl border-slate-100 shadow-xl shadow-slate-200/50 min-w-[200px] p-2">
+                          <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                            Opsi Pesanan
+                          </DropdownMenuLabel>
+                          
+                          {/* Detail Servis - New Icon */}
+                          <DropdownMenuItem onClick={() => openDetail(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:bg-slate-50">
+                            <Eye className="mr-3 h-4 w-4 text-slate-400" />
+                            <span>Detail Servis</span>
+                          </DropdownMenuItem>
+
+                          {/* Lakukan Pembayaran */}
+                          {(item.status_servis === "Booking" || item.status_servis === "Menunggu Pembayaran") && (
+                            <DropdownMenuItem className="rounded-xl px-3 py-2.5 text-xs font-black text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
+                               <CreditCard className="mr-3 h-4 w-4" />
+                               <span>{item.status_servis === "Booking" ? "Bayar DP Rp 50.000" : "Lakukan Pembayaran"}</span>
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem className="text-xs font-bold text-slate-600">Update Status</DropdownMenuItem>
+
+                          {/* Konfirmasi Estimasi */}
+                          {enableCustomerApproval && item.status_servis === "Menunggu Persetujuan Customer" && (
+                            <DropdownMenuItem onClick={() => openConfirm(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
+                               <Check className="mr-3 h-4 w-4" />
+                               Konfirmasi Estimasi
+                            </DropdownMenuItem>
+                          )}
+
+                          {/* Batalkan - Expanded Visibility */}
+                          {["Booking", "Menunggu Jadwal", "Teknisi Dikonfirmasi", "Dalam Pengecekan", "Menunggu Persetujuan Customer"].includes(item.status_servis) && (
+                            <DropdownMenuItem onClick={() => openConfirm(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-red-500 focus:bg-red-50 focus:text-red-600">
+                              <XCircle className="mr-3 h-4 w-4" />
+                              Batalkan
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     )}

@@ -93,5 +93,39 @@ export class BookingService {
       }
     });
   }
+
+  static async getServiceDetail(id: string) {
+    return db.services.findUnique({
+      where: { id },
+      include: {
+        customer: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        teknisi: {
+          select: {
+            name: true,
+          },
+        },
+        acUnits: {
+          include: {
+            layanan: true,
+          },
+        },
+        materialUsages: {
+          include: {
+            item: true,
+          },
+        },
+        statusHistory: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+  }
 }
 

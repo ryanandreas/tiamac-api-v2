@@ -10,6 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Save } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { SuccessAlert } from "./success-alert"
 
 export function CustomerProfileForm({
   initialValues,
@@ -22,16 +25,29 @@ export function CustomerProfileForm({
     alamat?: string | null
   }
 }) {
+  const router = useRouter()
   const [state, formAction, isPending] = useActionState<CustomerProfileActionState, FormData>(
     updateCustomerProfile,
     null
   )
+  const [showAlert, setShowAlert] = useState(false)
+
+  useEffect(() => {
+    if (state?.success) {
+      setShowAlert(true)
+      router.refresh()
+    }
+  }, [state, router])
 
   return (
-    <form action={formAction} className="space-y-4">
-      {state?.message && (
-        <div className="text-sm font-bold text-[#66B21D] bg-green-50/50 p-4 rounded-2xl border-none animate-fade-in">{state.message}</div>
-      )}
+    <form action={formAction} key={initialValues.name + initialValues.email} className="space-y-4">
+      {/* Success alert will float at top of viewport */}
+      <SuccessAlert 
+        message="Profil berhasil disimpan." 
+        isVisible={showAlert} 
+        onClose={() => setShowAlert(false)} 
+      />
+      
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-1.5 px-0">
           <Label htmlFor="name" className="text-xs font-bold text-slate-400 pl-1">Nama Lengkap</Label>

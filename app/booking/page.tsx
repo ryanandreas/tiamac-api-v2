@@ -19,7 +19,7 @@ export default async function BookingPage() {
   return (
     <div className="min-h-screen bg-background">
       <SiteNavbar user={current} mode="sticky" />
-      <main className="mx-auto max-w-4xl px-4 py-6 md:px-8">
+      <main className="mx-auto w-full py-6">
         <AcBookingForm catalogRows={catalogRows} currentUser={current} />
       </main>
     </div>

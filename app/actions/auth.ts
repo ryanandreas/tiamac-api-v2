@@ -34,7 +34,7 @@ export async function login(
     if (user.staffProfile) {
       redirect("/dashboard")
     } else {
-      redirect("/customer-panel/dashboard")
+      redirect("/")
     }
   } catch (error: any) {
     if (error.digest?.startsWith("NEXT_REDIRECT")) throw error;
@@ -56,5 +56,36 @@ export async function loginStaff(
   formData: FormData
 ): Promise<AuthActionState> {
   return login(_prevState, formData)
+}
+
+export async function signup(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const name = formData.get("name") as string
+  const email = formData.get("email") as string
+  const no_telp = formData.get("no_telp") as string
+  const provinsi = formData.get("provinsi") as string
+  const alamat = formData.get("alamat") as string
+  const password = formData.get("password") as string
+  const confirmPassword = formData.get("confirm-password") as string
+
+  try {
+    await AuthService.registerCustomer({
+      name,
+      email,
+      no_telp,
+      provinsi,
+      alamat,
+      password,
+      confirmPassword,
+    })
+
+    redirect("/")
+  } catch (error: any) {
+    if (error.digest?.startsWith("NEXT_REDIRECT")) throw error;
+    console.error("Signup error:", error)
+    return { success: false, message: error.message || "Terjadi kesalahan internal" }
+  }
 }
 

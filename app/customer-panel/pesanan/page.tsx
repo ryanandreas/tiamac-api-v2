@@ -13,17 +13,7 @@ import { Pagination } from "@/components/pagination"
 
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
-const ONGOING_STATUSES = [
-  "Menunggu Jadwal",
-  "Teknisi Dikonfirmasi",
-  "Dalam Pengecekan",
-  "Menunggu Persetujuan Customer",
-  "Sedang Dikerjakan",
-  "Pekerjaan Selesai",
-  "Menunggu Pembayaran",
-]
 
-const HISTORY_STATUSES = ["Selesai (Garansi Aktif)", "Selesai", "Dibatalkan"]
 
 export const metadata: Metadata = {
   title: "Pesanan Saya",
@@ -42,7 +32,9 @@ export default async function MyOrdersPage({
 
   const whereClause = {
     customerId: user.id,
-    status_servis: { in: activeTab === "ongoing" ? ONGOING_STATUSES : HISTORY_STATUSES },
+    status_servis: activeTab === "ongoing" 
+      ? { notIn: ["Selesai", "Dibatalkan"] }
+      : { in: ["Selesai", "Dibatalkan"] },
   }
 
   const [services, ongoingCount, historyCount] = await Promise.all([
@@ -68,8 +60,8 @@ export default async function MyOrdersPage({
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
     }),
-    db.services.count({ where: { customerId: user.id, status_servis: { in: ONGOING_STATUSES } } }),
-    db.services.count({ where: { customerId: user.id, status_servis: { in: HISTORY_STATUSES } } }),
+    db.services.count({ where: { customerId: user.id, status_servis: { notIn: ["Selesai", "Dibatalkan"] } } }),
+    db.services.count({ where: { customerId: user.id, status_servis: { in: ["Selesai", "Dibatalkan"] } } }),
   ])
   
   const totalCount = activeTab === "ongoing" ? ongoingCount : historyCount
@@ -93,26 +85,26 @@ export default async function MyOrdersPage({
 
       <Tabs defaultValue={activeTab} className="w-full">
         <TabsList className="flex w-full max-w-md bg-white p-1 rounded-2xl h-12 shadow-none border-none mb-2">
-          <Link href="/customer-panel/pesanan?tab=ongoing" className="contents">
-            <TabsTrigger value="ongoing" className="flex-1 rounded-xl font-semibold text-sm data-[state=active]:bg-green-50 data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
+          <TabsTrigger asChild value="ongoing" className="flex-1 rounded-xl font-semibold text-sm data-[state=active]:bg-green-50 data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
+            <Link href="/customer-panel/pesanan?tab=ongoing">
               <Clock className="h-4 w-4" /> Berjalan
               {ongoingCount > 0 && (
                 <Badge className="h-5 px-2 bg-orange-500 hover:bg-orange-600 text-white border-none animate-pulse">
                   {ongoingCount}
                 </Badge>
               )}
-            </TabsTrigger>
-          </Link>
-          <Link href="/customer-panel/pesanan?tab=history" className="contents">
-            <TabsTrigger value="history" className="flex-1 rounded-xl font-semibold text-sm data-[state=active]:bg-green-50 data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger asChild value="history" className="flex-1 rounded-xl font-semibold text-sm data-[state=active]:bg-green-50 data-[state=active]:text-[#66B21D] data-[state=active]:shadow-none transition-all gap-2">
+            <Link href="/customer-panel/pesanan?tab=history">
               <CheckCircle2 className="h-4 w-4" /> Riwayat
               {historyCount > 0 && (
                 <Badge className="h-5 px-2 bg-slate-200 text-slate-500 hover:bg-slate-300 border-none">
                   {historyCount}
                 </Badge>
               )}
-            </TabsTrigger>
-          </Link>
+            </Link>
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value={activeTab} className="mt-0 space-y-4">

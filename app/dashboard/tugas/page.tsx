@@ -6,22 +6,15 @@ import { getCurrentUser } from "@/app/actions/session"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
 
-const STATUS_OPTIONS = [
-  { value: "all", label: "Semua Status" },
-  { value: "Teknisi Dikonfirmasi", label: "Teknisi Dikonfirmasi" },
-  { value: "Dalam Pengecekan", label: "Dalam Pengecekan" },
-  { value: "Menunggu Persetujuan Customer", label: "Menunggu Persetujuan Customer" },
-  { value: "Sedang Dikerjakan", label: "Sedang Dikerjakan" },
-]
 
 export const metadata: Metadata = {
-  title: "Tugas Baru",
+  title: "Penugasan Baru",
 }
 
 export default async function TugasTeknisiPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; page?: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const user = await getCurrentUser()
   if (
@@ -32,22 +25,14 @@ export default async function TugasTeknisiPage({
     return null
   }
 
-  const { status, page } = await searchParams
+  const { page } = await searchParams
   const currentPage = Number(page) || 1
   const pageSize = 10
   const skip = (currentPage - 1) * pageSize
 
-  const selectedStatus = status && STATUS_OPTIONS.some((s) => s.value === status) ? status : "all"
-  const statusFilter =
-    selectedStatus === "all"
-      ? ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Menunggu Persetujuan Customer", "Sedang Dikerjakan"]
-      : [selectedStatus]
-
   const whereClause = {
     teknisiId: user.id,
-    status_servis: {
-      in: statusFilter,
-    },
+    status_servis: "Konfirmasi Teknisi",
   }
 
   const [tasks, totalCount] = await Promise.all([
@@ -77,15 +62,15 @@ export default async function TugasTeknisiPage({
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Tugas Servis</h1>
-            <p className="text-slate-500 font-medium text-base">Daftar semua tugas pengerjaan yang ditugaskan kepada Anda.</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Penugasan Baru</h1>
+            <p className="text-slate-500 font-medium text-base">Konfirmasi pesanan servis yang ditugaskan kepada Anda sebelum memulai pengerjaan.</p>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
         <div className="p-0">
-          <TugasTable tasks={tasks} selectedStatus={selectedStatus} />
+          <TugasTable tasks={tasks} />
         </div>
         {totalPages > 1 && (
           <div className="p-6 bg-slate-50/20">
@@ -93,7 +78,6 @@ export default async function TugasTeknisiPage({
               currentPage={currentPage}
               totalPages={totalPages}
               baseUrl="/dashboard/tugas"
-              searchParams={{ status: selectedStatus }}
             />
           </div>
         )}
