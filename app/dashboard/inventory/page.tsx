@@ -12,10 +12,9 @@ import { Button } from "@/components/ui/button"
 import { Plus, Search, Package, Edit2, Trash2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/utils"
-import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
-import Link from "next/link"
 import { Pagination } from "@/components/pagination"
 import { getCurrentUser } from "@/app/actions/session"
+import { InventoryHeader } from "@/components/dashboard/inventory-header"
 
 export default async function InventoryPage({
   searchParams,
@@ -49,34 +48,9 @@ export default async function InventoryPage({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-4">
-          <DynamicBreadcrumbs />
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Manajemen Inventory</h1>
-            <p className="text-slate-500 font-medium text-base">Kelola ketersediaan sparepart dan material teknisi.</p>
-          </div>
-        </div>
-        {!isTechnician && (
-          <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs border-none shadow-none gap-2 transition-all active:scale-95">
-            <Plus className="h-4 w-4" /> Tambah Barang Baru
-          </Button>
-        )}
-      </div>
+      <InventoryHeader isTechnician={isTechnician} totalCount={totalCount} />
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
-        <div className="p-6 flex flex-col md:flex-row md:items-center gap-4 bg-white">
-          <div className="relative flex-1 max-w-sm group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors pointer-events-none" />
-            <input
-              placeholder="Cari sparepart atau material..."
-              className="pl-10 h-10 w-full text-sm font-medium border border-slate-100 rounded-xl focus-visible:ring-[#66B21D] outline-none shadow-none bg-slate-50/50 placeholder:text-slate-300 transition-all"
-            />
-          </div>
-          <div className="flex-1"></div>
-          <p className="text-xs font-bold text-slate-400">Total {totalCount} Barang</p>
-        </div>
-
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-slate-50/10">

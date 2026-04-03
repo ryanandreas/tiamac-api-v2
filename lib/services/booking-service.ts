@@ -66,31 +66,45 @@ export class BookingService {
     ].join("\n");
 
     // 4. DB creation
-    return db.services.create({
-      data: {
-        customerId,
-        jenis_servis: "AC",
-        keluhan: keluhanGabungan,
-        status: "Booking",
-        status_servis: "Booking",
-        biaya_dasar: BASE_VISIT_FEE,
-        estimasi_biaya: estimasiTotal,
-        acUnits: {
-          create: unitsData.map((u) => ({
-            pk: u.pk,
-            layanan: {
-              create: u.layanan.map((l) => ({
-                nama: l.nama,
-                harga: l.harga,
-                catalogId: l.catalogId,
-              })),
-            },
-          })),
+    return db.$transaction(async (tx) => {
+      const service = await tx.services.create({
+        data: {
+          customerId,
+          jenis_servis: "AC",
+          keluhan: keluhanGabungan,
+          status: "Booking",
+          status_servis: "Booking",
+          biaya_dasar: BASE_VISIT_FEE,
+          estimasi_biaya: estimasiTotal,
+          acUnits: {
+            create: unitsData.map((u) => ({
+              pk: u.pk,
+              layanan: {
+                create: u.layanan.map((l) => ({
+                  nama: l.nama,
+                  harga: l.harga,
+                  catalogId: l.catalogId,
+                })),
+              },
+            })),
+          },
         },
-      },
-      include: {
-        acUnits: true
-      }
+        include: {
+          acUnits: true
+        }
+      });
+
+      await tx.serviceStatusHistory.create({
+        data: {
+          serviceId: service.id,
+          status: "Booking",
+          status_servis: "Booking",
+          changedByUserId: customerId,
+          notes: "Pesanan baru dibuat oleh customer",
+        },
+      });
+
+      return service;
     });
   }
 
@@ -106,6 +120,7 @@ export class BookingService {
         },
         teknisi: {
           select: {
+            id: true,
             name: true,
           },
         },

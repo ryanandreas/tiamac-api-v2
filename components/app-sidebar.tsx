@@ -62,7 +62,7 @@ const adminMenu = [
     title: "User & Pelanggan",
     items: [
       { title: "Data Teknisi", url: "/dashboard/users", icon: Wrench },
-      { title: "Daftar Pelanggan", url: "/dashboard/customers", icon: Users },
+      { title: "Data Pelanggan", url: "/dashboard/customers", icon: Users },
     ]
   },
   {
@@ -210,15 +210,6 @@ export function AppSidebar({
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="p-6 mt-auto">
-        <button 
-          onClick={() => logout()}
-          className="w-full h-12 rounded-2xl bg-slate-900 flex items-center justify-center gap-3 text-white hover:bg-red-600 transition-all duration-300 group active:scale-95 border-none shadow-none"
-        >
-          <LogOut className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-[11px] font-bold uppercase tracking-widest">Keluar Dashboard</span>
-        </button>
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

@@ -71,7 +71,10 @@ export function OrderDetailDialog({
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+          <div 
+            data-lenis-prevent
+            className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar"
+          >
             {/* Unit Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">

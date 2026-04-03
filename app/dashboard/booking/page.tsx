@@ -11,6 +11,7 @@ export default async function BookingPage({
 }) {
   const { page } = await searchParams
   const currentPage = Number(page) || 1
+  
   const services = await db.services.findMany({
     where: {
       status_servis: "Booking"
@@ -35,8 +36,8 @@ export default async function BookingPage({
         <div className="space-y-4">
           <DynamicBreadcrumbs />
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Manajemen Booking</h1>
-            <p className="text-slate-500 font-medium text-base">Kelola daftar pesanan baru yang perlu segera dijadwalkan.</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Booking Masuk</h1>
+            <p className="text-slate-500 font-medium text-base">Kelola daftar pesanan baru yang masuk ke sistem.</p>
           </div>
         </div>
         <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs border-none shadow-none gap-2 transition-all active:scale-95">

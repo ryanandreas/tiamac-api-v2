@@ -29,8 +29,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { MoreHorizontal, Plus, Filter, Receipt, Copy, Check, Search, Edit2, Trash2, Eye, XCircle, CreditCard } from "lucide-react"
+import Link from "next/link"
 import type { Prisma } from "@prisma/client"
 import { cancelServiceEstimate, confirmServiceEstimate } from "@/app/actions/customer"
+import { deleteService } from "@/app/actions/admin-actions"
 import { ServiceStatusHistoryDialog } from "./service-status-history-dialog"
 
 type BaseService = Prisma.ServicesGetPayload<{
@@ -104,9 +106,34 @@ export function ServiceListTable({
   const [detailOpen, setDetailOpen] = useState(false)
   const [selectedDetailServiceId, setSelectedDetailServiceId] = useState<string | null>(null)
 
-  const openDetail = (service: ServiceListItem) => {
-    setSelectedDetailServiceId(service.id)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [serviceToDelete, setServiceToDelete] = useState<string | null>(null)
+
+  const openDetail = (serviceId: string) => {
+    setSelectedDetailServiceId(serviceId)
     setDetailOpen(true)
+  }
+
+  const handleDeleteClick = (id: string) => {
+    setServiceToDelete(id)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!serviceToDelete) return
+    setActionBusy(true)
+    try {
+      const res = await deleteService(serviceToDelete)
+      if (res?.success) {
+        alert(res.message)
+        setDeleteDialogOpen(false)
+        router.refresh()
+      } else {
+        alert(res?.message || "Gagal menghapus pesanan")
+      }
+    } finally {
+      setActionBusy(false)
+    }
   }
 
   const formatRupiah = (amount: number) =>
@@ -213,7 +240,7 @@ export function ServiceListTable({
     }
   }
 
-  const handleCancel = async () => {
+  const handleCancelAction = async () => {
     if (!selectedService) return
     setActionBusy(true)
     setActionError(null)
@@ -355,10 +382,30 @@ export function ServiceListTable({
                   <div className="flex items-center justify-end gap-2">
                     {!isCustomerView ? (
                       <>
-                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-[#66B21D] hover:border-green-100 hover:bg-green-50 transition-all">
-                          <Edit2 className="h-3.5 w-3.5" />
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          onClick={() => openDetail(item.id)}
+                          className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-[#66B21D] hover:border-green-100 hover:bg-green-50 transition-all"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          asChild
+                          className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all"
+                        >
+                          <Link href={`/dashboard/servis/${item.id}/edit`}>
+                             <Edit2 className="h-3.5 w-3.5" />
+                          </Link>
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          onClick={() => handleDeleteClick(item.id)}
+                          className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all"
+                        >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </>
@@ -375,7 +422,7 @@ export function ServiceListTable({
                           </DropdownMenuLabel>
                           
                           {/* Detail Servis - New Icon */}
-                          <DropdownMenuItem onClick={() => openDetail(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:bg-slate-50">
+                          <DropdownMenuItem onClick={() => openDetail(item.id)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:bg-slate-50">
                             <Eye className="mr-3 h-4 w-4 text-slate-400" />
                             <span>Detail Servis</span>
                           </DropdownMenuItem>
@@ -496,11 +543,30 @@ export function ServiceListTable({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={handleCancel} disabled={actionBusy}>
+            <Button variant="outline" onClick={handleCancelAction} disabled={actionBusy}>
               Batalkan
             </Button>
             <Button onClick={handleConfirm} disabled={actionBusy}>
               Konfirmasi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Hapus Pesanan</DialogTitle>
+            <DialogDescription>
+              Apakah Anda yakin ingin menghapus pesanan ini? Tindakan ini tidak dapat dibatalkan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={actionBusy}>
+              Batal
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete} disabled={actionBusy}>
+              {actionBusy ? "Menghapus..." : "Hapus Pesanan"}
             </Button>
           </DialogFooter>
         </DialogContent>

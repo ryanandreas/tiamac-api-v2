@@ -15,9 +15,21 @@ export class TechnicianService {
       throw new Error("Servis tidak dapat diproses.");
     }
 
-    await db.services.update({
-      where: { id: serviceId },
-      data: { status: "Pengecekan Unit", status_servis: "Pengecekan Unit" },
+    await db.$transaction(async (tx) => {
+      await tx.services.update({
+        where: { id: serviceId },
+        data: { status: "Pengecekan Unit", status_servis: "Pengecekan Unit" },
+      });
+
+      await tx.serviceStatusHistory.create({
+        data: {
+          serviceId,
+          status: "Pengecekan Unit",
+          status_servis: "Pengecekan Unit",
+          changedByUserId: technicianId,
+          notes: "Teknisi memulai pengecekan di lokasi",
+        },
+      });
     });
 
     this.revalidateServicePaths(serviceId);
@@ -134,15 +146,27 @@ export class TechnicianService {
     keluhanNext = this.upsertLine(keluhanNext, "Sparepart/Material: Rp ", materialTotal.toLocaleString("id-ID"));
     keluhanNext = this.upsertLine(keluhanNext, "Total Estimasi (Update): Rp ", totalEstimasi.toLocaleString("id-ID"));
 
-    await db.services.update({
-      where: { id: serviceId },
-      data: {
-        keluhan: keluhanNext,
-        estimasi_biaya: totalEstimasi,
-        status: "Menunggu Persetujuan Customer",
-        status_servis: "Menunggu Persetujuan Customer",
-        biaya_disetujui: false,
-      },
+    await db.$transaction(async (tx) => {
+      await tx.services.update({
+        where: { id: serviceId },
+        data: {
+          keluhan: keluhanNext,
+          estimasi_biaya: totalEstimasi,
+          status: "Menunggu Persetujuan Customer",
+          status_servis: "Menunggu Persetujuan Customer",
+          biaya_disetujui: false,
+        },
+      });
+
+      await tx.serviceStatusHistory.create({
+        data: {
+          serviceId,
+          status: "Menunggu Persetujuan Customer",
+          status_servis: "Menunggu Persetujuan Customer",
+          changedByUserId: technicianId,
+          notes: `Teknisi menyerahkan diagnosa dan estimasi biaya Rp ${totalEstimasi.toLocaleString("id-ID")}`,
+        },
+      });
     });
 
     this.revalidateServicePaths(serviceId);
@@ -180,14 +204,26 @@ export class TechnicianService {
     const beforeUrl = await saveFile(before);
     const afterUrl = await saveFile(after);
 
-    await db.services.update({
-      where: { id: serviceId },
-      data: {
-        bukti_foto_before: beforeUrl,
-        bukti_foto_after: afterUrl,
-        status: "Menunggu Pembayaran",
-        status_servis: "Menunggu Pembayaran",
-      },
+    await db.$transaction(async (tx) => {
+      await tx.services.update({
+        where: { id: serviceId },
+        data: {
+          bukti_foto_before: beforeUrl,
+          bukti_foto_after: afterUrl,
+          status: "Menunggu Pembayaran",
+          status_servis: "Menunggu Pembayaran",
+        },
+      });
+
+      await tx.serviceStatusHistory.create({
+        data: {
+          serviceId,
+          status: "Menunggu Pembayaran",
+          status_servis: "Menunggu Pembayaran",
+          changedByUserId: technicianId,
+          notes: "Teknisi menyelesaikan pekerjaan dan mengupload bukti foto",
+        },
+      });
     });
 
     this.revalidateServicePaths(serviceId);

@@ -62,13 +62,25 @@ export async function confirmServiceEstimate(serviceId: string) {
       return { success: false, message: "Servis tidak dapat diproses." }
     }
 
-    await db.services.update({
-      where: { id: serviceId },
-      data: {
-        status: "Sedang Dikerjakan",
-        status_servis: "Sedang Dikerjakan",
-        biaya_disetujui: true,
-      },
+    await db.$transaction(async (tx) => {
+      await tx.services.update({
+        where: { id: serviceId },
+        data: {
+          status: "Sedang Dikerjakan",
+          status_servis: "Sedang Dikerjakan",
+          biaya_disetujui: true,
+        },
+      })
+
+      await tx.serviceStatusHistory.create({
+        data: {
+          serviceId,
+          status: "Sedang Dikerjakan",
+          status_servis: "Sedang Dikerjakan",
+          changedByUserId: current.id,
+          notes: "Customer menyetujui estimasi biaya. Pekerjaan dimulai.",
+        },
+      })
     })
 
     revalidatePath("/customer-panel/pesanan")
@@ -96,14 +108,26 @@ export async function cancelServiceEstimate(serviceId: string) {
       return { success: false, message: "Servis tidak dapat diproses." }
     }
 
-    await db.services.update({
-      where: { id: serviceId },
-      data: {
-        status: "Dibatalkan",
-        status_servis: "Dibatalkan",
-        biaya_disetujui: false,
-        alasan_batal: "Ditolak customer",
-      },
+    await db.$transaction(async (tx) => {
+      await tx.services.update({
+        where: { id: serviceId },
+        data: {
+          status: "Dibatalkan",
+          status_servis: "Dibatalkan",
+          biaya_disetujui: false,
+          alasan_batal: "Ditolak customer",
+        },
+      })
+
+      await tx.serviceStatusHistory.create({
+        data: {
+          serviceId,
+          status: "Dibatalkan",
+          status_servis: "Dibatalkan",
+          changedByUserId: current.id,
+          notes: "Customer menolak estimasi biaya. Pesanan dibatalkan.",
+        },
+      })
     })
 
     revalidatePath("/customer-panel/pesanan")

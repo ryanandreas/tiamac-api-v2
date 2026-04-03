@@ -144,7 +144,10 @@ export function ServiceStatusHistoryDialog({
             </div>
 
             {/* Scrollable Content Wrapper */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-10 pt-10">
+            <div 
+              data-lenis-prevent
+              className="flex-1 overflow-y-auto custom-scrollbar p-10 pt-10"
+            >
               {/* Triple Info Bar (Paper Exact) */}
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-6 mb-10">
                 {/* Pelanggan */}
