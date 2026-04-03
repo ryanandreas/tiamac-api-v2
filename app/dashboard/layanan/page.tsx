@@ -8,7 +8,8 @@ import {
   TableRow 
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Tag, Edit2, Trash2 } from "lucide-react"
+import { Tag, Edit2, Trash2, Search, Filter } from "lucide-react"
+import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/utils"
 import { Pagination } from "@/components/pagination"
 import { getCurrentUser } from "@/app/actions/session"
@@ -49,6 +50,20 @@ export default async function LayananPage({
       <LayananHeader isTechnician={isTechnician} />
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
+        <div className="px-8 py-6 border-b border-slate-50 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white">
+          <div className="relative w-full sm:w-80 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors pointer-events-none" />
+            <Input
+              placeholder="Cari nama layanan..."
+              className="pl-10 h-10 text-[11px] font-semibold border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none placeholder:text-slate-300 bg-slate-50/50"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" className="h-10 w-10 border-slate-100 rounded-xl text-slate-400 hover:text-[#66B21D] hover:bg-green-50 transition-all">
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
 
         <div className="overflow-x-auto">
           <Table>

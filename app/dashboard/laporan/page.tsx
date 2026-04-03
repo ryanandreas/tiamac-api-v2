@@ -37,11 +37,13 @@ export default function LaporanPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="space-y-4">
-        <DynamicBreadcrumbs />
-        <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Laporan Sistem</h1>
-          <p className="text-slate-500 font-medium text-base">Pantau performa bisnis dan operasional melalui laporan terpusat.</p>
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-4">
+          <DynamicBreadcrumbs />
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Laporan Sistem</h1>
+            <p className="text-slate-500 font-medium text-base">Pantau performa bisnis dan operasional melalui laporan terpusat.</p>
+          </div>
         </div>
       </div>
 

@@ -40,19 +40,19 @@ export default async function HistoryPage({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="space-y-4">
-        <DynamicBreadcrumbs />
-        <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Riwayat Pekerjaan</h1>
-          <p className="text-slate-500 font-medium text-base">Daftar semua pesanan servis yang telah selesai atau dibatalkan.</p>
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-4">
+          <DynamicBreadcrumbs />
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Riwayat Pekerjaan</h1>
+            <p className="text-slate-500 font-medium text-base">Daftar semua pesanan servis yang telah selesai atau dibatalkan.</p>
+          </div>
         </div>
-      </div>
       </div>
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
         <div className="p-0">
-          <ServiceListTable data={services} />
+          <ServiceListTable data={services} hideEdit={true} />
         </div>
         {totalPages > 1 && (
           <div className="p-6 bg-slate-50/20">

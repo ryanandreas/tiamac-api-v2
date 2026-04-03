@@ -30,18 +30,6 @@ export function InventoryHeader({ isTechnician, totalCount }: { isTechnician: bo
         )}
       </div>
 
-      <div className="p-6 flex flex-col md:flex-row md:items-center gap-4 bg-white rounded-2xl border-0 shadow-none">
-        <div className="relative flex-1 max-w-sm group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors pointer-events-none" />
-          <Input
-            placeholder="Cari sparepart atau material..."
-            className="pl-10 h-10 w-full text-sm font-medium border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none bg-slate-50/50 placeholder:text-slate-300"
-          />
-        </div>
-        <div className="flex-1"></div>
-        <p className="text-xs font-bold text-slate-400">Total {totalCount} Barang</p>
-      </div>
-
       <AddInventoryDialog open={open} onOpenChange={setOpen} />
     </>
   )

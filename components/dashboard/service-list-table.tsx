@@ -58,6 +58,7 @@ interface ServiceListTableProps {
   showNextStep?: boolean
   enableCustomerApproval?: boolean
   isCustomerView?: boolean
+  hideEdit?: boolean
 }
 
 function nextStepLabel(status: string) {
@@ -93,7 +94,8 @@ export function ServiceListTable({
   data,
   showNextStep,
   enableCustomerApproval,
-  isCustomerView = false
+  isCustomerView = false,
+  hideEdit = false
 }: ServiceListTableProps) {
   const emptyColSpan = isCustomerView ? (showNextStep ? 6 : 5) : (showNextStep ? 8 : 7)
   const router = useRouter()
@@ -390,16 +392,18 @@ export function ServiceListTable({
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          asChild
-                          className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all"
-                        >
-                          <Link href={`/dashboard/servis/${item.id}/edit`}>
-                             <Edit2 className="h-3.5 w-3.5" />
-                          </Link>
-                        </Button>
+                        {!hideEdit && (
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            asChild
+                            className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all"
+                          >
+                            <Link href={`/dashboard/servis/${item.id}/edit`}>
+                               <Edit2 className="h-3.5 w-3.5" />
+                            </Link>
+                          </Button>
+                        )}
                         <Button 
                           variant="outline" 
                           size="icon" 

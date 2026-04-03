@@ -1,8 +1,10 @@
 import { ServiceListTable } from "@/components/dashboard/service-list-table"
 import { db } from "@/lib/db"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
-import { Truck } from "lucide-react"
+import { Truck, Search, Filter } from "lucide-react"
 import { Pagination } from "@/components/pagination"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export default async function ServisPage({
   searchParams,
@@ -48,14 +50,14 @@ export default async function ServisPage({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="space-y-4">
-        <DynamicBreadcrumbs />
-        <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Servis Berjalan</h1>
-          <p className="text-slate-500 font-medium text-base">Pantau perkembangan seluruh pesanan servis yang sedang aktif.</p>
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-4">
+          <DynamicBreadcrumbs />
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Servis Berjalan</h1>
+            <p className="text-slate-500 font-medium text-base">Pantau perkembangan seluruh pesanan servis yang sedang aktif.</p>
+          </div>
         </div>
-      </div>
       </div>
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">

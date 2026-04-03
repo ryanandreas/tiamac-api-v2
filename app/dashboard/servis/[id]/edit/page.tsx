@@ -3,6 +3,10 @@ import { BookingService } from "@/lib/services/booking-service"
 import { db } from "@/lib/db"
 import { EditServiceForm } from "@/components/dashboard/edit-service-form"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 interface EditPageProps {
   params: { id: string }
@@ -60,12 +64,32 @@ export default async function EditServicePage({ params }: EditPageProps) {
   ])
 
   return (
-    <div className="space-y-8 animate-fade-in p-4 md:p-0">
-      <div className="space-y-4">
+    <div className="max-w-[1400px] mx-auto space-y-8 animate-fade-in font-outfit p-4 md:p-0">
+      <div className="space-y-6">
         <DynamicBreadcrumbs />
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Edit Detail Pengerjaan</h1>
-          <p className="text-slate-500 font-medium">Ubah status, teknisi, atau jadwal kunjungan pesanan.</p>
+        
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-2">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Badge className="bg-[#66B21D]/10 text-[#66B21D] border-none shadow-none font-black text-[10px] uppercase tracking-widest h-7 px-4 rounded-full">
+                Workstation Editor
+              </Badge>
+              <span className="text-slate-300 font-bold">•</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                Order ID #{service.id.slice(0, 8).toUpperCase()}
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Management Terminal</h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard/servis">
+              <Button variant="outline" className="bg-white border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest h-12 px-6 rounded-2xl shadow-sm hover:bg-slate-50 transition-all flex items-center gap-2 group">
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                Kembali
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Search, CreditCard, Eye, FileText } from "lucide-react"
+import { Search, CreditCard, Eye, FileText, Filter } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/utils"
 
@@ -31,23 +31,29 @@ export default async function TransaksiPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="space-y-4">
-        <DynamicBreadcrumbs />
-        <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Manajemen Transaksi</h1>
-          <p className="text-slate-500 font-medium text-base">Pantau riwayat pembayaran dan status invoice pesanan servis.</p>
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-4">
+          <DynamicBreadcrumbs />
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Manajemen Transaksi</h1>
+            <p className="text-slate-500 font-medium text-base">Pantau riwayat pembayaran dan status invoice pesanan servis.</p>
+          </div>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
-        <div className="p-6 flex flex-col md:flex-row md:items-center gap-4 bg-white">
-          <div className="relative flex-1 max-w-sm group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors" />
+        <div className="px-8 py-6 border-b border-slate-50 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white">
+          <div className="relative w-full sm:w-80 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#66B21D] transition-colors pointer-events-none" />
             <Input
-              type="search"
               placeholder="Cari transaksi (Nama, ID)..."
-              className="pl-10 h-10 w-full text-sm font-medium border border-slate-100 rounded-xl focus-visible:ring-[#66B21D] outline-none shadow-none bg-slate-50/50 placeholder:text-slate-300 transition-all"
+              className="pl-10 h-10 text-[11px] font-semibold border-slate-100 rounded-xl focus-visible:ring-[#66B21D] shadow-none placeholder:text-slate-300 bg-slate-50/50"
             />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" className="h-10 w-10 border-slate-100 rounded-xl text-slate-400 hover:text-[#66B21D] hover:bg-green-50 transition-all">
+              <Filter className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
