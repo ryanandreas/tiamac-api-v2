@@ -10,10 +10,11 @@ import type { CurrentUser } from "@/app/actions/session"
 import { useLenis } from "lenis/react"
 
 const menuItems = [
-  { name: "Layanan", href: "#layanan" },
-  { name: "Promo", href: "#promo" },
-  { name: "Harga", href: "#harga" },
-  { name: "Testimoni", href: "#testimoni" },
+  { name: "Layanan", href: "/#layanan" },
+  { name: "Promo", href: "/#promo" },
+  { name: "Harga", href: "/#harga" },
+  { name: "Mobile", href: "/mobile", badge: "NEW" },
+  { name: "Testimoni", href: "/#testimoni" },
 ]
 
 export function SiteNavbar({
@@ -79,9 +80,14 @@ export function SiteNavbar({
                     <li key={index}>
                       <Link
                         href={item.href}
-                        className="text-slate-600 font-bold hover:text-[#66B21D] transition-colors"
+                        className="flex items-center text-slate-600 font-bold hover:text-[#66B21D] transition-colors"
                       >
                         <span>{item.name}</span>
+                        {item.badge && (
+                          <span className="ml-2 px-1.5 py-0.5 rounded-full bg-[#66B21D]/10 text-[#66B21D] text-[10px] font-bold">
+                            {item.badge}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   ))}
