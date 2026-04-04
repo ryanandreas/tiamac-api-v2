@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { LenisProvider } from "@/components/providers/lenis-provider"
 import { cn } from "@/lib/utils";
+import Script from "next/script";
 
 const fontSans = Geist({ 
   subsets: ['latin'], 
@@ -57,6 +58,13 @@ export default function RootLayout({
              {children}
           </LenisProvider>
         </ThemeProvider>
+        <Script
+          src={process.env.MIDTRANS_IS_PRODUCTION === 'true' 
+            ? "https://app.midtrans.com/snap/snap.js" 
+            : "https://app.sandbox.midtrans.com/snap/snap.js"}
+          data-client-key={process.env.MIDTRANS_CLIENT_KEY}
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   )

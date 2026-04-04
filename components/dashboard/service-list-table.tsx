@@ -34,6 +34,7 @@ import type { Prisma } from "@prisma/client"
 import { cancelServiceEstimate, confirmServiceEstimate } from "@/app/actions/customer"
 import { deleteService } from "@/app/actions/admin-actions"
 import { ServiceStatusHistoryDialog } from "./service-status-history-dialog"
+import { PaymentButton } from "@/components/payment/PaymentButton"
 
 type BaseService = Prisma.ServicesGetPayload<{
   include: { customer: true; teknisi: true }
@@ -432,11 +433,28 @@ export function ServiceListTable({
                           </DropdownMenuItem>
 
                           {/* Lakukan Pembayaran */}
-                          {(item.status_servis === "Booking" || item.status_servis === "Menunggu Pembayaran") && (
-                            <DropdownMenuItem className="rounded-xl px-3 py-2.5 text-xs font-black text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
-                               <CreditCard className="mr-3 h-4 w-4" />
-                               <span>{item.status_servis === "Booking" ? "Bayar DP Rp 50.000" : "Lakukan Pembayaran"}</span>
-                            </DropdownMenuItem>
+                          {item.status_servis === "Booking" && (
+                            <div className="px-2 py-1">
+                              <PaymentButton 
+                                serviceId={item.id} 
+                                type="DOWN_PAYMENT" 
+                                amount={item.biaya_dasar ?? 50000} 
+                                label="Bayar DP Rp 50.000"
+                                className="w-full justify-start h-9 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-bold text-[11px] gap-2"
+                              />
+                            </div>
+                          )}
+
+                          {item.status_servis === "Menunggu Pembayaran" && (
+                            <div className="px-2 py-1">
+                              <PaymentButton 
+                                serviceId={item.id} 
+                                type="FULL_PAYMENT" 
+                                amount={item.biaya ?? 0} 
+                                label="Bayar Pelunasan"
+                                className="w-full justify-start h-9 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-bold text-[11px] gap-2"
+                              />
+                            </div>
                           )}
 
                           {/* Konfirmasi Estimasi */}

@@ -83,6 +83,7 @@ model Services {
   statusHistory        ServiceStatusHistory[]
   customer             User                   @relation("CustomerServices", fields: [customerId], references: [id])
   teknisi              User?                  @relation("TeknisiServices", fields: [teknisiId], references: [id])
+  payments             ServicePayment[]
 
   @@map("services")
 }
@@ -234,6 +235,33 @@ model ServiceStatusHistory {
 
   @@index([serviceId])
   @@map("service_status_history")
+}
+
+model ServicePayment {
+  id                    String      @id @default(uuid())
+  serviceId             String
+  type                  PaymentType
+  amount                Int
+  status                String      @default("PENDING")
+  metodePembayaran      String?     // qris, bank_transfer, ewallet
+  bank                  String?     // bca, bni, mandiri, bri
+  vaNumber              String?     // Nomor Virtual Account
+  qrUrl                 String?     // URL gambar QRIS
+  paymentDetails        Json?       // JSON lengkap dari Midtrans untuk backup
+  midtransTransactionId String?
+  waktuPembayaran       DateTime?
+  expiryTime            DateTime?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  service               Services    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@map("service_payments")
+}
+
+enum PaymentType {
+  DOWN_PAYMENT
+  FULL_PAYMENT
 }
 
 enum UserStatus {

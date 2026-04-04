@@ -4,11 +4,11 @@ List Status Step:
 1 Booking
 
 - Keterangan: Customer baru saja membuat pesanan dan menyetujui biaya dasar (Booking Fee/Biaya Kunjungan).
-- Action: customer harus bayar DP booking fee untuk melanjutkan ke tahap selanjutnya (Menunggu Jadwal).
+- Action: customer harus bayar DP booking fee untuk melanjutkan ke tahap selanjutnya, setelah customer bayar DP maka status berubah ke status "Menunggu Jadwal".
 
 2 Menunggu Jadwal
 
-- Keterangan: customer sudah bayar DP booking fee. 
+- Keterangan: status pembayaran DP sudah lunas. 
 - Action: Admin menetapkan Teknisi & Tanggal kunjungan lalu status berubah ke status "Konfirmasi Teknisi".
 
 3 Konfirmasi Teknisi
