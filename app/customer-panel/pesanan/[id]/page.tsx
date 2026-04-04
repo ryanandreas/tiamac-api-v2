@@ -242,7 +242,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             </div>
             
             <PaymentMethodChooser
-              orderId={orderIdShort}
+              orderId={service.id}
               amount={amountToPay}
               title={isPendingInitial ? "Biaya Awal (DP)" : "Pelunasan Hasil Servis"}
               buttonText="Bayar Sekarang"
