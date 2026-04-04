@@ -1,31 +1,12 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { coreApi } from "@/lib/midtrans";
-import { getCurrentUser } from "./session";
-import { PaymentType } from "@prisma/client";
+import { redirect } from "next/navigation"
+import { db } from "@/lib/db"
+import { coreApi } from "@/lib/midtrans"
+import { randomUUID } from "crypto"
 
-export type ActionResponse = {
-  success: boolean;
-  message: string;
-  va_number?: string;
-  qr_url?: string;
-  bank?: string;
-  expiry_time?: string;
-};
-
-export async function chargePayment(
-  serviceId: string,
-  paymentType: "DOWN_PAYMENT" | "FULL_PAYMENT",
-  method: "bank_transfer" | "qris" | "gopay",
-  bank?: string
-): Promise<ActionResponse> {
+export async function chargePayment(serviceId: string, paymentType: "DOWN_PAYMENT" | "FULL_PAYMENT", method: string, bank?: string) {
   try {
-    const user = await getCurrentUser();
-    if (!user || !user.isAuthenticated) {
-      return { success: false, message: "Unauthorized" };
-    }
-
     const service = await db.services.findUnique({
       where: { id: serviceId },
       include: { customer: true },
@@ -39,7 +20,7 @@ export async function chargePayment(
     const amount = paymentType === "DOWN_PAYMENT" ? (service.biaya_dasar ?? 50000) : (service.biaya ?? 0);
 
     // 1. Create a record in ServicePayment
-    const payment = await db.servicePayment.create({
+    const payment = await (db as any).servicePayment.create({
       data: {
         serviceId,
         type: paymentType,
@@ -50,9 +31,9 @@ export async function chargePayment(
       },
     });
 
-    // 2. Prepare Midtrans Request
+    // 2. Prepare Midtrans Charge Parameters
     const parameter: any = {
-      payment_type: method === "bank_transfer" ? "bank_transfer" : method,
+      payment_type: method,
       transaction_details: {
         order_id: payment.id,
         gross_amount: amount,
@@ -69,12 +50,7 @@ export async function chargePayment(
           name: `${paymentType === "DOWN_PAYMENT" ? "DP Booking" : "Pelunasan"} - ${service.jenis_servis}`,
         },
       ],
-      callbacks: {
-        new_order_url: "https://actiam.vercel.app/customer-panel/pesanan/" + serviceId,
-        finish_url: "https://actiam.vercel.app/customer-panel/pesanan/" + serviceId,
-        error_url: "https://actiam.vercel.app/customer-panel/pesanan/" + serviceId,
-        notification_url: "https://actiam.vercel.app/api/webhooks/midtrans",
-      },
+      notification_url: "https://actiam.vercel.app/api/webhooks/midtrans",
     };
 
     if (method === "bank_transfer" && bank) {
@@ -88,15 +64,13 @@ export async function chargePayment(
 
     // 4. Extract Payment Instructions from Response
     let vaNumber = "";
+    let expiryTime = "";
     let qrUrl = "";
-    let expiryTime = response.expiry_time;
 
     if (method === "bank_transfer") {
-      if (bank === "mandiri") {
-          vaNumber = response.bill_key; // Mandiri uses bill_key
-      } else if (response.va_numbers && response.va_numbers.length > 0) {
-          vaNumber = response.va_numbers[0].va_number;
-      }
+      const vaDetails = response.va_numbers?.[0];
+      vaNumber = vaDetails?.va_number || "";
+      expiryTime = response.expiry_time || "";
     } else if (method === "qris" || method === "gopay") {
       // Find the QR action or URL
       const qrAction = response.actions?.find((a: any) => a.name === "generate-qr-code");
@@ -104,7 +78,7 @@ export async function chargePayment(
     }
 
     // 5. Update Payment Record with Instructions
-    await db.servicePayment.update({
+    await (db as any).servicePayment.update({
       where: { id: payment.id },
       data: {
         vaNumber,
