@@ -102,6 +102,7 @@ export function RiwayatTableBody({ tasks }: RiwayatTableBodyProps) {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         serviceId={selectedServiceId}
+        mode="staff"
       />
     </TooltipProvider>
   )

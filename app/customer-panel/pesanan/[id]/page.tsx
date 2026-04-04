@@ -20,7 +20,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { PaymentMethodChooser } from "@/components/payment-method-chooser"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
-import { OrderDetailDialog, OrderUnit } from "@/components/dashboard/order-detail-dialog"
+import { ServiceStatusHistoryDialog } from "@/components/dashboard/service-status-history-dialog"
 import { PaymentSummaryCard } from "@/components/dashboard/payment-summary-card"
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -85,14 +85,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const totalEstimasi = biayaKunjungan + layananTotal
   const totalFinal = service.biaya ?? totalEstimasi
 
-  const orderUnits: OrderUnit[] = service.acUnits.map((unit) => ({
-    id: unit.id,
-    name: `Unit AC ${unit.pk} PK`,
-    pk: String(unit.pk),
-    serviceName: unit.layanan.map(l => l.nama).join(", ") || "Servis Routine",
-    price: unit.layanan.reduce((sum, l) => sum + l.harga, 0)
-  }))
-
   const isFinalPayment = ["Pekerjaan Selesai", "Menunggu Pembayaran"].includes(service.status_servis)
   const isCompleted = ["Selesai", "Selesai (Garansi Aktif)"].includes(service.status_servis)
   const isPendingInitial = service.status_servis === "Booking"
@@ -150,14 +142,11 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   </p>
                 </div>
 
-                <OrderDetailDialog 
-                  orderId={service.id}
-                  units={orderUnits}
-                  biayaDasar={biayaKunjungan}
-                  totalBiaya={totalFinal}
+                <ServiceStatusHistoryDialog 
+                  serviceId={service.id}
                   trigger={
                     <Button variant="outline" className="h-9 rounded-xl font-bold text-xs gap-2 border-slate-200">
-                      <CreditCard className="size-3.5" /> Lihat Rincian
+                      <CreditCard className="size-3.5" /> Melihat Detail Servis
                     </Button>
                   }
                 />
@@ -230,37 +219,35 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               </div>
             </CardContent>
           </Card>
+
+          <div className="bg-white rounded-3xl p-6 pt-5 space-y-4">
+             <div className="space-y-0.5 mb-2">
+               <h3 className="text-lg font-bold text-slate-900 tracking-tight">Metode Pembayaran</h3>
+               <p className="text-xs font-medium text-slate-400">Pilih kanal pembayaran praktis Anda.</p>
+             </div>
+             
+             <PaymentMethodChooser
+               orderId={service.id}
+               amount={amountToPay}
+               title={isPendingInitial ? "Biaya Awal (DP)" : "Pelunasan Hasil Servis"}
+               buttonText="Bayar Sekarang"
+               buttonClassName="hidden" 
+               triggerId="custom-pay-button"
+             />
+          </div>
         </div>
 
-        {/* Right Sidebar - Sticky Method Selection */}
+        {/* Right Sidebar - Sticky Payment Summary */}
         <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
-          {/* Payment Method Selector */}
-          <Card className="rounded-3xl border-none shadow-none bg-white p-6 pt-5 space-y-0">
-            <div className="space-y-0.5 mb-2">
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Metode Pembayaran</h3>
-              <p className="text-xs font-medium text-slate-400">Pilih kanal pembayaran praktis Anda.</p>
-            </div>
-            
-            <PaymentMethodChooser
-              orderId={service.id}
-              amount={amountToPay}
-              title={isPendingInitial ? "Biaya Awal (DP)" : "Pelunasan Hasil Servis"}
-              buttonText="Bayar Sekarang"
-              buttonClassName="hidden" 
-              triggerId="custom-pay-button"
-            />
-          </Card>
+          <PaymentSummaryCard 
+            amount={amountToPay}
+            label={isPendingInitial ? "Biaya Kunjungan (DP)" : "Pelunasan Pesanan"}
+            isCompleted={isCompleted}
+            triggerId="custom-pay-button"
+            variant="vertical"
+          />
         </div>
       </div>
-
-      {/* Moved Summary Card outside the grid to make it full width */}
-      <PaymentSummaryCard 
-        amount={amountToPay}
-        label={isPendingInitial ? "Biaya Kunjungan (DP)" : "Pelunasan Pesanan"}
-        isCompleted={isCompleted}
-        triggerId="custom-pay-button"
-        variant="horizontal"
-      />
     </div>
   )
 }

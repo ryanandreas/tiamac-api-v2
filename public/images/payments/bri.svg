@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <rect width="200" height="60" fill="white"/>
+  <path fill="#00529C" d="M30 10c-15 0-25 10-25 20s10 20 25 20c10 0 18-5 22-12-3 8-11 13-22 13-14 0-24-9-24-19s10-19 24-19c9 0 17 4 21 10-3-7-10-13-21-13z"/>
+  <text x="85" y="42" font-family="Arial, sans-serif" font-weight="900" font-size="32" fill="#00529C">BRI</text>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 50" width="120" height="50">
+  <rect width="120" height="50" fill="white"/>
+  <text x="15" y="38" font-family="Arial, sans-serif" font-weight="900" font-size="32" fill="#005e61">BNI</text>
+  <rect x="85" y="10" width="12" height="30" fill="#ff6600"/>
+</svg>

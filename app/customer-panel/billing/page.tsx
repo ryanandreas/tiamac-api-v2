@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CreditCard, Receipt, AlertCircle, CheckCircle2, Clock, ArrowRight, Eye } from "lucide-react"
 import Link from "next/link"
-import { OrderDetailDialog } from "@/components/dashboard/order-detail-dialog"
+import { ServiceStatusHistoryDialog } from "@/components/dashboard/service-status-history-dialog"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
 
@@ -151,23 +151,14 @@ export default async function BillingPage({
                             {formatRupiah(sisaPembayaran)}
                           </div>
                           <div className="flex items-center gap-2">
-                             <OrderDetailDialog
-                              orderId={service.id}
-                              units={service.acUnits.map((unit) => ({
-                                id: unit.id,
-                                name: `Unit AC ${unit.pk} PK`,
-                                pk: String(unit.pk),
-                                serviceName: unit.layanan.map((l) => l.nama).join(", ") || "Servis Routine",
-                                price: unit.layanan.reduce((sum, l) => sum + l.harga, 0),
-                              }))}
-                              biayaDasar={biayaKunjungan}
-                              totalBiaya={service.biaya ?? totalEstimasi}
-                              trigger={
-                                <Button variant="secondary" size="icon" className="h-10 w-10 rounded-xl border-none bg-slate-50 hover:bg-green-50 hover:text-[#66B21D] transition-all">
-                                  <Eye className="h-4.5 w-4.5" />
-                                </Button>
-                              }
-                            />
+                             <ServiceStatusHistoryDialog
+                               serviceId={service.id}
+                               trigger={
+                                 <Button variant="secondary" size="icon" className="h-10 w-10 rounded-xl border-none bg-slate-50 hover:bg-green-50 hover:text-[#66B21D] transition-all">
+                                   <Eye className="h-4.5 w-4.5" />
+                                 </Button>
+                               }
+                             />
                             <Link href={`/customer-panel/pesanan/${service.id}`}>
                               <Button size="sm" className="h-10 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs shadow-none gap-2">
                                 <CreditCard className="h-4 w-4" /> Bayar Sekarang

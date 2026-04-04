@@ -99,6 +99,7 @@ export function JadwalTableBody({ rows }: JadwalTableBodyProps) {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         serviceId={selectedServiceId}
+        mode="staff"
       />
     </TooltipProvider>
   )

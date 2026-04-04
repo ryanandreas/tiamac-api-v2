@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60" width="160" height="60">
+  <rect width="160" height="60" fill="white"/>
+  <rect x="10" y="10" width="40" height="40" rx="8" fill="#ee4d2d"/>
+  <path fill="white" d="M22 28h16l-1 12H23l-1-12zm3-4c0-2 2-4 5-4s5 2 5 4v2h-10v-2z"/>
+  <text x="60" y="42" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="#ee4d2d">SHOPEE</text>
+</svg>

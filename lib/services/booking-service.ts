@@ -116,6 +116,7 @@ export class BookingService {
           select: {
             name: true,
             email: true,
+            customerProfile: true,
           },
         },
         teknisi: {

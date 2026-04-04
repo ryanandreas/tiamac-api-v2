@@ -5,13 +5,22 @@ import crypto from "crypto";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log("🔔 Midtrans Webhook Received:", JSON.stringify(body, null, 2));
 
     // 1. Verify Signature
     const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
+    // Midtrans SHA512 Signature: order_id + status_code + gross_amount + ServerKey
     const signatureSource = body.order_id + body.status_code + body.gross_amount + serverKey;
     const expectedSignature = crypto.createHash("sha512").update(signatureSource).digest("hex");
 
+    console.log("🔑 Signature Check:", {
+      received: body.signature_key,
+      calculated: expectedSignature,
+      match: body.signature_key === expectedSignature
+    });
+
     if (expectedSignature !== body.signature_key) {
+      console.error("❌ Invalid Midtrans Signature");
       return NextResponse.json({ message: "Invalid Signature" }, { status: 403 });
     }
 
@@ -21,12 +30,13 @@ export async function POST(req: Request) {
     const fraudStatus = body.fraud_status;
 
     // 3. Find the Payment record
-    const paymentRecord = await db.servicePayment.findUnique({
+    const paymentRecord = await (db as any).servicePayment.findUnique({
       where: { id: paymentId },
       include: { service: true },
     });
 
     if (!paymentRecord) {
+      console.error("❌ Payment Record Not Found:", paymentId);
       return NextResponse.json({ message: "Payment Not Found" }, { status: 404 });
     }
 
@@ -46,8 +56,10 @@ export async function POST(req: Request) {
       status = "PENDING";
     }
 
+    console.log(`ℹ️ Transaction Status: ${transactionStatus}, Final Status: ${status}`);
+
     // 5. Update the ServicePayment Record
-    await db.servicePayment.update({
+    await (db as any).servicePayment.update({
       where: { id: paymentId },
       data: {
         status: status,
@@ -62,14 +74,14 @@ export async function POST(req: Request) {
     if (status === "SETTLEMENT") {
       const serviceId = paymentRecord.serviceId;
       const paymentType = paymentRecord.type;
+      
+      console.log(`✅ Payment Settled for Service: ${serviceId}, Type: ${paymentType}`);
 
       if (paymentType === "DOWN_PAYMENT") {
         // Workflow: Booking -> Menunggu Jadwal
         await db.services.update({
           where: { id: serviceId },
-          data: {
-            status_servis: "Menunggu Jadwal",
-          },
+          data: { status_servis: "Menunggu Jadwal" },
         });
 
         await db.serviceStatusHistory.create({
@@ -77,16 +89,15 @@ export async function POST(req: Request) {
             serviceId: serviceId,
             status: "Status",
             status_servis: "Menunggu Jadwal",
-            notes: "Pembayaran DP Berhasil via Midtrans",
+            notes: "Pembayaran DP Berhasil (Midtrans)",
           },
         });
+        console.log("🚀 Service Status Updated: Menunggu Jadwal");
       } else if (paymentType === "FULL_PAYMENT") {
         // Workflow: Menunggu Pembayaran -> Selesai (Garansi Aktif)
         await db.services.update({
           where: { id: serviceId },
-          data: {
-            status_servis: "Selesai (Garansi Aktif)",
-          },
+          data: { status_servis: "Selesai (Garansi Aktif)" },
         });
 
         await db.serviceStatusHistory.create({
@@ -94,15 +105,16 @@ export async function POST(req: Request) {
             serviceId: serviceId,
             status: "Status",
             status_servis: "Selesai (Garansi Aktif)",
-            notes: "Pembayaran Pelunasan Berhasil via Midtrans",
+            notes: "Pembayaran Pelunasan Berhasil (Midtrans)",
           },
         });
+        console.log("🚀 Service Status Updated: Selesai (Garansi Aktif)");
       }
     }
 
     return NextResponse.json({ message: "OK" });
   } catch (error: any) {
-    console.error("Webhook Error:", error);
+    console.error("❌ Webhook Error:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }

@@ -153,6 +153,7 @@ export function OngoingTableBody({ services }: OngoingTableBodyProps) {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         serviceId={selectedServiceId}
+        mode="staff"
       />
     </TooltipProvider>
   )
