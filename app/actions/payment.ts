@@ -105,3 +105,26 @@ export async function chargePayment(serviceId: string, paymentType: "DOWN_PAYMEN
     };
   }
 }
+
+export async function checkPaymentStatus(serviceId: string) {
+  try {
+    const payment = await (db as any).servicePayment.findFirst({
+      where: {
+        serviceId,
+        status: "SETTLEMENT",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    if (payment) {
+      return { success: true, status: "SETTLEMENT" };
+    }
+
+    return { success: false, status: "PENDING" };
+  } catch (error: any) {
+    console.error("Check Payment Status Error:", error);
+    return { success: false, error: error.message };
+  }
+}
