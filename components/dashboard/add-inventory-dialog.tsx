@@ -69,7 +69,7 @@ export function AddInventoryDialog({ open, onOpenChange }: AddInventoryDialogPro
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true)
     try {
-      const res = await createInventoryItem(values)
+      const res = await createInventoryItem(values as any)
       if (res?.success) {
         alert(res.message)
         onOpenChange(false)

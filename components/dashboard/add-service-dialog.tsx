@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { createServiceCatalog } from "@/app/actions/admin-actions"
-import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
@@ -57,7 +56,7 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true)
     try {
-      const res = await createServiceCatalog(values)
+      const res = await createServiceCatalog(values as any)
       if (res?.success) {
         // toast.success(res.message) // Removed sonner check earlier, using alert for now
         alert(res.message)
