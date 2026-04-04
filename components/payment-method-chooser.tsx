@@ -15,11 +15,11 @@ const METHODS: Array<{
   label: string
   description: string
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
-  category: "qris" | "bank_transfer" | "ewallet"
+  category: "qris" | "bank_transfer" | "gopay"
   bank?: string
 }> = [
   { id: "qris", label: "QRIS / All Payment", description: "Scan QR via aplikasi bank/e-wallet.", Icon: QrCode, category: "qris" },
-  { id: "gopay", label: "GoPay / ShopeePay", description: "Otomatis buka aplikasi E-Wallet.", Icon: Wallet, category: "ewallet" },
+  { id: "gopay", label: "GoPay / ShopeePay", description: "Otomatis buka aplikasi E-Wallet.", Icon: Wallet, category: "gopay" },
   { id: "va_bca", label: "BCA Virtual Account", description: "Transfer via m-BCA atau KlikBCA.", Icon: Landmark, category: "bank_transfer", bank: "bca" },
   { id: "va_mandiri", label: "Mandiri Bill", description: "Pembayaran via Mandiri Online.", Icon: Landmark, category: "bank_transfer", bank: "mandiri" },
   { id: "va_bni", label: "BNI Virtual Account", description: "Transfer via BNI Mobile Banking.", Icon: Landmark, category: "bank_transfer", bank: "bni" },
