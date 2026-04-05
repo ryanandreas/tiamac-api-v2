@@ -39,7 +39,7 @@ export default async function Page() {
        db.services.count({
          where: {
            teknisiId: user.id,
-           status_servis: { in: ["Sedang Dikerjakan"] }
+           status_servis: { in: ["Perbaikan Unit"] }
          }
        }),
        db.services.count({
@@ -51,7 +51,7 @@ export default async function Page() {
        db.services.count({
          where: {
            teknisiId: user.id,
-           status_servis: { in: ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Menunggu Persetujuan Customer"] }
+           status_servis: { in: ["Konfirmasi Teknisi", "Dalam Pengecekan", "Menunggu Persetujuan Customer"] }
          }
        })
      ])
@@ -163,7 +163,7 @@ export default async function Page() {
      db.services.count({
        where: {
          status_servis: {
-           in: ["Dalam Pengecekan", "Sedang Dikerjakan"]
+           in: ["Dalam Pengecekan", "Perbaikan Unit"]
          }
        }
      }),

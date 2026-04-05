@@ -39,7 +39,7 @@ export default async function PengerjaanListPage({
 
   const whereClause = {
     teknisiId: user.id,
-    status_servis: "Sedang Dikerjakan",
+    status_servis: "Perbaikan Unit",
   }
 
   const [services, totalCount] = await Promise.all([
@@ -86,7 +86,7 @@ export default async function PengerjaanListPage({
                        <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-2">
                         <Truck className="h-6 w-6" />
                       </div>
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tidak ada unit yang sedang dikerjakan</p>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tidak ada unit dalam perbaikan</p>
                     </div>
                   </TableCell>
                 </TableRow>

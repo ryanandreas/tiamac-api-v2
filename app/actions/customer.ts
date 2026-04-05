@@ -66,8 +66,8 @@ export async function confirmServiceEstimate(serviceId: string) {
       await tx.services.update({
         where: { id: serviceId },
         data: {
-          status: "Sedang Dikerjakan",
-          status_servis: "Sedang Dikerjakan",
+          status: "Perbaikan Unit",
+          status_servis: "Perbaikan Unit",
           biaya_disetujui: true,
         },
       })
@@ -75,8 +75,8 @@ export async function confirmServiceEstimate(serviceId: string) {
       await tx.serviceStatusHistory.create({
         data: {
           serviceId,
-          status: "Sedang Dikerjakan",
-          status_servis: "Sedang Dikerjakan",
+          status: "Perbaikan Unit",
+          status_servis: "Perbaikan Unit",
           changedByUserId: current.id,
           notes: "Customer menyetujui estimasi biaya. Pekerjaan dimulai.",
         },
@@ -104,8 +104,16 @@ export async function cancelServiceEstimate(serviceId: string) {
       select: { id: true, customerId: true, status_servis: true },
     })
 
-    if (!service || service.customerId !== current.id || service.status_servis !== "Menunggu Persetujuan Customer") {
-      return { success: false, message: "Servis tidak dapat diproses." }
+    const cancellableStatuses = [
+      "Booking",
+      "Menunggu Jadwal",
+      "Konfirmasi Teknisi",
+      "Dalam Pengecekan",
+      "Menunggu Persetujuan Customer",
+    ]
+
+    if (!service || service.customerId !== current.id || !cancellableStatuses.includes(service.status_servis)) {
+      return { success: false, message: "Servis tidak dapat dibatalkan pada tahap ini." }
     }
 
     await db.$transaction(async (tx) => {

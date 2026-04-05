@@ -83,14 +83,14 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     0
   )
   const totalEstimasi = biayaKunjungan + layananTotal
-  const totalFinal = service.biaya ?? totalEstimasi
+  const totalFinal = service.biaya ?? service.estimasi_biaya ?? totalEstimasi
 
-  const isFinalPayment = ["Pekerjaan Selesai", "Menunggu Pembayaran"].includes(service.status_servis)
+  const isFinalPayment = ["Perbaikan Unit", "Pekerjaan Selesai", "Menunggu Pembayaran"].includes(service.status_servis)
   const isCompleted = ["Selesai", "Selesai (Garansi Aktif)"].includes(service.status_servis)
   const isPendingInitial = service.status_servis === "Booking"
 
   const dpAmount = biayaKunjungan
-  const pelunasanAmount = Math.max(0, (service.biaya ?? 0) - biayaKunjungan)
+  const pelunasanAmount = Math.max(0, totalFinal - biayaKunjungan)
   const amountToPay = isPendingInitial ? dpAmount : pelunasanAmount
 
   return (
@@ -115,7 +115,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         </div>
         <div className="flex flex-col gap-1 pl-1">
           <DynamicBreadcrumbs />
-          <p className="text-slate-500 font-medium text-sm mt-1">Selesaikan administrasi Anda untuk mempercepat proses pengerjaan unit AC.</p>
+          <p className="text-slate-500 font-medium text-sm mt-1">Selesaikan administrasi Anda untuk mempercepat proses pengerjaan unit.</p>
         </div>
       </div>
 
@@ -160,8 +160,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <Package className="h-6 w-6" />
                 </div>
                 <div className="space-y-0.5">
-                  <h4 className="text-base font-bold text-slate-900">Servis AC Routine (Cleaning)</h4>
-                  <p className="text-xs font-medium text-slate-400">Layanan perawatan berkala untuk {service.acUnits.length} unit AC favorit Anda.</p>
+                  <h4 className="text-base font-bold text-slate-900">Routine Cleaning</h4>
+                  <p className="text-xs font-medium text-slate-400">Layanan perawatan berkala untuk {service.acUnits.length} unit favorit Anda.</p>
                 </div>
               </div>
 
@@ -170,7 +170,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 <div className="flex justify-between items-center group/line">
                    <div className="flex items-center gap-3">
                       <div className="size-1.5 rounded-full bg-slate-200 group-hover/line:bg-[#66B21D] transition-colors" />
-                      <span className="text-sm font-medium text-slate-500 group-hover/line:text-slate-900 transition-colors">Cuci AC Routine ({service.acUnits.length} Unit)</span>
+                      <span className="text-sm font-medium text-slate-500 group-hover/line:text-slate-900 transition-colors">Routine Cleaning ({service.acUnits.length} Unit)</span>
                    </div>
                    <span className="text-sm font-bold text-slate-900">{formatRupiah(layananTotal)}</span>
                 </div>

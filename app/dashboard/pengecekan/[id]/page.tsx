@@ -32,7 +32,10 @@ export default async function PengecekanDetailPage({
       teknisi: true,
       statusHistory: { orderBy: { createdAt: "desc" } },
       materialUsages: { include: { item: { select: { nama: true, uom: true } } }, orderBy: { createdAt: "desc" } },
-      acUnits: { include: { layanan: true } },
+      acUnits: { 
+        include: { layanan: true },
+        orderBy: { createdAt: "asc" }
+      },
     },
   })
 

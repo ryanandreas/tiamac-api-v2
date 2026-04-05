@@ -150,7 +150,7 @@ async function main() {
     { id: 3, value: 'Konfirmasi Teknisi', label: 'Konfirmasi Teknisi', role: 'teknisi' },
     { id: 4, value: 'Pengecekan Unit', label: 'Pengecekan Unit', role: 'teknisi' },
     { id: 5, value: 'Menunggu Persetujuan Customer', label: 'Menunggu Persetujuan Customer', role: 'teknisi' },
-    { id: 6, value: 'Sedang Dikerjakan', label: 'Sedang Dikerjakan', role: 'teknisi' },
+    { id: 6, value: 'Perbaikan Unit', label: 'Perbaikan Unit', role: 'teknisi' },
     { id: 7, value: 'Menunggu Pembayaran', label: 'Menunggu Pembayaran', role: 'teknisi' },
     { id: 8, value: 'Selesai (Garansi Aktif)', label: 'Selesai (Garansi Aktif)', role: 'admin' },
     { id: 9, value: 'Dibatalkan', label: 'Dibatalkan', role: 'customer' },
@@ -163,7 +163,7 @@ async function main() {
       'Konfirmasi Teknisi': 'Teknisi telah dikonfirmasi untuk pesanan ini.',
       'Pengecekan Unit': 'Teknisi sedang melakukan pengecekan unit di lokasi.',
       'Menunggu Persetujuan Customer': 'Teknisi telah mengajukan detail rincian biaya servis. Menunggu persetujuan customer.',
-      'Sedang Dikerjakan': 'Customer menyetujui biaya. Teknisi mulai melakukan pengerjaan.',
+      'Perbaikan Unit': 'Customer menyetujui biaya. Teknisi mulai melakukan pengerjaan.',
       'Menunggu Pembayaran': 'Pekerjaan selesai. Menunggu customer melakukan pembayaran.',
       'Selesai (Garansi Aktif)': 'Pembayaran telah dikonfirmasi. Layanan selesai dan garansi diaktifkan.',
       'Dibatalkan': 'Pesanan telah dibatalkan.'
@@ -203,7 +203,7 @@ async function main() {
       data: {
         customerId: input.customerId,
         teknisiId: input.teknisiId ?? null,
-        jenis_servis: 'Servis AC',
+        jenis_servis: 'AC',
         keluhan: input.keluhan,
         status: input.status,
         status_servis: input.status_servis,
@@ -330,8 +330,8 @@ async function main() {
   const serviceSedangDikerjakan = await createService({
     customerId: customerUsers[1].id,
     teknisiId: staffUsers[1].id,
-    status_servis: 'Sedang Dikerjakan',
-    status: 'Sedang Dikerjakan',
+    status_servis: 'Perbaikan Unit',
+    status: 'Perbaikan Unit',
     biaya_dasar: 50000,
     estimasi_biaya: 480000,
     biaya_disetujui: true,

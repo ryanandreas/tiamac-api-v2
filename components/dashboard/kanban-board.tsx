@@ -22,10 +22,10 @@ interface KanbanBoardProps {
 
 const STATUS_COLUMNS = [
   { id: "Menunggu Jadwal", label: "Menunggu Jadwal", color: "bg-yellow-100 text-yellow-800" },
-  { id: "Teknisi Dikonfirmasi", label: "Teknisi Dikonfirmasi", color: "bg-blue-100 text-blue-800" },
+  { id: "Konfirmasi Teknisi", label: "Konfirmasi Teknisi", color: "bg-blue-100 text-blue-800" },
   { id: "Dalam Pengecekan", label: "Dalam Pengecekan", color: "bg-indigo-100 text-indigo-800" },
   { id: "Menunggu Persetujuan Customer", label: "Menunggu Persetujuan", color: "bg-purple-100 text-purple-800" },
-  { id: "Sedang Dikerjakan", label: "Sedang Dikerjakan", color: "bg-orange-100 text-orange-800" },
+  { id: "Perbaikan Unit", label: "Perbaikan Unit", color: "bg-orange-100 text-orange-800" },
   { id: "Pekerjaan Selesai", label: "Pekerjaan Selesai", color: "bg-teal-100 text-teal-800" },
   { id: "Menunggu Pembayaran", label: "Menunggu Pembayaran", color: "bg-red-100 text-red-800" },
 ]
@@ -75,9 +75,6 @@ export function KanbanBoard({ data }: KanbanBoardProps) {
                 >
                   <CardContent className="p-3 space-y-2">
                     <div className="flex justify-between items-start gap-2">
-                      <span className="font-medium text-xs leading-none line-clamp-1" title={item.jenis_servis}>
-                        {item.jenis_servis}
-                      </span>
                       <span className="text-[9px] text-muted-foreground whitespace-nowrap">
                         {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </span>

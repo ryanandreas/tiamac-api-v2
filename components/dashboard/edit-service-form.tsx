@@ -58,10 +58,10 @@ interface EditServiceFormProps {
 const STATUS_OPTIONS = [
   "Booking",
   "Menunggu Jadwal",
-  "Teknisi Dikonfirmasi",
+  "Konfirmasi Teknisi",
   "Dalam Pengecekan",
   "Menunggu Persetujuan Customer",
-  "Sedang Dikerjakan",
+  "Perbaikan Unit",
   "Pekerjaan Selesai",
   "Menunggu Pembayaran",
   "Selesai (Garansi Aktif)",
@@ -236,7 +236,7 @@ export function EditServiceForm({ service, technicians, inventoryItems, catalogR
                 <h2 className="text-lg font-black text-slate-900 tracking-tight">Main <span className="text-slate-400">Diagnostic Override</span></h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Status Field */}
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Status Workflow</Label>
@@ -248,24 +248,6 @@ export function EditServiceForm({ service, technicians, inventoryItems, catalogR
                       {STATUS_OPTIONS.map((opt) => (
                         <SelectItem key={opt} value={opt} className="rounded-xl px-4 py-3 text-xs font-black text-slate-700 data-[highlighted]:bg-green-50 data-[highlighted]:text-[#66B21D]">
                           {opt}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Technician Assign Field */}
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Field Staff</Label>
-                  <Select value={teknisiId} onValueChange={setTeknisiId}>
-                    <SelectTrigger className="h-14 border-slate-200 rounded-2xl bg-white hover:bg-slate-50 transition-all font-black text-slate-900 px-5 text-xs shadow-sm">
-                      <SelectValue placeholder="Assign Teknisi" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-2 min-w-[240px]">
-                      <SelectItem value="none" className="rounded-xl px-4 py-3 text-xs font-black text-slate-400 italic">Belum ditugaskan</SelectItem>
-                      {technicians.map((t) => (
-                        <SelectItem key={t.id} value={t.id} className="rounded-xl px-4 py-3 text-xs font-black text-slate-700 data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-600">
-                          {t.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

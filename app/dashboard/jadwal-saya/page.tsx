@@ -37,7 +37,7 @@ export default async function JadwalSayaPage({
 
   const whereClause = {
     teknisiId: user.id,
-    status_servis: { in: ["Teknisi Dikonfirmasi", "Dalam Pengecekan", "Sedang Dikerjakan"] },
+    status_servis: { in: ["Konfirmasi Teknisi", "Dalam Pengecekan", "Perbaikan Unit"] },
   }
 
   const [services, totalCount] = await Promise.all([

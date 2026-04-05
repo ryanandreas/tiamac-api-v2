@@ -22,18 +22,18 @@ export class ServiceRequestService {
         where: { id: serviceId },
         data: {
           teknisiId,
-          status: "Teknisi Dikonfirmasi",
-          status_servis: "Teknisi Dikonfirmasi",
+          status: "Konfirmasi Teknisi",
+          status_servis: "Konfirmasi Teknisi",
           keluhan: keluhanNext,
         },
       });
 
-      if (current?.status_servis !== "Teknisi Dikonfirmasi") {
+      if (current?.status_servis !== "Konfirmasi Teknisi") {
         await tx.serviceStatusHistory.create({
           data: {
             serviceId,
-            status: "Teknisi Dikonfirmasi",
-            status_servis: "Teknisi Dikonfirmasi",
+            status: "Konfirmasi Teknisi",
+            status_servis: "Konfirmasi Teknisi",
             changedByUserId: changedByUserId || null,
             notes: `Penjadwalan teknisi ke tanggal ${jadwalTanggal}`,
           },
@@ -47,12 +47,11 @@ export class ServiceRequestService {
   static async updateService(data: {
     serviceId: string;
     status_servis?: string;
-    jenis_servis?: string;
     teknisiId?: string;
     jadwal_tanggal?: string;
     changedByUserId?: string;
   }) {
-    const { serviceId, status_servis, jenis_servis, teknisiId, jadwal_tanggal, changedByUserId } = data;
+    const { serviceId, status_servis, teknisiId, jadwal_tanggal, changedByUserId } = data;
 
     const current = await db.services.findUnique({
       where: { id: serviceId },
@@ -66,7 +65,6 @@ export class ServiceRequestService {
       updateData.status = status_servis;
       updateData.status_servis = status_servis;
     }
-    if (jenis_servis) updateData.jenis_servis = jenis_servis;
     if (teknisiId !== undefined) updateData.teknisiId = teknisiId;
     if (jadwal_tanggal) {
       updateData.keluhan = this.upsertJadwalLine(current.keluhan ?? "", jadwal_tanggal);
@@ -166,5 +164,8 @@ export class ServiceRequestService {
     revalidatePath("/dashboard/booking");
     revalidatePath("/dashboard/jadwal");
     revalidatePath("/dashboard/servis");
+    revalidatePath("/dashboard/tugas");
+    revalidatePath("/dashboard/servis/dalam-pengecekan");
+    revalidatePath("/dashboard/servis/perbaikan-unit");
   }
 }

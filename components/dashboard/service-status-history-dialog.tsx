@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getServiceDetail } from "@/app/actions/booking";
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, parse } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
 interface ServiceStatusHistoryDialogProps {
@@ -33,6 +33,9 @@ interface ServiceStatusHistoryDialogProps {
   serviceId: string | null;
   trigger?: React.ReactNode;
   mode?: "customer" | "staff";
+  showApprovalActions?: boolean;
+  onApprove?: () => Promise<void>;
+  isApproving?: boolean;
 }
 
 const SERVICE_STEPS = [
@@ -49,6 +52,9 @@ export function ServiceStatusHistoryDialog({
   serviceId,
   trigger,
   mode = "customer",
+  showApprovalActions = false,
+  onApprove,
+  isApproving = false,
 }: ServiceStatusHistoryDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined;
@@ -58,6 +64,7 @@ export function ServiceStatusHistoryDialog({
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmAlert, setShowConfirmAlert] = useState(false);
 
   const fetchDetail = async () => {
     if (!serviceId) return;
@@ -174,7 +181,16 @@ export function ServiceStatusHistoryDialog({
                   <div className="min-w-0">
                     <p className="text-[11px] font-[700] text-[#94A3B8] uppercase tracking-[0.12em] mb-0.5">Tanggal Kunjungan</p>
                     <p className="text-sm font-[800] text-[#1E293B] truncate">
-                      {data.keluhan?.match(/Jadwal:\s*(.*)/i)?.[1]?.trim() || "Menunggu Konfirmasi"}
+                      {(() => {
+                        const rawJadwal = data.keluhan?.match(/Jadwal:\s*(.*)/i)?.[1]?.trim();
+                        if (!rawJadwal) return "Menunggu Konfirmasi";
+                        try {
+                          const parsedDate = parse(rawJadwal, "yyyy-MM-dd HH:mm", new Date());
+                          return format(parsedDate, "dd MMMM yyyy, HH:mm", { locale: localeId });
+                        } catch (e) {
+                          return rawJadwal;
+                        }
+                      })()}
                     </p>
                   </div>
                 </div>
@@ -353,9 +369,88 @@ export function ServiceStatusHistoryDialog({
                 </div>
               </div>
             </div>
+
+            {/* Premium Action Footer v3 */}
+            {showApprovalActions && !loading && !error && data && (
+              <div className="p-6 bg-white border-t border-[#F1F5F9] shrink-0 z-30">
+                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-[11px] font-[800] text-[#94A3B8] uppercase tracking-[0.2em] mb-1">Total yang disetujui</p>
+                    <p className="text-xl font-[900] text-[#0F172A]">
+                      Rp {(data.biaya || data.estimasi_biaya || 0).toLocaleString('id-ID')}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => setIsOpen(false)}
+                      disabled={isApproving}
+                      className="flex-1 sm:flex-none h-14 px-8 rounded-2xl font-[800] text-xs text-[#64748B] hover:bg-[#F1F5F9] transition-all uppercase tracking-widest border border-transparent"
+                    >
+                      Batal
+                    </Button>
+                    <Button 
+                      onClick={() => setShowConfirmAlert(true)}
+                      disabled={isApproving}
+                      className="flex-1 sm:flex-none h-14 px-10 rounded-2xl bg-[#66B21D] hover:bg-[#5aa11a] text-white font-[900] text-xs shadow-[0_12px_24px_-8px_rgba(102,178,29,0.4)] transition-all active:scale-95 uppercase tracking-widest border-none"
+                    >
+                      {isApproving ? (
+                        <div className="flex items-center gap-3">
+                           <div className="size-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                           Memproses...
+                        </div>
+                      ) : (
+                        "Setujui Estimasi"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ) : null}
       </DialogContent>
+
+      {/* Final Approval Confirmation Alert */}
+      <Dialog open={showConfirmAlert} onOpenChange={setShowConfirmAlert}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden border-none rounded-[32px] shadow-2xl z-[100]">
+          <div className="bg-white p-8 space-y-6">
+            <div className="size-20 rounded-[24px] bg-green-50 text-[#66B21D] flex items-center justify-center mx-auto shadow-sm border border-green-100/50">
+              <ShieldCheck className="size-10" />
+            </div>
+            
+            <div className="space-y-2 text-center">
+              <h3 className="text-xl font-[900] text-slate-900 tracking-tight uppercase tracking-widest">Setujui Estimasi?</h3>
+              <p className="text-sm font-[600] text-slate-500 leading-relaxed px-4">
+                Dengan melanjutkan, Anda menyetujui rincian biaya tersebut dan tim teknisi kami akan segera memulai pengerjaan unit AC Anda.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Button 
+                variant="ghost" 
+                onClick={() => setShowConfirmAlert(false)}
+                className="h-14 rounded-2xl font-[800] text-xs text-slate-400 hover:bg-slate-50 transition-all uppercase tracking-widest"
+                disabled={isApproving}
+              >
+                Kembali
+              </Button>
+              <Button 
+                onClick={async () => {
+                  if (onApprove) {
+                    await onApprove();
+                    setShowConfirmAlert(false);
+                  }
+                }}
+                className="h-14 rounded-2xl bg-[#66B21D] hover:bg-[#5aa11a] text-white font-[900] text-xs shadow-lg shadow-green-500/20 transition-all active:scale-95 uppercase tracking-widest"
+                disabled={isApproving}
+              >
+                {isApproving ? "Proses..." : "Ya, Lanjutkan"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

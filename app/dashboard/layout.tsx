@@ -33,7 +33,7 @@ export default async function DashboardLayout({
             "Konfirmasi Teknisi", 
             "Pengecekan Unit", 
             "Menunggu Persetujuan Customer", 
-            "Sedang Dikerjakan", 
+            "Perbaikan Unit", 
             "Menunggu Pembayaran"
           ] 
         } 
@@ -49,7 +49,7 @@ export default async function DashboardLayout({
       where: { 
         teknisiId: user.id || undefined,
         status_servis: {
-          in: ["Pengecekan Unit", "Menunggu Persetujuan Customer", "Sedang Dikerjakan", "Menunggu Pembayaran"]
+          in: ["Pengecekan Unit", "Menunggu Persetujuan Customer", "Perbaikan Unit", "Menunggu Pembayaran"]
         }
       } 
     })

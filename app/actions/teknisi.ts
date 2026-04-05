@@ -101,6 +101,20 @@ export async function removeMaterialUsage(input: { usageId: string }): Promise<A
   }
 }
 
+export async function removeAcUnit(input: { unitId: string }): Promise<ActionResponse> {
+  try {
+    const current = await getCurrentUser()
+    ensureTechnician(current)
+    await TechnicianService.removeAcUnit({
+      ...input,
+      technicianId: current.id!,
+    })
+    return { success: true, message: "Unit AC berhasil dihapus" }
+  } catch (err: any) {
+    return { success: false, message: err.message || "Gagal memproses" }
+  }
+}
+
 export async function submitPengecekan(input: {
   serviceId: string
   diagnosa?: string

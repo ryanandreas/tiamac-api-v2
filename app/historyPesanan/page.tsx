@@ -10,10 +10,10 @@ export const dynamic = "force-dynamic"
 
 const ONGOING_STATUSES = [
   "Menunggu Jadwal",
-  "Teknisi Dikonfirmasi",
+  "Konfirmasi Teknisi",
   "Dalam Pengecekan",
   "Menunggu Persetujuan Customer",
-  "Sedang Dikerjakan",
+  "Perbaikan Unit",
   "Pekerjaan Selesai",
   "Menunggu Pembayaran",
 ]

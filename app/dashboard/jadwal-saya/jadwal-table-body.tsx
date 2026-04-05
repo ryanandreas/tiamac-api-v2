@@ -68,7 +68,7 @@ export function JadwalTableBody({ rows }: JadwalTableBodyProps) {
                 <Badge 
                   variant="secondary" 
                   className={`font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-lg whitespace-nowrap border-none
-                    ${s.status_servis === "Sedang Dikerjakan" ? "bg-blue-50 text-blue-600" : "bg-orange-50 text-orange-600"}
+                    ${s.status_servis === "Perbaikan Unit" ? "bg-blue-50 text-blue-600" : "bg-orange-50 text-orange-600"}
                   `}
                 >
                   {s.status_servis}

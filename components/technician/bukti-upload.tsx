@@ -58,7 +58,7 @@ export function BuktiUpload({
             <Input
               type="file"
               accept="image/*"
-              disabled={busy || statusServis !== "Sedang Dikerjakan"}
+              disabled={busy || statusServis !== "Perbaikan Unit"}
               onChange={(e) => setBefore(e.target.files?.[0] ?? null)}
             />
           </div>
@@ -67,7 +67,7 @@ export function BuktiUpload({
             <Input
               type="file"
               accept="image/*"
-              disabled={busy || statusServis !== "Sedang Dikerjakan"}
+              disabled={busy || statusServis !== "Perbaikan Unit"}
               onChange={(e) => setAfter(e.target.files?.[0] ?? null)}
             />
           </div>
@@ -76,7 +76,7 @@ export function BuktiUpload({
         {success ? <div className="text-sm text-primary">{success}</div> : null}
       </CardContent>
       <CardFooter>
-        <Button className="w-full" onClick={handleSubmit} disabled={busy || statusServis !== "Sedang Dikerjakan"}>
+        <Button className="w-full" onClick={handleSubmit} disabled={busy || statusServis !== "Perbaikan Unit"}>
           Simpan & Tandai Selesai
         </Button>
       </CardFooter>

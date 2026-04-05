@@ -27,21 +27,21 @@ List Status Step:
 
 - Keterangan: Teknisi sudah input biaya. Sistem menunggu Customer klik "Setuju" atau "Tolak" di aplikasi.
 - Action: Customer review & approval.
-- jika customer setuju maka status berubah ke status "Sedang Dikerjakan".
+- jika customer setuju maka status berubah ke status "Perbaikan Unit".
 - jika customer menolak maka status berubah ke status "Dibatalkan".
 
-6 Sedang Dikerjakan
+6 Perbaikan Unit
 
 - Keterangan: Customer sudah Setuju . Teknisi mulai bekerja (bongkar/pasang/perbaikan).
+- Action : customer dari mulai step ini sudah bisa membayar pelunasan 
 - Action: Teknisi bekerja & upload foto bukti (Before/After).
 - Action: Setelah teknisi selesai proses servis dan upload bukti maka status berubah ke status "Menunggu Pembayaran".
-- Customer sudah bisa mulai bayar pelunasan di tahap ini 
+
 
 7 Menunggu Pembayaran
 
-- Keterangan: Invoice sudah keluar. Menunggu Customer transfer/bayar.
-- Action: Customer melakukan pembayaran.
-- jika customer sudah membayar maka status berubah ke status "Selesai (Garansi Aktif)".
+- Keterangan: Menunggu Customer transfer/bayar.
+- Action: Customer melakukan pembayaran. , jika status pembayaran pelunasan sudah lunas maka status berubah ke status "Selesai (Garansi Aktif)".
 
 8 Selesai (Garansi Aktif)
 

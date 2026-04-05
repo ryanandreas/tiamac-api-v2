@@ -39,7 +39,7 @@ export default async function PengecekanListPage({
 
   const whereClause = {
     teknisiId: user.id,
-    status_servis: { in: ["Teknisi Dikonfirmasi", "Dalam Pengecekan"] },
+    status_servis: { in: ["Konfirmasi Teknisi", "Dalam Pengecekan"] },
   }
 
   const [services, totalCount] = await Promise.all([

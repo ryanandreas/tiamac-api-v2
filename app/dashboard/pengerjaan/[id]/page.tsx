@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/app/actions/session"
-import { WorkDocumentation } from "@/components/technician/work-documentation"
+import { PengerjaanWorkstation } from "@/components/technician/pengerjaan-workstation"
 import { db } from "@/lib/db"
+import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
+import { Badge } from "@/components/ui/badge"
 
 export default async function PengerjaanDetailPage({
   params,
@@ -78,6 +80,21 @@ export default async function PengerjaanDetailPage({
   }
 
   return (
-    <WorkDocumentation serviceData={serviceData} />
+    <div className="space-y-4 animate-fade-in font-outfit">
+      <div className="bg-white px-6 py-4 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 border-none shadow-none">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Terminal Pengerjaan</h1>
+          <DynamicBreadcrumbs />
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge className="bg-orange-50 text-orange-600 border-none font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-lg">
+             {service.status_servis}
+          </Badge>
+          <span className="text-xs font-bold text-slate-300">ID: #{service.id.slice(-8).toUpperCase()}</span>
+        </div>
+      </div>
+
+      <PengerjaanWorkstation serviceData={serviceData} />
+    </div>
   )
 }

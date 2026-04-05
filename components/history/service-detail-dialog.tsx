@@ -87,13 +87,9 @@ export function ServiceDetailDialog({ service, children }: ServiceDetailDialogPr
               <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Informasi Layanan</span>
             </div>
             <div className="p-6 rounded-[32px] bg-white border border-slate-100 shadow-sm space-y-6">
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-1.5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Jenis Layanan</p>
-                  <p className="text-sm font-black text-slate-900">{service.jenis_servis}</p>
-                </div>
-                <div className="space-y-1.5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Akhir</p>
+              <div className="grid grid-cols-1 gap-8">
+                <div className="space-y-1.5 p-4 rounded-2xl bg-[#66B21D]/5 border border-[#66B21D]/10">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Akhir Pengerjaan</p>
                   <div className="flex items-center gap-1.5 text-[#66B21D]">
                     <CheckCircle2 className="size-3.5" />
                     <p className="text-sm font-black uppercase tracking-tight">{service.status_servis}</p>

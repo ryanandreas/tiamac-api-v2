@@ -9,10 +9,10 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 
 const ONGOING_STATUSES = [
   "Menunggu Jadwal",
-  "Teknisi Dikonfirmasi",
+  "Konfirmasi Teknisi",
   "Dalam Pengecekan",
   "Menunggu Persetujuan Customer",
-  "Sedang Dikerjakan",
+  "Perbaikan Unit",
   "Pekerjaan Selesai",
   "Menunggu Pembayaran",
 ]
@@ -48,7 +48,7 @@ export default async function CustomerPanelLayout({
   const unpaidCount = await db.services.count({
     where: {
       customerId: user.id,
-      status_servis: { in: ["Booking", "Menunggu Pembayaran"] },
+      status_servis: { in: ["Booking", "Perbaikan Unit", "Menunggu Pembayaran"] },
     },
   })
 

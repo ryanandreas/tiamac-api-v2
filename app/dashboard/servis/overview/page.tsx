@@ -9,10 +9,10 @@ export default async function OverviewPage() {
       status_servis: {
         in: [
           "Menunggu Jadwal",
-          "Teknisi Dikonfirmasi",
+          "Konfirmasi Teknisi",
           "Dalam Pengecekan",
           "Menunggu Persetujuan Customer",
-          "Sedang Dikerjakan",
+          "Perbaikan Unit",
           "Pekerjaan Selesai",
           "Menunggu Pembayaran",
         ],

@@ -89,7 +89,6 @@ export default async function RiwayatTeknisiPage({
               <TableRow className="border-slate-50 hover:bg-transparent h-14">
                 <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pl-8">ID Servis</TableHead>
                 <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Pelanggan</TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Layanan</TableHead>
                 <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-center">Status</TableHead>
                 <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Tgl Selesai</TableHead>
                 <TableHead className="text-right text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pr-8">Aksi</TableHead>

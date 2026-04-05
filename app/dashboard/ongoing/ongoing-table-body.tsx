@@ -13,14 +13,34 @@ import {
   TooltipTrigger 
 } from "@/components/ui/tooltip"
 import { ServiceStatusHistoryDialog } from "@/components/dashboard/service-status-history-dialog"
+import { format, parse } from "date-fns"
+import { id } from "date-fns/locale"
 
 interface OngoingTableBodyProps {
   services: any[]
 }
 
-function extractJadwal(keluhan: string) {
+function formatJadwalParts(keluhan: string) {
   const match = keluhan.match(/^Jadwal:\s*(.+)$/im)
-  return match?.[1]?.trim()
+  const fullJadwal = match?.[1]?.trim()
+
+  if (!fullJadwal) return { date: "N/A", time: "" }
+  
+  try {
+    // Expected seed format: "YYYY-MM-DD HH:mm"
+    const parsedDate = parse(fullJadwal, "yyyy-MM-dd HH:mm", new Date())
+    
+    return {
+      date: format(parsedDate, "dd MMMM yyyy", { locale: id }),
+      time: format(parsedDate, "HH:mm", { locale: id })
+    }
+  } catch (e) {
+    // Fallback if format is different (e.g. from real booking form)
+    return {
+      date: fullJadwal.split(' ')[0] || fullJadwal,
+      time: fullJadwal.split(' ')[1] || ""
+    }
+  }
 }
 
 export function OngoingTableBody({ services }: OngoingTableBodyProps) {
@@ -37,7 +57,7 @@ export function OngoingTableBody({ services }: OngoingTableBodyProps) {
       <TableBody>
         {services.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={4} className="py-24 text-center">
+            <TableCell colSpan={5} className="py-24 text-center">
               <div className="flex flex-col items-center gap-2">
                 <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-2">
                   <Truck className="h-6 w-6" />
@@ -51,7 +71,7 @@ export function OngoingTableBody({ services }: OngoingTableBodyProps) {
             const isKonfirmasi = s.status_servis === "Konfirmasi Teknisi"
             const isPengecekan = s.status_servis === "Pengecekan Unit"
             const isWaitingApproval = s.status_servis === "Menunggu Persetujuan Customer"
-            const isWorking = s.status_servis === "Sedang Dikerjakan"
+            const isWorking = s.status_servis === "Perbaikan Unit"
             const isPayment = s.status_servis === "Menunggu Pembayaran"
 
             const actionUrl = (isKonfirmasi || isPengecekan)
@@ -61,7 +81,7 @@ export function OngoingTableBody({ services }: OngoingTableBodyProps) {
                 : `/dashboard/pengecekan/${s.id}` 
 
             const buttonLabel = isWaitingApproval 
-              ? "Menunggu Acc" 
+              ? "Konfirmasi" 
               : isPayment 
                 ? "Menunggu Bayar" 
                 : isKonfirmasi 
@@ -70,12 +90,17 @@ export function OngoingTableBody({ services }: OngoingTableBodyProps) {
                     ? "Lanjutkan" 
                     : "Proses Unit"
 
+            const { date, time } = formatJadwalParts(s.keluhan ?? "")
+
             return (
               <TableRow key={s.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
                 <TableCell className="py-6 pl-8 font-outfit">
+                   <span className="text-[10px] font-black text-slate-900 group-hover:text-[#66B21D] tracking-widest uppercase py-1 px-2.5 bg-slate-100 rounded-lg">#{s.id.slice(0, 8).toUpperCase()}</span>
+                </TableCell>
+                <TableCell className="py-6 font-outfit">
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-slate-900 group-hover:text-[#66B21D] transition-colors">{extractJadwal(s.keluhan ?? "") || "N/A"}</span>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID: #{s.id.slice(0, 8).toUpperCase()}</span>
+                    <span className="text-sm font-bold text-slate-900 uppercase tracking-tight">{date}</span>
+                    {time && <span className="text-[10px] font-bold text-slate-400 mt-0.5">{time} WIB</span>}
                   </div>
                 </TableCell>
                 <TableCell className="py-6 font-outfit">
@@ -106,14 +131,14 @@ export function OngoingTableBody({ services }: OngoingTableBodyProps) {
                     {/* Primary Task Action Button */}
                     <Button 
                       className={`h-10 px-5 rounded-2xl font-black text-[10px] uppercase tracking-widest gap-2.5 transition-all shadow-lg ${
-                        isWaitingApproval || isPayment
+                        isPayment
                         ? "bg-slate-100 text-slate-400 cursor-not-allowed hover:bg-slate-100 shadow-none border border-slate-200" 
                         : "bg-[#66B21D] hover:bg-[#4d9e0f] text-white shadow-green-500/10"
                       }`} 
-                      asChild={!isWaitingApproval && !isPayment}
-                      disabled={isWaitingApproval || isPayment}
+                      asChild={!isPayment}
+                      disabled={isPayment}
                     >
-                      {isWaitingApproval || isPayment ? (
+                      {isPayment ? (
                         <>
                           <Clock className="size-3.5" />
                           {buttonLabel}

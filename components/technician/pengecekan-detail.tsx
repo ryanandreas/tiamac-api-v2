@@ -98,7 +98,7 @@ export function PengecekanDetail({
   const selectClassName =
     "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 
-  const canEdit = statusServis === "Teknisi Dikonfirmasi" || statusServis === "Dalam Pengecekan"
+  const canEdit = statusServis === "Konfirmasi Teknisi" || statusServis === "Dalam Pengecekan"
 
   const unitOptions = useMemo(() => {
     return acUnits.map((u, idx) => ({ id: u.id, label: `AC ${idx + 1} (${u.pk} PK)` }))

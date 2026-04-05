@@ -25,10 +25,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
-import { MoreHorizontal, Plus, Filter, Receipt, Copy, Check, Search, Edit2, Trash2, Eye, XCircle, CreditCard } from "lucide-react"
+import { MoreHorizontal, Filter, Copy, Check, Search, Edit2, Trash2, Eye, XCircle } from "lucide-react"
 import Link from "next/link"
 import type { Prisma } from "@prisma/client"
 import { cancelServiceEstimate, confirmServiceEstimate } from "@/app/actions/customer"
@@ -68,14 +67,14 @@ function nextStepLabel(status: string) {
       return "Bayar DP Rp 50.000"
     case "Menunggu Jadwal":
       return "Menunggu jadwal"
-    case "Teknisi Dikonfirmasi":
+    case "Konfirmasi Teknisi":
       return "Teknisi menuju lokasi"
     case "Dalam Pengecekan":
       return "Menunggu diagnosa"
     case "Menunggu Persetujuan Customer":
       return "Setujui estimasi biaya"
-    case "Sedang Dikerjakan":
-      return "Sedang dikerjakan"
+    case "Perbaikan Unit":
+      return "Proses perbaikan & pelunasan"
     case "Pekerjaan Selesai":
       return "Menunggu invoice"
     case "Menunggu Pembayaran":
@@ -100,21 +99,38 @@ export function ServiceListTable({
 }: ServiceListTableProps) {
   const emptyColSpan = isCustomerView ? (showNextStep ? 6 : 5) : (showNextStep ? 8 : 7)
   const router = useRouter()
+  
+  // States
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [selectedService, setSelectedService] = useState<ServiceListItem | null>(null)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [selectedDetailServiceId, setSelectedDetailServiceId] = useState<string | null>(null)
+  const [approvalMode, setApprovalMode] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [serviceToDelete, setServiceToDelete] = useState<string | null>(null)
+  
   const [actionBusy, setActionBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
-  const [detailOpen, setDetailOpen] = useState(false)
-  const [selectedDetailServiceId, setSelectedDetailServiceId] = useState<string | null>(null)
-
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [serviceToDelete, setServiceToDelete] = useState<string | null>(null)
-
+  // Handlers
   const openDetail = (serviceId: string) => {
     setSelectedDetailServiceId(serviceId)
+    setApprovalMode(false)
     setDetailOpen(true)
+  }
+
+  const openApproveDialog = (service: ServiceListItem) => {
+    setSelectedDetailServiceId(service.id)
+    setSelectedService(service)
+    setApprovalMode(true)
+    setDetailOpen(true)
+  }
+
+  const openCancelDialog = (service: ServiceListItem) => {
+    setSelectedService(service)
+    setActionError(null)
+    setConfirmOpen(true)
   }
 
   const handleDeleteClick = (id: string) => {
@@ -128,116 +144,32 @@ export function ServiceListTable({
     try {
       const res = await deleteService(serviceToDelete)
       if (res?.success) {
-        alert(res.message)
         setDeleteDialogOpen(false)
         router.refresh()
       } else {
         alert(res?.message || "Gagal menghapus pesanan")
       }
+    } catch (err) {
+      alert("Terjadi kesalahan sistem")
     } finally {
       setActionBusy(false)
     }
   }
 
-  const formatRupiah = (amount: number) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(amount)
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedId(text)
-      setTimeout(() => setCopiedId(null), 2000) // Reset after 2 seconds
-    })
-  }
-
-  const detail = useMemo(() => {
-    if (!selectedService) {
-      return {
-        rows: [],
-        layananTotal: 0,
-        materialTotal: 0,
-        biayaKunjungan: 50000,
-        totalEstimasi: 0,
-        alamat: "-",
-        jadwal: "-",
-      }
-    }
-
-    const biayaKunjungan = selectedService.biaya_dasar ?? 50000
-    const layananRows =
-      selectedService.acUnits?.flatMap((unit, idx) =>
-        unit.layanan.map((layanan) => ({
-          id: layanan.id,
-          deskripsi: `AC ${idx + 1} - ${layanan.nama}`,
-          pk: `${unit.pk} PK`,
-          harga: layanan.harga ?? 0,
-        }))
-      ) ?? []
-
-    const materialRows =
-      selectedService.materialUsages?.map((u) => ({
-        id: u.id,
-        deskripsi: `Sparepart: ${u.item.nama} x${u.qty}`,
-        pk: "-",
-        harga: u.qty * u.harga_satuan,
-      })) ?? []
-
-    const rows = [
-      ...layananRows,
-      ...materialRows,
-      {
-        id: "biaya-kunjungan",
-        deskripsi: "Biaya Kunjungan & Diagnosa",
-        pk: "-",
-        harga: biayaKunjungan,
-      },
-    ]
-
-    const layananTotal = layananRows.reduce((sum, r) => sum + r.harga, 0)
-    const materialTotal = materialRows.reduce((sum, r) => sum + r.harga, 0)
-    const totalEstimasi =
-      selectedService.estimasi_biaya ?? biayaKunjungan + layananTotal + materialTotal
-
-    const keluhan = selectedService.keluhan ?? ""
-    const alamatLine = keluhan
-      .split("\n")
-      .find((l) => l.trim().toLowerCase().startsWith("alamat:"))
-    const jadwalLine = keluhan
-      .split("\n")
-      .find((l) => l.trim().toLowerCase().startsWith("jadwal:"))
-
-    return {
-      rows,
-      layananTotal,
-      materialTotal,
-      biayaKunjungan,
-      totalEstimasi,
-      alamat: alamatLine ? alamatLine.replace(/alamat:\s*/i, "") : "-",
-      jadwal: jadwalLine ? jadwalLine.replace(/jadwal:\s*/i, "") : "-",
-    }
-  }, [selectedService])
-
-  const openConfirm = (service: ServiceListItem) => {
-    setSelectedService(service)
-    setActionError(null)
-    setConfirmOpen(true)
-  }
-
-  const handleConfirm = async () => {
-    if (!selectedService) return
+  const handleApproveFromDialog = async () => {
+    if (!selectedDetailServiceId) return
     setActionBusy(true)
     setActionError(null)
     try {
-      const res = await confirmServiceEstimate(selectedService.id)
+      const res = await confirmServiceEstimate(selectedDetailServiceId)
       if (!res.success) {
-        setActionError(res.message ?? "Gagal konfirmasi.")
+        alert(res.message ?? "Gagal konfirmasi.")
         return
       }
-      setConfirmOpen(false)
+      setDetailOpen(false)
       router.refresh()
+    } catch (err) {
+      alert("Terjadi kesalahan saat mengonfirmasi estimasi")
     } finally {
       setActionBusy(false)
     }
@@ -255,10 +187,20 @@ export function ServiceListTable({
       }
       setConfirmOpen(false)
       router.refresh()
+    } catch (err) {
+      setActionError("Terjadi kesalahan sistem")
     } finally {
       setActionBusy(false)
     }
   }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedId(text)
+      setTimeout(() => setCopiedId(null), 2000)
+    })
+  }
+
   return (
     <div className="flex flex-col">
       {!isCustomerView && (
@@ -301,7 +243,7 @@ export function ServiceListTable({
                 <TableCell className={`${isCustomerView ? "pl-6 py-6" : "pl-8 py-6"}`}>
                   <div className="flex items-center gap-2">
                     <span className={`font-black tracking-tight ${isCustomerView ? "text-slate-900" : "text-slate-500 text-xs"}`}>
-                      #{item.id.slice(0, 8).toUpperCase()}
+                      #{item.id.slice(-8).toUpperCase()}
                     </span>
                     {isCustomerView && (
                       <Button
@@ -426,13 +368,11 @@ export function ServiceListTable({
                             Opsi Pesanan
                           </DropdownMenuLabel>
                           
-                          {/* Detail Servis - New Icon */}
                           <DropdownMenuItem onClick={() => openDetail(item.id)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:bg-slate-50">
                             <Eye className="mr-3 h-4 w-4 text-slate-400" />
                             <span>Detail Servis</span>
                           </DropdownMenuItem>
 
-                          {/* Lakukan Pembayaran */}
                           {item.status_servis === "Booking" && (
                             <div className="px-2 py-1">
                               <PaymentButton 
@@ -445,7 +385,7 @@ export function ServiceListTable({
                             </div>
                           )}
 
-                          {item.status_servis === "Menunggu Pembayaran" && (
+                          {(item.status_servis === "Menunggu Pembayaran" || item.status_servis === "Perbaikan Unit") && (
                             <div className="px-2 py-1">
                               <PaymentButton 
                                 serviceId={item.id} 
@@ -457,17 +397,15 @@ export function ServiceListTable({
                             </div>
                           )}
 
-                          {/* Konfirmasi Estimasi */}
                           {enableCustomerApproval && item.status_servis === "Menunggu Persetujuan Customer" && (
-                            <DropdownMenuItem onClick={() => openConfirm(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
+                            <DropdownMenuItem onClick={() => openApproveDialog(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
                                <Check className="mr-3 h-4 w-4" />
                                Konfirmasi Estimasi
                             </DropdownMenuItem>
                           )}
 
-                          {/* Batalkan - Expanded Visibility */}
-                          {["Booking", "Menunggu Jadwal", "Teknisi Dikonfirmasi", "Dalam Pengecekan", "Menunggu Persetujuan Customer"].includes(item.status_servis) && (
-                            <DropdownMenuItem onClick={() => openConfirm(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-red-500 focus:bg-red-50 focus:text-red-600">
+                          {["Booking", "Menunggu Jadwal", "Konfirmasi Teknisi", "Dalam Pengecekan", "Menunggu Persetujuan Customer"].includes(item.status_servis) && (
+                            <DropdownMenuItem onClick={() => openCancelDialog(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-red-500 focus:bg-red-50 focus:text-red-600">
                               <XCircle className="mr-3 h-4 w-4" />
                               Batalkan
                             </DropdownMenuItem>
@@ -479,102 +417,49 @@ export function ServiceListTable({
                 </TableCell>
               </TableRow>
             ))}
-            {data.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={emptyColSpan} className="h-32 text-center">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-200 mb-2">
-                      <Search className="h-5 w-5" />
-                    </div>
-                    <p className="text-[11px] font-bold text-slate-400">Tidak ada pesanan ditemukan</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
       </div>
 
+      {/* Cancellation Dialog */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Konfirmasi Biaya Servis</DialogTitle>
-            <DialogDescription>Periksa rincian biaya sebelum konfirmasi.</DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="rounded-lg border border-dashed bg-background p-4">
-              <div className="space-y-2 text-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="text-muted-foreground">Order ID</div>
-                  <div className="text-right font-medium whitespace-pre-wrap break-words max-w-[70%]">
-                    {selectedService?.id ?? "-"}
-                  </div>
-                </div>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="text-muted-foreground">Customer</div>
-                  <div className="text-right font-medium whitespace-pre-wrap break-words max-w-[70%]">
-                    {selectedService?.customer?.name ?? "-"}
-                  </div>
-                </div>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="text-muted-foreground">Alamat</div>
-                  <div className="text-right font-medium whitespace-pre-wrap break-words max-w-[70%]">
-                    {detail.alamat}
-                  </div>
-                </div>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="text-muted-foreground">Jadwal</div>
-                  <div className="text-right font-medium whitespace-pre-wrap break-words max-w-[70%]">
-                    {detail.jadwal}
-                  </div>
-                </div>
-              </div>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden border-none rounded-3xl shadow-2xl">
+          <div className="bg-white p-8 space-y-6">
+            <div className="size-16 rounded-3xl bg-red-50 text-red-500 flex items-center justify-center mx-auto shadow-sm border border-red-100/50">
+              <XCircle className="size-8" />
+            </div>
+            
+            <div className="space-y-2 text-center">
+              <DialogTitle className="text-xl font-black text-slate-900 tracking-tight">Batalkan Pesanan?</DialogTitle>
+              <DialogDescription className="text-sm font-bold text-slate-500 font-medium leading-relaxed">
+                Tindakan ini akan membatalkan seluruh proses pengerjaan untuk pesanan #{selectedService?.id.slice(-8).toUpperCase()} ini.
+              </DialogDescription>
             </div>
 
-            <div className="rounded-lg border border-dashed bg-background p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-sm font-medium">Rincian Biaya</div>
-                <div className="text-sm font-semibold">{formatRupiah(detail.totalEstimasi)}</div>
-              </div>
-              <div className="mt-3">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[60px]">No</TableHead>
-                      <TableHead>Deskripsi</TableHead>
-                      <TableHead className="w-[120px]">PK</TableHead>
-                      <TableHead className="w-[160px] text-right">Harga</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {detail.rows.map((row, idx) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{idx + 1}</TableCell>
-                        <TableCell className="whitespace-normal">{row.deskripsi}</TableCell>
-                        <TableCell>{row.pk}</TableCell>
-                        <TableCell className="text-right">{formatRupiah(row.harga)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
+            {actionError && <div className="p-3 bg-red-50 text-red-500 text-[10px] font-bold rounded-lg border border-red-100">{actionError}</div>}
 
-            {actionError ? <div className="text-sm text-destructive">{actionError}</div> : null}
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                variant="secondary" 
+                onClick={() => setConfirmOpen(false)}
+                className="h-12 rounded-2xl font-black text-xs bg-slate-50 hover:bg-slate-100 text-slate-400 transition-all border-none"
+                disabled={actionBusy}
+              >
+                Kembali
+              </Button>
+              <Button 
+                onClick={handleCancelAction}
+                className="h-12 rounded-2xl font-black text-xs bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 border-none"
+                disabled={actionBusy}
+              >
+                {actionBusy ? "Proses..." : "Ya, Batalkan"}
+              </Button>
+            </div>
           </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCancelAction} disabled={actionBusy}>
-              Batalkan
-            </Button>
-            <Button onClick={handleConfirm} disabled={actionBusy}>
-              Konfirmasi
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
+      {/* Delete Dialog (Admin Only) */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -594,10 +479,14 @@ export function ServiceListTable({
         </DialogContent>
       </Dialog>
 
+      {/* Premium Detail & Approval Dialog */}
       <ServiceStatusHistoryDialog
         open={detailOpen}
         onOpenChange={setDetailOpen}
         serviceId={selectedDetailServiceId}
+        showApprovalActions={approvalMode}
+        onApprove={handleApproveFromDialog}
+        isApproving={actionBusy}
       />
     </div>
   )

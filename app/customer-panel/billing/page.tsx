@@ -28,12 +28,12 @@ export default async function BillingPage({
 
   const unpaidWhere = {
     customerId: user.id,
-    status_servis: { in: ["Booking", "Menunggu Pembayaran"] },
+    status_servis: { in: ["Booking", "Perbaikan Unit", "Menunggu Pembayaran"] },
   }
 
   const paidWhere = {
     customerId: user.id,
-    status_servis: { in: ["Selesai", "Selesai (Garansi Aktif)", "Sedang Dikerjakan", "Pekerjaan Selesai"] },
+    status_servis: { in: ["Selesai", "Selesai (Garansi Aktif)", "Pekerjaan Selesai"] },
   }
 
   const [unpaidServices, unpaidTotal, paidServices, paidTotal] = await Promise.all([
@@ -113,9 +113,8 @@ export default async function BillingPage({
                 const orderIdShort = service.id.slice(0, 8).toUpperCase()
                 const keluhanText = service.keluhan || ""
                 const keluhanLines = keluhanText.split("\n")
-                const firstEmptyLineIdx = keluhanLines.findIndex((line) => line.trim() === "")
-                const keluhanMain =
-                  firstEmptyLineIdx >= 0 ? keluhanLines.slice(0, firstEmptyLineIdx).join("\n").trim() : keluhanText.trim()
+                // Only show the first line to keep it clean, as technicians append metadata later
+                const keluhanMain = keluhanLines[0]?.trim() || "Routine Cleaning & Repair"
 
                 const biayaKunjungan = service.biaya_dasar ?? 50000
                 const layananTotal = service.acUnits.reduce(
@@ -123,8 +122,9 @@ export default async function BillingPage({
                   0
                 )
                 const totalEstimasi = biayaKunjungan + layananTotal
+                const totalFinal = service.biaya ?? service.estimasi_biaya ?? totalEstimasi
                 const sisaPembayaran =
-                  service.status_servis === "Booking" ? biayaKunjungan : Math.max(0, (service.biaya ?? 0) - biayaKunjungan)
+                  service.status_servis === "Booking" ? biayaKunjungan : Math.max(0, totalFinal - biayaKunjungan)
 
                 return (
                   <Card key={service.id} className="border-none shadow-none overflow-hidden group !py-0 gap-0 bg-white">
@@ -142,9 +142,11 @@ export default async function BillingPage({
                           <h4 className="text-xl font-bold text-slate-900 leading-tight">
                             {service.status_servis === "Booking" ? "Biaya Kunjungan (DP)" : "Pelunasan Hasil Servis"}
                           </h4>
-                          <p className="text-sm font-medium text-slate-500 max-w-lg">
-                            {keluhanMain || "Servis AC Routine Pengecekan & Perbaikan"}
-                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="px-2.5 py-0.5 rounded-md text-[10px] font-black bg-slate-100/50 text-slate-400 border-slate-200/50 uppercase tracking-widest">
+                               {service.status_servis}
+                            </Badge>
+                          </div>
                         </div>
                         <div className="flex flex-col lg:items-end gap-3 shrink-0">
                           <div className="text-3xl font-bold text-slate-900 tracking-tight">
@@ -218,7 +220,7 @@ export default async function BillingPage({
                           </div>
                           <div className="min-w-0">
                             <p className="text-[10px] font-semibold text-slate-300 leading-none mb-1">#{service.id.slice(0, 8).toUpperCase()}</p>
-                            <p className="text-base font-bold text-slate-900 truncate">Pembayaran Servis AC</p>
+                            <p className="text-base font-bold text-slate-900 truncate">Order Payment</p>
                             <p className="text-[10px] text-slate-400 mt-1 font-semibold">
                               {new Date(service.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </p>

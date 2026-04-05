@@ -30,7 +30,7 @@ export class TechnicianService {
           notes: "Teknisi memulai pengecekan di lokasi",
         },
       });
-    });
+    }, { timeout: 15000 });
 
     this.revalidateServicePaths(serviceId);
   }
@@ -89,7 +89,7 @@ export class TechnicianService {
           createdByUserId: technicianId,
         },
       });
-    });
+    }, { timeout: 15000 });
 
     revalidatePath(`/dashboard/pengecekan/${serviceId}`);
   }
@@ -146,28 +146,37 @@ export class TechnicianService {
     keluhanNext = this.upsertLine(keluhanNext, "Sparepart/Material: Rp ", materialTotal.toLocaleString("id-ID"));
     keluhanNext = this.upsertLine(keluhanNext, "Total Estimasi (Update): Rp ", totalEstimasi.toLocaleString("id-ID"));
 
+    const isAlreadyWaiting = service.status_servis === "Menunggu Persetujuan Customer";
+
     await db.$transaction(async (tx) => {
+      const updateData: any = {
+        keluhan: keluhanNext,
+        estimasi_biaya: totalEstimasi,
+      };
+
+      if (!isAlreadyWaiting) {
+        updateData.status = "Menunggu Persetujuan Customer";
+        updateData.status_servis = "Menunggu Persetujuan Customer";
+        updateData.biaya_disetujui = false;
+      }
+
       await tx.services.update({
         where: { id: serviceId },
-        data: {
-          keluhan: keluhanNext,
-          estimasi_biaya: totalEstimasi,
-          status: "Menunggu Persetujuan Customer",
-          status_servis: "Menunggu Persetujuan Customer",
-          biaya_disetujui: false,
-        },
+        data: updateData,
       });
 
-      await tx.serviceStatusHistory.create({
-        data: {
-          serviceId,
-          status: "Menunggu Persetujuan Customer",
-          status_servis: "Menunggu Persetujuan Customer",
-          changedByUserId: technicianId,
-          notes: `Teknisi menyerahkan diagnosa dan estimasi biaya Rp ${totalEstimasi.toLocaleString("id-ID")}`,
-        },
-      });
-    });
+      if (!isAlreadyWaiting) {
+        await tx.serviceStatusHistory.create({
+          data: {
+            serviceId,
+            status: "Menunggu Persetujuan Customer",
+            status_servis: "Menunggu Persetujuan Customer",
+            changedByUserId: technicianId,
+            notes: `Teknisi menyerahkan diagnosa dan estimasi biaya Rp ${totalEstimasi.toLocaleString("id-ID")}`,
+          },
+        });
+      }
+    }, { timeout: 15000 });
 
     this.revalidateServicePaths(serviceId);
   }
@@ -185,7 +194,7 @@ export class TechnicianService {
       select: { id: true, teknisiId: true, status_servis: true },
     });
     
-    if (!service || service.teknisiId !== technicianId || service.status_servis !== "Sedang Dikerjakan") {
+    if (!service || service.teknisiId !== technicianId || service.status_servis !== "Perbaikan Unit") {
       throw new Error("Servis tidak dapat diproses.");
     }
 
@@ -204,27 +213,41 @@ export class TechnicianService {
     const beforeUrl = await saveFile(before);
     const afterUrl = await saveFile(after);
 
+    // Check if full payment is already settled
+    const fullPayment = await db.servicePayment.findFirst({
+      where: {
+        serviceId,
+        type: "FULL_PAYMENT",
+        status: "SETTLEMENT",
+      },
+    });
+
+    const nextStatus = fullPayment ? "Selesai (Garansi Aktif)" : "Menunggu Pembayaran";
+    const historyNote = fullPayment 
+      ? "Teknisi menyelesaikan pekerjaan. Pelunasan sudah lunas, status menjadi Selesai."
+      : "Teknisi menyelesaikan pekerjaan dan mengupload bukti foto. Menunggu pelunasan.";
+
     await db.$transaction(async (tx) => {
       await tx.services.update({
         where: { id: serviceId },
         data: {
           bukti_foto_before: beforeUrl,
           bukti_foto_after: afterUrl,
-          status: "Menunggu Pembayaran",
-          status_servis: "Menunggu Pembayaran",
+          status: nextStatus,
+          status_servis: nextStatus,
         },
       });
 
       await tx.serviceStatusHistory.create({
         data: {
           serviceId,
-          status: "Menunggu Pembayaran",
-          status_servis: "Menunggu Pembayaran",
+          status: nextStatus,
+          status_servis: nextStatus,
           changedByUserId: technicianId,
-          notes: "Teknisi menyelesaikan pekerjaan dan mengupload bukti foto",
+          notes: historyNote,
         },
       });
-    });
+    }, { timeout: 15000 });
 
     this.revalidateServicePaths(serviceId);
   }
@@ -285,6 +308,23 @@ export class TechnicianService {
     revalidatePath(`/dashboard/pengecekan/${serviceId}`);
   }
 
+  static async removeAcUnit(data: { unitId: string; technicianId: string }) {
+    const { unitId, technicianId } = data;
+    const unit = await db.serviceAcUnit.findUnique({
+      where: { id: unitId },
+      include: {
+        service: { select: { id: true, teknisiId: true, status_servis: true } },
+      },
+    });
+
+    if (!unit || unit.service.teknisiId !== technicianId || !this.isEditableStatus(unit.service.status_servis)) {
+      throw new Error("Data tidak dapat diproses.");
+    }
+
+    await db.serviceAcUnit.delete({ where: { id: unitId } });
+    revalidatePath(`/dashboard/pengecekan/${unit.service.id}`);
+  }
+
   static async removeUnitLayanan(data: { unitLayananId: string; technicianId: string }) {
     const { unitLayananId, technicianId } = data;
     const layanan = await db.serviceAcUnitLayanan.findUnique({
@@ -330,13 +370,13 @@ export class TechnicianService {
           createdByUserId: technicianId,
         },
       });
-    });
+    }, { timeout: 15000 });
 
     revalidatePath(`/dashboard/pengecekan/${usage.serviceId}`);
   }
 
   private static isEditableStatus(status: string | null | undefined) {
-    return status === "Konfirmasi Teknisi" || status === "Pengecekan Unit" || status === "Dalam Pengecekan" || status === "Teknisi Dikonfirmasi";
+    return status === "Konfirmasi Teknisi" || status === "Pengecekan Unit" || status === "Dalam Pengecekan" || status === "Menunggu Persetujuan Customer";
   }
 
   private static upsertLine(text: string, prefix: string, value: string) {

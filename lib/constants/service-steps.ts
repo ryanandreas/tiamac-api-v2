@@ -4,7 +4,7 @@ export const SERVICE_STEPS = [
   { id: 3, label: "Konfirmasi", value: "Konfirmasi Teknisi" },
   { id: 4, label: "Pengecekan", value: "Pengecekan Unit" },
   { id: 5, label: "Persetujuan", value: "Menunggu Persetujuan Customer" },
-  { id: 6, label: "Pengerjaan", value: "Sedang Dikerjakan" },
+  { id: 6, label: "Pengerjaan", value: "Perbaikan Unit" },
   { id: 7, label: "Pembayaran", value: "Menunggu Pembayaran" },
   { id: 8, label: "Selesai", value: "Selesai" },
 ] as const;

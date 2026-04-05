@@ -31,7 +31,7 @@ export function RiwayatTableBody({ tasks }: RiwayatTableBodyProps) {
       <TableBody>
         {tasks.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={6} className="py-24 text-center">
+            <TableCell colSpan={5} className="py-24 text-center">
               <div className="flex flex-col items-center gap-2">
                 <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-2">
                   <History className="h-6 w-6" />
@@ -51,11 +51,6 @@ export function RiwayatTableBody({ tasks }: RiwayatTableBodyProps) {
                   <span className="text-sm font-bold text-slate-900">{task.customer?.name}</span>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Identitas Member</span>
                 </div>
-              </TableCell>
-              <TableCell className="py-6 font-outfit">
-                <Badge variant="outline" className="h-5 px-2 text-[9px] font-bold uppercase tracking-widest border-slate-100 bg-slate-50 text-slate-500 rounded-lg">
-                  {task.jenis_servis}
-                </Badge>
               </TableCell>
               <TableCell className="py-6 text-center font-outfit">
                 {task.status_servis === "Selesai (Garansi Aktif)" ? (

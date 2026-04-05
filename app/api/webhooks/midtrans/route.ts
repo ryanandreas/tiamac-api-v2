@@ -94,21 +94,37 @@ export async function POST(req: Request) {
         });
         console.log("🚀 Service Status Updated: Menunggu Jadwal");
       } else if (paymentType === "FULL_PAYMENT") {
-        // Workflow: Menunggu Pembayaran -> Selesai (Garansi Aktif)
-        await db.services.update({
-          where: { id: serviceId },
-          data: { status_servis: "Selesai (Garansi Aktif)" },
-        });
+        // Workflow: ONLY change to Selesai if tech is already done (status is Menunggu Pembayaran or Pekerjaan Selesai)
+        const currentService = paymentRecord.service;
+        const allowedStatuses = ["Menunggu Pembayaran", "Pekerjaan Selesai"];
+        const shouldUpdateStatus = allowedStatuses.includes(currentService.status_servis);
 
-        await db.serviceStatusHistory.create({
-          data: {
-            serviceId: serviceId,
-            status: "Status",
-            status_servis: "Selesai (Garansi Aktif)",
-            notes: "Pembayaran Pelunasan Berhasil (Midtrans)",
-          },
-        });
-        console.log("🚀 Service Status Updated: Selesai (Garansi Aktif)");
+        if (shouldUpdateStatus) {
+            await db.services.update({
+              where: { id: serviceId },
+              data: { status_servis: "Selesai (Garansi Aktif)" },
+            });
+
+            await db.serviceStatusHistory.create({
+              data: {
+                serviceId: serviceId,
+                status: "Status",
+                status_servis: "Selesai (Garansi Aktif)",
+                notes: "Pembayaran Pelunasan Berhasil (Midtrans). Pekerjaan sudah selesai, status menjadi Selesai.",
+              },
+            });
+            console.log("🚀 Service Status Updated: Selesai (Garansi Aktif)");
+        } else {
+            console.log(`ℹ️ Pelunasan Berhasil, but Service still in status: ${currentService.status_servis}. Waiting for tech completion.`);
+            await db.serviceStatusHistory.create({
+              data: {
+                serviceId: serviceId,
+                status: "Status",
+                status_servis: currentService.status_servis,
+                notes: "Pembayaran Pelunasan Berhasil (Midtrans). Menunggu teknisi menyelesaikan perbaikan.",
+              },
+            });
+        }
       }
     }
 

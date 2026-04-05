@@ -74,7 +74,7 @@ export default async function MyOrdersPage({
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Pesanan Saya</h1>
           <DynamicBreadcrumbs />
-          <p className="text-slate-500 font-medium text-sm">Kelola semua pengerjaan servis AC Anda dalam satu panel kendali.</p>
+          <p className="text-slate-500 font-medium text-sm">Kelola semua pengerjaan servis Anda dalam satu panel kendali.</p>
         </div>
         <Link href="/booking">
           <Button className="h-11 px-6 rounded-2xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs shadow-none gap-2 transition-all">

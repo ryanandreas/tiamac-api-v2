@@ -3,10 +3,10 @@ import { DashboardHeader } from "@/components/dashboard/header"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { db } from "@/lib/db"
 
-export default async function SedangDikerjakanPage() {
+export default async function PerbaikanUnitPage() {
   const services = await db.services.findMany({
     where: {
-      status_servis: "Sedang Dikerjakan"
+      status_servis: "Perbaikan Unit"
     },
     include: {
       customer: true,
@@ -19,16 +19,16 @@ export default async function SedangDikerjakanPage() {
 
   return (
     <SidebarInset>
-      <DashboardHeader title="Sedang Dikerjakan" />
+      <DashboardHeader title="Perbaikan Unit" />
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Sedang Dikerjakan</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Perbaikan Unit</h2>
         </div>
         <div className="hidden h-full flex-1 flex-col space-y-8 md:flex">
           <div className="flex items-center justify-between space-y-2">
             <div>
               <p className="text-muted-foreground">
-                Pesanan yang sedang dikerjakan oleh teknisi.
+                Pesanan yang dalam tahap perbaikan oleh teknisi.
               </p>
             </div>
           </div>

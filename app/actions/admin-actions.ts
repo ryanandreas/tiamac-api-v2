@@ -84,7 +84,6 @@ export async function createInventoryItem(data: {
 export async function updateServiceAction(data: {
   serviceId: string
   status_servis?: string
-  jenis_servis?: string
   teknisiId?: string
   jadwal_tanggal?: string
 }): Promise<ActionResponse> {

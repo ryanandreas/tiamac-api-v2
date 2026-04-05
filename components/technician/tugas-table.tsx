@@ -29,13 +29,10 @@ function extractJadwal(keluhan: string) {
 }
 
 function actionForStatus(status: string, serviceId: string) {
-  if (status === "Sedang Dikerjakan") {
+  if (status === "Perbaikan Unit") {
     return { href: `/dashboard/pengerjaan/${serviceId}`, label: "Upload Bukti", color: "bg-[#66B21D] hover:bg-[#4d9e0f]" }
   }
-  if (status === "Menunggu Persetujuan Customer") {
-    return { href: `/dashboard/pengecekan/${serviceId}`, label: "Lihat Detail", color: "bg-amber-500 hover:bg-amber-600" }
-  }
-  if (status === "Konfirmasi Teknisi" || status === "Pengecekan Unit" || status === "Dalam Pengecekan" || status === "Teknisi Dikonfirmasi") {
+  if (status === "Konfirmasi Teknisi" || status === "Pengecekan Unit" || status === "Dalam Pengecekan" || status === "Menunggu Persetujuan Customer") {
     return { href: `/dashboard/pengecekan/${serviceId}`, label: "Konfirmasi", color: "bg-[#66B21D] hover:bg-[#4d9e0f]" }
   }
   return null
@@ -84,8 +81,8 @@ export function TugasTable({
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-slate-50 hover:bg-transparent h-14">
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 pl-8">Informasi Pelanggan</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Detail Servis</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 pl-8">Order ID</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Informasi Pelanggan</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Waktu & Alamat</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Status</TableHead>
                 <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 pr-8">Aksi</TableHead>
@@ -111,25 +108,22 @@ export function TugasTable({
                   return (
                     <TableRow key={task.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
                       <TableCell className="py-6 pl-8">
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-[11px] font-black text-slate-900 group-hover:text-[#66B21D] transition-colors tabular-nums">#{task.id.slice(-8).toUpperCase()}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-6">
                         <div className="flex items-center gap-4">
                           <div className="size-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-xs shrink-0 group-hover:bg-white transition-colors uppercase">
                             {task.customer.name.slice(0, 2)}
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <span className="text-sm font-black text-slate-900 group-hover:text-[#66B21D] transition-colors truncate">{task.customer.name}</span>
+                            <span className="text-sm font-black text-slate-900 truncate">{task.customer.name}</span>
                             <div className="flex items-center gap-2 mt-0.5">
                                <Phone className="h-3 w-3 text-slate-300" />
                                <span className="text-[10px] font-bold text-slate-400 tracking-tight">{task.customer.customerProfile?.no_telp || "-"}</span>
                             </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        <div className="flex flex-col gap-1">
-                          <Badge variant="outline" className="w-fit h-5 px-2 text-[9px] font-black uppercase tracking-widest border-slate-100 bg-slate-50 text-slate-500 rounded-lg">
-                            {task.jenis_servis}
-                          </Badge>
-                          <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">ID: #{task.id.slice(0, 8)}</span>
                         </div>
                       </TableCell>
                       <TableCell className="py-6">

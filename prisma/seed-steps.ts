@@ -52,7 +52,7 @@ async function main() {
     { value: 'Konfirmasi Teknisi', role: 'teknisi' },
     { value: 'Pengecekan Unit', role: 'teknisi' },
     { value: 'Menunggu Persetujuan Customer', role: 'teknisi' },
-    { value: 'Sedang Dikerjakan', role: 'teknisi' },
+    { value: 'Perbaikan Unit', role: 'teknisi' },
     { value: 'Menunggu Pembayaran', role: 'teknisi' },
     { value: 'Selesai (Garansi Aktif)', role: 'admin' },
     { value: 'Dibatalkan', role: 'customer' },
@@ -65,7 +65,7 @@ async function main() {
       'Konfirmasi Teknisi': 'Teknisi mengonfirmasi kehadiran.',
       'Pengecekan Unit': 'Pengecekan fisik unit di lokasi.',
       'Menunggu Persetujuan Customer': 'Estimasi biaya diajukan ke customer.',
-      'Sedang Dikerjakan': 'Persetujuan didapat, perbaikan dimulai.',
+      'Perbaikan Unit': 'Persetujuan didapat, perbaikan dimulai.',
       'Menunggu Pembayaran': 'Perbaikan selesai, invoice terbit.',
       'Selesai (Garansi Aktif)': 'Pembayaran diterima, garansi berjalan.',
       'Dibatalkan': 'Servis dibatalkan.'
@@ -85,14 +85,14 @@ async function main() {
          data: {
            customerId: customer.id,
            teknisiId: techId,
-           jenis_servis: 'Servis AC',
+           jenis_servis: 'AC',
            keluhan: `Keluhan Servis ${step.value} - Unit ${i}\nJadwal: 2026-04-02 0${i}:00`,
            status: step.value,
            status_servis: step.value,
            biaya_dasar: 50000,
-           estimasi_biaya: ['Menunggu Persetujuan Customer', 'Sedang Dikerjakan', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value) ? 450000 : null,
+           estimasi_biaya: ['Menunggu Persetujuan Customer', 'Perbaikan Unit', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value) ? 450000 : null,
            biaya: ['Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value) ? 450000 : null,
-           biaya_disetujui: ['Sedang Dikerjakan', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value),
+           biaya_disetujui: ['Perbaikan Unit', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value),
            alasan_batal: step.value === 'Dibatalkan' ? 'Permintaan Customer' : null
          }
        })
@@ -135,7 +135,7 @@ async function main() {
        }
 
        // Add material usage for later steps
-       if (['Menunggu Persetujuan Customer', 'Sedang Dikerjakan'].includes(step.value) && inventory.length > 0) {
+       if (['Menunggu Persetujuan Customer', 'Perbaikan Unit'].includes(step.value) && inventory.length > 0) {
           await prisma.serviceMaterialUsage.create({
             data: {
               serviceId: service.id,

@@ -10,10 +10,10 @@ import { Clock, CreditCard, Package, ArrowRight, AlertCircle, ShieldCheck, Wrenc
 
 const ONGOING_STATUSES = [
   "Menunggu Jadwal",
-  "Teknisi Dikonfirmasi",
+  "Konfirmasi Teknisi",
   "Dalam Pengecekan",
   "Menunggu Persetujuan Customer",
-  "Sedang Dikerjakan",
+  "Perbaikan Unit",
   "Pekerjaan Selesai",
   "Menunggu Pembayaran",
 ]
@@ -120,7 +120,7 @@ export default async function CustomerDashboardPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <p className="text-sm font-extrabold text-slate-900 truncate">#{service.id.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-sm font-extrabold text-slate-900 truncate">#{service.id.slice(-8).toUpperCase()}</p>
                             <Badge
                               className={`text-[10px] px-2 py-0.5 rounded-lg font-bold border-none ${service.status_servis === "Menunggu Pembayaran" || service.status_servis === "Booking"
                                 ? "bg-orange-100 text-orange-600"
@@ -131,7 +131,7 @@ export default async function CustomerDashboardPage() {
                             </Badge>
                           </div>
                           <p className="text-xs text-slate-500 font-medium line-clamp-2">
-                            {service.keluhan || "Servis AC Routine"}
+                            {service.keluhan || "Routine Cleaning"}
                           </p>
                         </div>
                         <div className="size-8 rounded-full border-none flex items-center justify-center text-slate-300 group-hover:text-[#66B21D] transition-all">
@@ -194,7 +194,7 @@ export default async function CustomerDashboardPage() {
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-900 mb-1">Tips Perawatan AC</p>
                     <p className="text-[11px] text-slate-500 font-normal leading-relaxed line-clamp-2">
-                      Servis cuci AC rutin setiap 3-4 bulan sekali untuk menjaga efisiensi dan kebersihan udara ruangan Anda.
+                      Servis cuci rutin setiap 3-4 bulan sekali untuk menjaga efisiensi dan kebersihan udara ruangan Anda.
                     </p>
                   </div>
                 </div>
