@@ -81,7 +81,7 @@ const adminMenu = [
   }
 ]
 
-const karyawanMenu = [
+const teknisiMenu = [
   {
     title: "Utama",
     items: [
@@ -124,8 +124,8 @@ export function AppSidebar({
   }
 }) {
   const role = userRole?.toLowerCase()
-  const isTechnician = role === "karyawan" || role === "teknisi"
-  const menuGroups = role === "admin" ? adminMenu : isTechnician ? karyawanMenu : []
+  const isTechnician = role === "teknisi" || role === "karyawan"
+  const menuGroups = role === "admin" ? adminMenu : isTechnician ? teknisiMenu : []
   const pathname = usePathname()
 
   return (

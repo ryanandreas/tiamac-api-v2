@@ -284,6 +284,10 @@ enum StockReferenceType {
 enum InventoryUom {
   pcs
   meter
-  botol
+  set
+  btg
+  roll
+  kg
+  liter
   tabung
 }

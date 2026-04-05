@@ -48,7 +48,7 @@ export default async function JadwalPage({
 
   const teknisiProfiles = await db.staffProfile.findMany({
     where: {
-      role: { in: ["karyawan", "teknisi"] },
+      role: "teknisi",
     },
     include: { user: { select: { id: true, name: true } } },
   })

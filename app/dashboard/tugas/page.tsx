@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { Briefcase, Bell } from "lucide-react"
 import { TugasTable } from "@/components/technician/tugas-table"
@@ -20,9 +21,9 @@ export default async function TugasTeknisiPage({
   if (
     !user.isAuthenticated ||
     user.type !== "staff" ||
-    (user.role?.toLowerCase() !== "teknisi" && user.role?.toLowerCase() !== "karyawan")
+    user.role?.toLowerCase() !== "teknisi"
   ) {
-    return null
+    redirect("/dashboard")
   }
 
   const { page } = await searchParams

@@ -33,8 +33,8 @@ export default async function MyOrdersPage({
   const whereClause = {
     customerId: user.id,
     status_servis: activeTab === "ongoing" 
-      ? { notIn: ["Selesai", "Dibatalkan"] }
-      : { in: ["Selesai", "Dibatalkan"] },
+      ? { notIn: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] }
+      : { in: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] },
   }
 
   const [services, ongoingCount, historyCount] = await Promise.all([
@@ -60,8 +60,8 @@ export default async function MyOrdersPage({
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
     }),
-    db.services.count({ where: { customerId: user.id, status_servis: { notIn: ["Selesai", "Dibatalkan"] } } }),
-    db.services.count({ where: { customerId: user.id, status_servis: { in: ["Selesai", "Dibatalkan"] } } }),
+    db.services.count({ where: { customerId: user.id, status_servis: { notIn: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] } } }),
+    db.services.count({ where: { customerId: user.id, status_servis: { in: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] } } }),
   ])
   
   const totalCount = activeTab === "ongoing" ? ongoingCount : historyCount

@@ -64,6 +64,7 @@ export function PaymentMethodChooser({
     bank?: string;
     expiry_time?: string;
   } | null>(null)
+  const [isCopied, setIsCopied] = React.useState(false)
   
   const router = useRouter()
   const selectedMethod = METHODS.find((m) => m.id === selected) ?? METHODS[0]
@@ -142,7 +143,8 @@ export function PaymentMethodChooser({
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    alert("Berhasil disalin!")
+    setIsCopied(true)
+    setTimeout(() => setIsCopied(false), 2000)
   }
 
   return (
@@ -226,6 +228,7 @@ export function PaymentMethodChooser({
           setPaymentResult(null)
           setIsSuccess(false)
           setCountdown(3)
+          setIsCopied(false)
         }
       }}>
         <DialogContent className="sm:max-w-md rounded-[32px] border-none p-0 overflow-hidden">
@@ -309,11 +312,19 @@ export function PaymentMethodChooser({
                             <Button 
                                variant="ghost" 
                                onClick={() => copyToClipboard(paymentResult.va_number!)}
-                               className="absolute top-1/2 -translate-y-1/2 right-3 h-8 w-8 rounded-lg bg-white shadow-sm text-slate-400 hover:text-[#66B21D]"
+                               className={cn(
+                                 "absolute top-1/2 -translate-y-1/2 right-3 h-8 w-8 rounded-lg transition-all",
+                                 isCopied ? "bg-green-500 text-white" : "bg-white shadow-sm text-slate-400 hover:text-[#66B21D]"
+                               )}
                             >
-                               <Copy className="size-3.5" />
+                               {isCopied ? <CheckCircle2 className="size-3.5" /> : <Copy className="size-3.5" />}
                             </Button>
                           </div>
+                          {isCopied && (
+                            <p className="text-[10px] font-bold text-[#66B21D] mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                              Nomor Virtual Account berhasil disalin ke clipboard!
+                            </p>
+                          )}
                         </div>
                       </div>
                     ) : paymentResult.qr_url ? (

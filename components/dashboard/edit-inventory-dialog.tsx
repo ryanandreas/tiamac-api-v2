@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,9 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createInventoryItem } from "@/app/actions/admin-actions"
+import { updateInventoryItem } from "@/app/actions/admin-actions"
 import { useRouter } from "next/navigation"
-import { PackagePlus, Tag, Boxes, BadgeDollarSign, Loader2, ListOrdered, BarChart3, Settings2 } from "lucide-react"
+import { Edit3, Tag, Boxes, BadgeDollarSign, Loader2, ListOrdered, BarChart3, Settings2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { triggerLayananAlert } from "./layanan-alert-handler"
 
@@ -54,38 +53,60 @@ const formSchema = z.object({
   minStock: z.coerce.number().min(0).optional(),
 })
 
-interface AddInventoryDialogProps {
+interface EditInventoryDialogProps {
+  item: {
+    id: string
+    sku: string
+    nama: string
+    uom: string
+    harga: number
+    qtyOnHand: number
+    minStock: number | null
+  }
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function AddInventoryDialog({ open, onOpenChange }: AddInventoryDialogProps) {
+export function EditInventoryDialog({ item, open, onOpenChange }: EditInventoryDialogProps) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      sku: "",
-      nama: "",
-      uom: "pcs",
-      harga: 0,
-      qtyOnHand: 0,
-      minStock: 0,
+      sku: item.sku,
+      nama: item.nama,
+      uom: item.uom,
+      harga: item.harga,
+      qtyOnHand: item.qtyOnHand,
+      minStock: item.minStock || 0,
     },
   })
+
+  // Update default values when item changes
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        sku: item.sku,
+        nama: item.nama,
+        uom: item.uom,
+        harga: item.harga,
+        qtyOnHand: item.qtyOnHand,
+        minStock: item.minStock || 0,
+      })
+    }
+  }, [item, open, form])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true)
     try {
-      const res = await createInventoryItem(values as any)
+      const res = await updateInventoryItem(item.id, values as any)
       if (res?.success) {
         onOpenChange(false)
         router.refresh()
-        triggerLayananAlert("Barang berhasil ditambahkan ke gudang")
-        form.reset()
+        triggerLayananAlert("Data barang berhasil diperbarui")
       } else {
-        triggerLayananAlert(res?.message || "Gagal menambahkan barang", "error")
+        triggerLayananAlert(res?.message || "Gagal memperbarui data barang", "error")
       }
     } catch (error) {
       triggerLayananAlert("Terjadi kesalahan sistem saat menyimpan", "error")
@@ -103,11 +124,11 @@ export function AddInventoryDialog({ open, onOpenChange }: AddInventoryDialogPro
           </div>
           <DialogHeader className="relative z-10">
             <div className="size-12 rounded-2xl bg-[#66B21D] text-white flex items-center justify-center mb-4 shadow-lg shadow-green-200">
-               <PackagePlus className="size-6" />
+               <Edit3 className="size-6" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Tambah Barang Baru</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Edit Data Barang</DialogTitle>
             <DialogDescription className="text-sm font-medium text-slate-500 mt-1">
-              Daftarkan material atau sparepart baru ke dalam inventaris gudang.
+              Perbarui informasi SKU, harga, atau stok untuk barang ini.
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -126,7 +147,7 @@ export function AddInventoryDialog({ open, onOpenChange }: AddInventoryDialogPro
                       </FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="Contoh: FREON-R32" 
+                          placeholder="FREON-R32" 
                           {...field} 
                           className="h-12 rounded-xl bg-slate-50 border-none focus-visible:ring-[#66B21D] font-medium text-slate-900"
                         />
@@ -143,7 +164,7 @@ export function AddInventoryDialog({ open, onOpenChange }: AddInventoryDialogPro
                        <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                         <Boxes className="size-3" /> Satuan (UOM)
                       </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none focus:ring-[#66B21D] font-bold text-slate-900">
                             <SelectValue placeholder="Pilih Satuan" />
@@ -172,11 +193,11 @@ export function AddInventoryDialog({ open, onOpenChange }: AddInventoryDialogPro
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                      <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <PackagePlus className="size-3" /> Nama Barang
+                        <Edit3 className="size-3" /> Nama Barang
                       </FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="Contoh: Freon R32 (1kg)" 
+                        placeholder="Nama Barang" 
                         {...field} 
                         className="h-12 rounded-xl bg-slate-50 border-none focus-visible:ring-[#66B21D] font-medium text-slate-900"
                       />
@@ -274,7 +295,7 @@ export function AddInventoryDialog({ open, onOpenChange }: AddInventoryDialogPro
                       <Loader2 className="size-4 animate-spin" /> Menyimpan...
                     </div>
                   ) : (
-                    "Tambahkan Barang"
+                    "Simpan Perubahan"
                   )}
                 </Button>
               </div>

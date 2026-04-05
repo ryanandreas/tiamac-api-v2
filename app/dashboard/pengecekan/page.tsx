@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { Search, MapPin, Phone, ArrowRight, Activity } from "lucide-react"
 import { getCurrentUser } from "@/app/actions/session"
+import { redirect } from "next/navigation"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
 import { Badge } from "@/components/ui/badge"
@@ -27,9 +28,9 @@ export default async function PengecekanListPage({
   if (
     !user.isAuthenticated ||
     user.type !== "staff" ||
-    (user.role?.toLowerCase() !== "teknisi" && user.role?.toLowerCase() !== "karyawan")
+    user.role?.toLowerCase() !== "teknisi"
   ) {
-    return null
+    redirect("/dashboard")
   }
 
   const { page } = await searchParams

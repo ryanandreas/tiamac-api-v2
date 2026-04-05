@@ -14,19 +14,24 @@ import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/utils"
 import { Pagination } from "@/components/pagination"
 import { getCurrentUser } from "@/app/actions/session"
+import { redirect } from "next/navigation"
 import { InventoryHeader } from "@/components/dashboard/inventory-header"
+import { LayananAlertHandler } from "@/components/dashboard/layanan-alert-handler"
+import { InventoryActions } from "@/components/dashboard/inventory-actions"
 
 export default async function InventoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; q?: string }>
 }) {
   const user = await getCurrentUser()
   if (!user.isAuthenticated) return null
 
-  const isTechnician =
-    user.type === "staff" &&
-    (user.role?.toLowerCase() === "teknisi" || user.role?.toLowerCase() === "karyawan")
+  const isTechnician = user.type === "staff" && user.role?.toLowerCase() === "teknisi"
+  
+  if (isTechnician) {
+    redirect("/dashboard")
+  }
 
   const { page } = await searchParams
   const currentPage = Number(page) || 1
@@ -47,7 +52,8 @@ export default async function InventoryPage({
   const totalPages = Math.ceil(totalCount / pageSize)
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in relative">
+      <LayananAlertHandler />
       <InventoryHeader isTechnician={isTechnician} totalCount={totalCount} />
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">
@@ -117,14 +123,7 @@ export default async function InventoryPage({
                     </TableCell>
                     <TableCell className="text-right py-6 pr-8">
                        {isUserAdmin(user) ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="icon" className="size-8 rounded-lg border-slate-100 text-slate-400 hover:text-[#66B21D] hover:border-green-100 hover:bg-green-50 transition-all">
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button variant="outline" size="icon" className="size-8 rounded-lg border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
+                        <InventoryActions item={item} />
                        ) : (
                          <span className="text-[10px] font-bold text-slate-200 uppercase tracking-widest pr-2">Read Only</span>
                        )}

@@ -29,10 +29,10 @@ export default async function Page() {
   
   if (!user.isAuthenticated) return null
 
-  // If user is technician/karyawan, we might want to redirect or show a different view
+  // If user is technician, we might want to redirect or show a different view
   const isTechnician =
     user.type === "staff" &&
-    (user.role?.toLowerCase() === "teknisi" || user.role?.toLowerCase() === "karyawan")
+    (user.role?.toLowerCase() === "teknisi")
 
   if (isTechnician) {
      const [activeTasks, completedTasks, pendingTasks] = await Promise.all([

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { History, Search, Filter } from "lucide-react"
 import { getCurrentUser } from "@/app/actions/session"
+import { redirect } from "next/navigation"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -22,9 +23,9 @@ export default async function RiwayatTeknisiPage({
   if (
     !user.isAuthenticated ||
     user.type !== "staff" ||
-    (user.role?.toLowerCase() !== "teknisi" && user.role?.toLowerCase() !== "karyawan")
+    user.role?.toLowerCase() !== "teknisi"
   ) {
-    return null
+    redirect("/dashboard")
   }
 
   const { page } = await searchParams

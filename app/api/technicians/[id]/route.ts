@@ -8,7 +8,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const technician = await db.staffProfile.findFirst({
       where: {
         userId: userId,
-        role: { in: ["Teknisi", "Karyawan", "teknisi", "karyawan"] } // Assuming role case varies
+        role: { in: ["Teknisi", "teknisi"] } // Assuming role case varies
       },
       include: {
         user: {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -29,9 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createServiceCatalog } from "@/app/actions/admin-actions"
+import { updateServiceCatalog } from "@/app/actions/admin-actions"
 import { useRouter } from "next/navigation"
-import { Settings2, Tag, Info, BadgeDollarSign, Loader2, PlusCircle } from "lucide-react"
+import { Settings2, Tag, Info, BadgeDollarSign, Loader2, Edit3, XCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { triggerLayananAlert } from "./layanan-alert-handler"
 
@@ -45,12 +44,18 @@ const formSchema = z.object({
   }),
 })
 
-interface AddServiceDialogProps {
+interface EditServiceDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  service: {
+    uuid: string
+    nama: string
+    pk: string | null
+    harga: number
+  } | null
 }
 
-export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) {
+export function EditServiceDialog({ open, onOpenChange, service }: EditServiceDialogProps) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -63,17 +68,29 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
     },
   })
 
+  // Sync form values when service changes
+  useEffect(() => {
+    if (service) {
+      form.reset({
+        nama: service.nama,
+        pk: service.pk || "-",
+        harga: service.harga,
+      })
+    }
+  }, [service, form])
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!service) return
+    
     setLoading(true)
     try {
-      const res = await createServiceCatalog(values as any)
+      const res = await updateServiceCatalog(service.uuid, values as any)
       if (res?.success) {
         onOpenChange(false)
         router.refresh()
-        triggerLayananAlert("Layanan berhasil ditambahkan ke katalog")
-        form.reset()
+        triggerLayananAlert("Layanan berhasil diperbarui")
       } else {
-        triggerLayananAlert(res?.message || "Gagal menambahkan layanan", "error")
+        triggerLayananAlert(res?.message || "Gagal memperbarui layanan", "error")
       }
     } catch (error) {
       triggerLayananAlert("Terjadi kesalahan sistem saat menyimpan", "error")
@@ -91,11 +108,11 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
           </div>
           <DialogHeader className="relative z-10">
             <div className="size-12 rounded-2xl bg-[#66B21D] text-white flex items-center justify-center mb-4 shadow-lg shadow-green-200">
-               <PlusCircle className="size-6" />
+               <Edit3 className="size-6" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Tambah Layanan</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Edit Layanan</DialogTitle>
             <DialogDescription className="text-sm font-medium text-slate-500 mt-1">
-              Lengkapi katalog pengerjaan dengan detail jasa servis terbaru.
+              Perbarui detail layanan katalog Anda.
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -114,7 +131,7 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
                       </FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="Contoh: Cuci AC Split, Bongkar Pasang..." 
+                          placeholder="Nama Layanan" 
                           {...field} 
                           className="h-12 rounded-xl bg-slate-50 border-none focus-visible:ring-[#66B21D] font-medium text-slate-900"
                         />
@@ -133,9 +150,9 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
                         <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                           <Info className="size-3" /> Kapasitas (PK)
                         </FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none focus:ring-[#66B21D] font-medium text-slate-900 w-full px-4">
+                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none focus:ring-[#66B21D] font-medium text-slate-900 w-full px-4 text-left">
                               <SelectValue placeholder="Pilih PK" />
                             </SelectTrigger>
                           </FormControl>
@@ -198,7 +215,7 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
                       <Loader2 className="size-4 animate-spin" /> Menyimpan...
                     </div>
                   ) : (
-                    "Simpan ke Katalog"
+                    "Simpan Perubahan"
                   )}
                 </Button>
               </div>

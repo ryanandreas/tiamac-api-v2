@@ -9,7 +9,7 @@ function ensureTechnician(current: any) {
   if (
     !current.isAuthenticated ||
     current.type !== "staff" ||
-    (current.role?.toLowerCase() !== "teknisi" && current.role?.toLowerCase() !== "karyawan")
+    current.role?.toLowerCase() !== "teknisi"
   ) {
     throw new Error("UNAUTHORIZED")
   }

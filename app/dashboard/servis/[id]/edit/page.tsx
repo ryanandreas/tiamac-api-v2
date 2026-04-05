@@ -36,7 +36,7 @@ export default async function EditServicePage({ params }: EditPageProps) {
           {
             staffProfile: {
               role: {
-                in: ["teknisi", "karyawan", "Staff", "Teknisi"],
+                in: ["teknisi"],
                 mode: "insensitive"
               }
             }

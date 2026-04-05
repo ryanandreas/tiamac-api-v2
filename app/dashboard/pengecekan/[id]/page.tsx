@@ -20,9 +20,9 @@ export default async function PengecekanDetailPage({
   if (
     !user.isAuthenticated ||
     user.type !== "staff" ||
-    (user.role?.toLowerCase() !== "teknisi" && user.role?.toLowerCase() !== "karyawan")
+    user.role?.toLowerCase() !== "teknisi"
   ) {
-    redirect("/login")
+    redirect("/dashboard")
   }
 
   const service = await db.services.findUnique({
