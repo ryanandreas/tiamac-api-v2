@@ -183,6 +183,7 @@ export async function updateServiceAction(data: {
   status_servis?: string
   teknisiId?: string
   jadwal_tanggal?: string
+  jenis_servis?: string
 }): Promise<ActionResponse> {
   try {
     const current = await getCurrentUser()

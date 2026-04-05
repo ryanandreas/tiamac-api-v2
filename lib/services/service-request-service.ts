@@ -49,9 +49,10 @@ export class ServiceRequestService {
     status_servis?: string;
     teknisiId?: string;
     jadwal_tanggal?: string;
+    jenis_servis?: string;
     changedByUserId?: string;
   }) {
-    const { serviceId, status_servis, teknisiId, jadwal_tanggal, changedByUserId } = data;
+    const { serviceId, status_servis, teknisiId, jadwal_tanggal, jenis_servis, changedByUserId } = data;
 
     const current = await db.services.findUnique({
       where: { id: serviceId },
@@ -66,6 +67,7 @@ export class ServiceRequestService {
       updateData.status_servis = status_servis;
     }
     if (teknisiId !== undefined) updateData.teknisiId = teknisiId;
+    if (jenis_servis !== undefined) updateData.jenis_servis = jenis_servis;
     if (jadwal_tanggal) {
       updateData.keluhan = this.upsertJadwalLine(current.keluhan ?? "", jadwal_tanggal);
     }

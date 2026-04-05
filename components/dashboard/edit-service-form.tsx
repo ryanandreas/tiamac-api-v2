@@ -236,7 +236,7 @@ export function EditServiceForm({ service, technicians, inventoryItems, catalogR
                 <h2 className="text-lg font-black text-slate-900 tracking-tight">Main <span className="text-slate-400">Diagnostic Override</span></h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Status Field */}
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Status Workflow</Label>
@@ -248,6 +248,43 @@ export function EditServiceForm({ service, technicians, inventoryItems, catalogR
                       {STATUS_OPTIONS.map((opt) => (
                         <SelectItem key={opt} value={opt} className="rounded-xl px-4 py-3 text-xs font-black text-slate-700 data-[highlighted]:bg-green-50 data-[highlighted]:text-[#66B21D]">
                           {opt}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Jenis Servis Field */}
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Jenis Layanan</Label>
+                  <Select value={jenisServis} onValueChange={setJenisServis}>
+                    <SelectTrigger className="h-14 border-slate-200 rounded-2xl bg-white hover:bg-slate-50 transition-all font-black text-slate-900 px-5 text-xs shadow-sm">
+                      <SelectValue placeholder="Pilih Layanan" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-2 min-w-[200px]">
+                      {JENIS_SERVIS_OPTIONS.map((opt) => (
+                        <SelectItem key={opt} value={opt} className="rounded-xl px-4 py-3 text-xs font-black text-slate-700 data-[highlighted]:bg-green-50 data-[highlighted]:text-[#66B21D]">
+                          {opt}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Teknisi Field */}
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Assign Technician</Label>
+                  <Select value={teknisiId} onValueChange={setTeknisiId}>
+                    <SelectTrigger className="h-14 border-slate-200 rounded-2xl bg-white hover:bg-slate-50 transition-all font-black text-slate-900 px-5 text-xs shadow-sm">
+                      <SelectValue placeholder="Pilih Teknisi" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-2 min-w-[200px]">
+                      <SelectItem value="none" className="rounded-xl px-4 py-3 text-xs font-black text-slate-400">
+                        Belum Ditugaskan
+                      </SelectItem>
+                      {technicians.map((t) => (
+                        <SelectItem key={t.id} value={t.id} className="rounded-xl px-4 py-3 text-xs font-black text-slate-700 data-[highlighted]:bg-green-50 data-[highlighted]:text-[#66B21D]">
+                          {t.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
