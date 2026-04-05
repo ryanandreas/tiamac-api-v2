@@ -87,9 +87,9 @@ export function UserActivityDialog({
             <div className="size-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center mb-4 shadow-lg shadow-slate-200">
                <History className="size-6" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Aktifitas Staff</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Aktifitas Pengguna</DialogTitle>
             <DialogDescription className="text-sm font-medium text-slate-500 mt-1">
-              Catatan pekerjaan dan mutasi material oleh <span className="font-bold text-slate-900">{user.name}</span>.
+              Catatan riwayat pekerjaan atau pemesanan oleh <span className="font-bold text-slate-900">{user.name}</span>.
             </DialogDescription>
           </DialogHeader>
         </div>

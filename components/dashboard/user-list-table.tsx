@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Search, Mail, Shield, Clock, Filter, UserCircle2 } from "lucide-react"
+import { Search, Mail, Shield, Clock, Filter, UserCircle2, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Prisma } from "@prisma/client"
 import { UserActions } from "./user-actions"
@@ -54,7 +54,7 @@ export function UserListTable({ data, type }: UserListTableProps) {
                 <TableHead className="text-xs font-black text-slate-400 uppercase tracking-widest h-12">Role / Hak Akses</TableHead>
                 <TableHead className="text-xs font-black text-slate-400 uppercase tracking-widest h-12">Status</TableHead>
                 <TableHead className="text-xs font-black text-slate-400 uppercase tracking-widest h-12">Login Terakhir</TableHead>
-                <TableHead className="text-right text-xs font-black text-slate-400 uppercase tracking-widest h-12 pr-6">Alat</TableHead>
+                <TableHead className="text-right text-xs font-black text-slate-400 uppercase tracking-widest h-12 pr-6">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -62,7 +62,8 @@ export function UserListTable({ data, type }: UserListTableProps) {
                 const userObj = item.user;
                 const combinedUser = {
                   ...userObj,
-                  staffProfile: type === "staff" ? item : null
+                  staffProfile: type === "staff" ? item : null,
+                  customerProfile: type === "customer" ? item : null
                 };
 
                 return (
@@ -115,11 +116,7 @@ export function UserListTable({ data, type }: UserListTableProps) {
                       </div>
                     </TableCell>
                     <TableCell className="text-right py-4 pr-6">
-                      {type === "staff" ? (
-                        <UserActions user={combinedUser} />
-                      ) : (
-                         <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Customer Only</span>
-                      )}
+                      <UserActions user={combinedUser as any} type={type} />
                     </TableCell>
                   </TableRow>
                 )

@@ -28,9 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { updateStaffUser } from "@/app/actions/admin-actions"
+import { updateStaffUser, updateCustomerUser } from "@/app/actions/admin-actions"
 import { useRouter } from "next/navigation"
-import { UserCog, Mail, ShieldCheck, Phone, MapPin, Loader2, UserCircle2, Settings2, Activity } from "lucide-react"
+import { UserCog, Mail, ShieldCheck, Phone, MapPin, Loader2, UserCircle2, Settings2, Activity, Map } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { triggerLayananAlert } from "./layanan-alert-handler"
 
@@ -42,32 +42,38 @@ const formSchema = z.object({
     message: "Email tidak valid.",
   }),
   status: z.string(),
-  role: z.string().min(1, {
-    message: "Pilih peran staff.",
-  }),
+  role: z.string().optional(),
   no_telp: z.string().optional(),
   wilayah: z.string().optional(),
   bio: z.string().optional(),
+  provinsi: z.string().optional(),
+  alamat: z.string().optional(),
 })
 
 interface EditUserDialogProps {
+  type?: "staff" | "customer"
   user: {
     id: string
     name: string
     email: string
     status: string
-    staffProfile: {
+    staffProfile?: {
       role: string
       no_telp: string | null
       wilayah: string | null
       bio: string | null
+    } | null
+    customerProfile?: {
+      no_telp: string | null
+      alamat: string | null
+      provinsi: string | null
     } | null
   }
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps) {
+export function EditUserDialog({ user, open, onOpenChange, type = "staff" }: EditUserDialogProps) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -78,9 +84,11 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
       email: user.email,
       status: user.status,
       role: user.staffProfile?.role || "teknisi",
-      no_telp: user.staffProfile?.no_telp || "",
+      no_telp: user.staffProfile?.no_telp || user.customerProfile?.no_telp || "",
       wilayah: user.staffProfile?.wilayah || "",
       bio: user.staffProfile?.bio || "",
+      provinsi: user.customerProfile?.provinsi || "",
+      alamat: user.customerProfile?.alamat || "",
     },
   })
 
@@ -91,9 +99,11 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
         email: user.email,
         status: user.status,
         role: user.staffProfile?.role || "teknisi",
-        no_telp: user.staffProfile?.no_telp || "",
+        no_telp: user.staffProfile?.no_telp || user.customerProfile?.no_telp || "",
         wilayah: user.staffProfile?.wilayah || "",
         bio: user.staffProfile?.bio || "",
+        provinsi: user.customerProfile?.provinsi || "",
+        alamat: user.customerProfile?.alamat || "",
       })
     }
   }, [user, open, form])
@@ -101,7 +111,10 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true)
     try {
-      const res = await updateStaffUser(user.id, values as any)
+      const res = type === "staff" 
+        ? await updateStaffUser(user.id, values as any)
+        : await updateCustomerUser(user.id, values as any)
+
       if (res?.success) {
         onOpenChange(false)
         router.refresh()
@@ -127,9 +140,11 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
             <div className="size-12 rounded-2xl bg-[#66B21D] text-white flex items-center justify-center mb-4 shadow-lg shadow-green-200">
                <UserCog className="size-6" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Edit Profil Staff</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">
+              Edit Profil {type === "staff" ? "Staff" : "Pelanggan"}
+            </DialogTitle>
             <DialogDescription className="text-sm font-medium text-slate-500 mt-1">
-              Perbarui informasi akses, peran, dan detail profil teknisi.
+              Perbarui informasi akses, peran, dan detail profil {type === "staff" ? "teknisi" : "pelanggan"}.
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -203,29 +218,52 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                       <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <ShieldCheck className="size-3" /> Peran (Role)
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                {type === "staff" && (
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <ShieldCheck className="size-3" /> Peran (Role)
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none focus:ring-[#66B21D] font-bold text-slate-900">
+                              <SelectValue placeholder="Pilih Peran" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="rounded-xl">
+                            <SelectItem value="teknisi">Teknisi / Lapangan</SelectItem>
+                            <SelectItem value="admin">Administrator</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-[10px] font-bold" />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {type === "customer" && (
+                  <FormField
+                    control={form.control}
+                    name="provinsi"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <Map className="size-3" /> Provinsi
+                        </FormLabel>
                         <FormControl>
-                          <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none focus:ring-[#66B21D] font-bold text-slate-900">
-                            <SelectValue placeholder="Pilih Peran" />
-                          </SelectTrigger>
+                          <Input 
+                            placeholder="Contoh: DKI Jakarta" 
+                            {...field} 
+                            className="h-12 rounded-xl bg-slate-50 border-none focus-visible:ring-[#66B21D] font-medium text-slate-900"
+                          />
                         </FormControl>
-                        <SelectContent className="rounded-xl">
-                          <SelectItem value="teknisi">Teknisi / Lapangan</SelectItem>
-                          <SelectItem value="admin">Administrator</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className="text-[10px] font-bold" />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage className="text-[10px] font-bold" />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -248,25 +286,47 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="wilayah"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                       <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <MapPin className="size-3" /> Wilayah Tugas
-                      </FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Contoh: Jakarta Timur" 
-                          {...field} 
-                          className="h-12 rounded-xl bg-slate-50 border-none focus-visible:ring-[#66B21D] font-medium text-slate-900"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-[10px] font-bold" />
-                    </FormItem>
-                  )}
-                />
+                {type === "staff" ? (
+                  <FormField
+                    control={form.control}
+                    name="wilayah"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <MapPin className="size-3" /> Wilayah Tugas
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Contoh: Jakarta Timur" 
+                            {...field} 
+                            className="h-12 rounded-xl bg-slate-50 border-none focus-visible:ring-[#66B21D] font-medium text-slate-900"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-[10px] font-bold" />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="alamat"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <MapPin className="size-3" /> Alamat Lengkap
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Jl. Contoh No. 123" 
+                            {...field} 
+                            className="h-12 rounded-xl bg-slate-50 border-none focus-visible:ring-[#66B21D] font-medium text-slate-900"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-[10px] font-bold" />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               <div className="pt-4 flex gap-3">

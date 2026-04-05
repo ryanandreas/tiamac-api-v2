@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { triggerLayananAlert } from "./layanan-alert-handler"
 
 interface DeleteUserConfirmDialogProps {
+  type?: "staff" | "customer"
   open: boolean
   onOpenChange: (open: boolean) => void
   user: {
@@ -26,6 +27,7 @@ interface DeleteUserConfirmDialogProps {
 }
 
 export function DeleteUserConfirmDialog({
+  type = "staff",
   open,
   onOpenChange,
   user,
@@ -59,7 +61,9 @@ export function DeleteUserConfirmDialog({
             <UserX className="size-8" />
           </div>
           <DialogHeader className="text-center">
-            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Hapus Akses Staff?</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">
+              Hapus Akses {type === "staff" ? "Staff" : "Pelanggan"}?
+            </DialogTitle>
             <DialogDescription className="text-sm font-medium text-slate-500 mt-2 px-4 leading-relaxed">
               Tindakan ini permanen. Akun <span className="font-bold text-rose-600 block mt-1">{user.name} ({user.email})</span> tidak akan bisa lagi mengakses dashboard.
             </DialogDescription>
@@ -73,7 +77,7 @@ export function DeleteUserConfirmDialog({
             disabled={loading}
             className="h-12 rounded-xl font-bold text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all"
           >
-            Batal, Simpan Staff
+            Batal, Simpan {type === "staff" ? "Staff" : "Pelanggan"}
           </Button>
           <Button
             onClick={handleDelete}

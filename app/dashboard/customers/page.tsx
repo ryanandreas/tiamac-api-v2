@@ -1,7 +1,5 @@
 import { UserListTable } from "@/components/dashboard/user-list-table"
 import { db } from "@/lib/db"
-import { Button } from "@/components/ui/button"
-import { User, UserIcon, Plus } from "lucide-react"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 
 export default async function CustomerListPage() {
@@ -20,9 +18,6 @@ export default async function CustomerListPage() {
             <p className="text-slate-500 font-medium text-base">Kelola informasi profil dan riwayat aktivitas para pelanggan Anda.</p>
           </div>
         </div>
-        <Button className="h-11 px-6 rounded-xl bg-[#66B21D] hover:bg-[#4d9e0f] text-white font-bold text-xs border-none shadow-none gap-2 transition-all active:scale-95">
-          <Plus className="h-4 w-4" /> Tambah Customer
-        </Button>
       </div>
 
       <div className="bg-white rounded-2xl border-0 shadow-none overflow-hidden">

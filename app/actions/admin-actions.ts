@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache"
 
 import { db } from "@/lib/db"
 import { InventoryUom } from "@prisma/client"
+import bcrypt from "bcryptjs"
 
 export type ActionResponse = { success: boolean; message: string; data?: any } | null
 
@@ -423,9 +424,74 @@ export async function deleteStaffUser(id: string): Promise<ActionResponse> {
     })
 
     revalidatePath("/dashboard/users")
-    return { success: true, message: "Staff berhasil dihapus" }
+    revalidatePath("/dashboard/customers")
+    return { success: true, message: "Akun berhasil dihapus" }
   } catch (err: any) {
-    return { success: false, message: err.message || "Gagal menghapus staff" }
+    return { success: false, message: err.message || "Gagal menghapus akun" }
+  }
+}
+
+export async function updateCustomerUser(id: string, data: {
+  name: string
+  email: string
+  status: any
+  no_telp: string
+  provinsi?: string
+  alamat?: string
+}): Promise<ActionResponse> {
+  try {
+    const current = await getCurrentUser()
+    if (!current.isAuthenticated || current.type !== "staff" || current.role?.toLowerCase() !== "admin") {
+      return { success: false, message: "Unauthorized: Admin only" }
+    }
+
+    await db.user.update({
+      where: { id },
+      data: {
+        name: data.name,
+        email: data.email,
+        status: data.status,
+        customerProfile: {
+          upsert: {
+            create: {
+              no_telp: data.no_telp,
+              provinsi: data.provinsi,
+              alamat: data.alamat
+            },
+            update: {
+              no_telp: data.no_telp,
+              provinsi: data.provinsi,
+              alamat: data.alamat
+            }
+          }
+        }
+      }
+    })
+
+    revalidatePath("/dashboard/customers")
+    return { success: true, message: "Profil pelanggan berhasil diperbarui" }
+  } catch (err: any) {
+    return { success: false, message: err.message || "Gagal memperbarui pelanggan" }
+  }
+}
+
+export async function resetUserPassword(userId: string, newPassword: string): Promise<ActionResponse> {
+  try {
+    const current = await getCurrentUser()
+    if (!current.isAuthenticated || current.type !== "staff" || current.role?.toLowerCase() !== "admin") {
+      return { success: false, message: "Unauthorized: Admin only" }
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+    await db.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword }
+    })
+
+    return { success: true, message: "Password berhasil diperbarui" }
+  } catch (err: any) {
+    return { success: false, message: err.message || "Gagal memperbarui password" }
   }
 }
 
@@ -436,33 +502,47 @@ export async function getStaffActivity(userId: string): Promise<ActionResponse> 
       return { success: false, message: "Unauthorized" }
     }
 
+    // Checking target user type
+    const target = await db.user.findUnique({
+      where: { id: userId },
+      include: { staffProfile: true, customerProfile: true }
+    })
+
+    if (!target) return { success: false, message: "User tidak ditemukan" }
+    const isCustomer = !!target.customerProfile
+
     // Fetching various activities
     const services = await db.services.findMany({
-      where: { teknisiId: userId },
+      where: isCustomer ? { customerId: userId } : { teknisiId: userId },
       orderBy: { updatedAt: "desc" },
       take: 10,
       select: { id: true, status_servis: true, updatedAt: true, jenis_servis: true }
     })
 
-    const stockMovements = await db.stockMovement.findMany({
-      where: { createdByUserId: userId },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      include: { item: { select: { nama: true } } }
-    })
+    let stockMovements: any[] = []
+    let materialUsages: any[] = []
 
-    const materialUsages = await db.serviceMaterialUsage.findMany({
-      where: { createdByUserId: userId },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      include: { item: { select: { nama: true } } }
-    })
+    if (!isCustomer) {
+      stockMovements = await db.stockMovement.findMany({
+        where: { createdByUserId: userId },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        include: { item: { select: { nama: true } } }
+      })
+
+      materialUsages = await db.serviceMaterialUsage.findMany({
+        where: { createdByUserId: userId },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        include: { item: { select: { nama: true } } }
+      })
+    }
 
     // Aggregating and sorting
     const rawActivities = [
       ...services.map(s => ({
         type: "SERVICE",
-        title: `Mengerjakan: ${s.jenis_servis}`,
+        title: isCustomer ? `Pesan: ${s.jenis_servis}` : `Kerja: ${s.jenis_servis}`,
         subtitle: `Status: ${s.status_servis}`,
         date: s.updatedAt,
       })),
@@ -474,7 +554,7 @@ export async function getStaffActivity(userId: string): Promise<ActionResponse> 
       })),
       ...materialUsages.map(u => ({
         type: "MATERIAL",
-        title: `Penggunaan: ${u.qty} ${u.item.nama}`,
+        title: `Material: ${u.qty} ${u.item.nama}`,
         subtitle: `Di service #${u.serviceId.slice(-6)}`,
         date: u.createdAt,
       }))
