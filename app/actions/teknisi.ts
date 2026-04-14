@@ -59,7 +59,7 @@ export async function addUnitLayanan(input: { unitId: string; catalogId: string 
   }
 }
 
-export async function addAcUnit(input: { serviceId: string; pk: number }): Promise<ActionResponse> {
+export async function addAcUnit(input: { serviceId: string; pk: string }): Promise<ActionResponse> {
   try {
     const current = await getCurrentUser()
     ensureTechnician(current)

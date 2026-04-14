@@ -28,7 +28,7 @@ function buildCatalogIndex(rows: Array<{ uuid: string; nama: string; pk: string 
   return idx
 }
 
-function getCatalogEntry(catalog: CatalogIndex, layananName: string, pk: number) {
+function getCatalogEntry(catalog: CatalogIndex, layananName: string, pk: string) {
   const item = catalog[layananName]
   if (!item) return undefined
   const pkKey = String(pk)

@@ -287,7 +287,7 @@ export class TechnicianService {
     revalidatePath(`/dashboard/pengecekan/${unit.service.id}`);
   }
 
-  static async addAcUnit(data: { serviceId: string; pk: number; technicianId: string }) {
+  static async addAcUnit(data: { serviceId: string; pk: string; technicianId: string }) {
     const { serviceId, pk, technicianId } = data;
     const service = await db.services.findUnique({
       where: { id: serviceId },

@@ -36,7 +36,7 @@ type UsageItem = {
 }
 
 type UnitLayanan = { id: string; nama: string; harga: number; catalogId: string | null }
-type ServiceUnit = { id: string; pk: number; layanan: UnitLayanan[] }
+type ServiceUnit = { id: string; pk: string; layanan: UnitLayanan[] }
 
 type CatalogRow = { uuid: string; nama: string; pk: string | null; harga: number }
 

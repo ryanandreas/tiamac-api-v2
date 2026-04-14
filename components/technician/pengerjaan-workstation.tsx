@@ -50,7 +50,7 @@ interface PengerjaanWorkstationProps {
     services: {
       nama: string
       harga: number
-      unitPk: number
+      unitPk: string
     }[]
     materials: {
       nama: string

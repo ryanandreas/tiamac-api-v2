@@ -42,7 +42,7 @@ type BaseService = Prisma.ServicesGetPayload<{
 type ServiceListItem = BaseService & {
   acUnits?: Array<{
     id: string
-    pk: number
+    pk: string
     layanan: Array<{ id: string; nama: string; harga?: number }>
   }>
   materialUsages?: Array<{

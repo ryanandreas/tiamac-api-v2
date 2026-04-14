@@ -69,7 +69,7 @@ type UsageItem = {
 }
 
 type UnitLayanan = { id: string; nama: string; harga: number; catalogId: string | null }
-type ServiceUnit = { id: string; pk: number; layanan: UnitLayanan[] }
+type ServiceUnit = { id: string; pk: string; layanan: UnitLayanan[] }
 type CatalogRow = { uuid: string; nama: string; pk: string | null; harga: number }
 type StatusHistory = { id: string; status: string; notes: string | null; createdAt: Date }
 
@@ -171,7 +171,7 @@ export function PengecekanWorkstation({
     setBusy(true)
     setError(null)
     try {
-      const res = await addAcUnit({ serviceId, pk: Number(newUnitPk) })
+      const res = await addAcUnit({ serviceId, pk: newUnitPk })
       if (!res?.success) setError(res?.message ?? "Gagal menambah unit.")
       router.refresh()
     } finally {

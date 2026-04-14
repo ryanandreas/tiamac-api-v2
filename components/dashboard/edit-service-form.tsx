@@ -168,7 +168,7 @@ export function EditServiceForm({ service, technicians, inventoryItems, catalogR
   const handleAddAcUnit = async () => {
     setBusy(true)
     try {
-      const res = await adminAddAcUnit({ serviceId: service.id, pk: Number(newUnitPk) })
+      const res = await adminAddAcUnit({ serviceId: service.id, pk: newUnitPk })
       if (!res?.success) setError(res?.message || "Gagal menambah unit")
       router.refresh()
     } finally {

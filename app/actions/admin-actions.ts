@@ -234,7 +234,7 @@ export async function getTechniciansAction(): Promise<ActionResponse> {
   }
 }
 
-export async function adminAddAcUnit(input: { serviceId: string; pk: number }): Promise<ActionResponse> {
+export async function adminAddAcUnit(input: { serviceId: string; pk: string }): Promise<ActionResponse> {
   try {
     const current = await getCurrentUser()
     if (!current.isAuthenticated || current.type !== "staff" || current.role?.toLowerCase() !== "admin") {
