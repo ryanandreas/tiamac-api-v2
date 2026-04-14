@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const BookingUnitSchema = z.object({
-  pk: z.number().min(0.5, "PK minimal 0.5"),
+  pk: z.string().min(1, "PK wajib dipilih"),
   layanan: z.array(z.string()).min(1, "Pilih minimal 1 layanan"),
 });
 

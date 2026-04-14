@@ -56,15 +56,35 @@ export async function POST(req: Request) {
       status = "PENDING";
     }
 
-    console.log(`ℹ️ Transaction Status: ${transactionStatus}, Final Status: ${status}`);
+    // 4.1 Advanced Parsing of Payment Details
+    let bank = body.bank || null;
+    let vaNumber = body.va_numbers?.[0]?.va_number || body.permata_va_number || body.bill_key || body.payment_code || null;
+    let qrUrl = null;
+    let methodLabel = body.payment_type;
+
+    // Specific logic per payment type
+    if (body.payment_type === "bank_transfer") {
+      bank = body.va_numbers?.[0]?.bank || (body.permata_va_number ? "permata" : null);
+    } else if (body.payment_type === "echannel") {
+      bank = "mandiri";
+      vaNumber = body.bill_key; // For Mandiri Bill, Bill Key is treated as VA Number for UI
+    } else if (body.payment_type === "cstore") {
+      bank = body.store;
+    } else if (body.payment_type === "credit_card") {
+      bank = body.bank;
+    }
+
+    console.log(`ℹ️ Transaction Status: ${transactionStatus}, Final Status: ${status}, Method: ${methodLabel}, Bank: ${bank}`);
 
     // 5. Update the ServicePayment Record
     await (db as any).servicePayment.update({
       where: { id: paymentId },
       data: {
         status: status,
-        metodePembayaran: body.payment_type,
-        waktuPembayaran: body.settlement_time ? new Date(body.settlement_time) : null,
+        metodePembayaran: methodLabel,
+        bank: bank,
+        vaNumber: vaNumber,
+        waktuPembayaran: body.settlement_time ? new Date(body.settlement_time) : (status === "SETTLEMENT" ? new Date() : null),
         midtransTransactionId: body.transaction_id,
         paymentDetails: body, // Store the full callback body for reference
       },

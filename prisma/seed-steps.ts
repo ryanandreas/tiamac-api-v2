@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { generateOrderId } from '../lib/utils/id-utils'
 
 const prisma = new PrismaClient()
 
@@ -80,28 +81,29 @@ async function main() {
     for (let i = 1; i <= 2; i++) {
        const customer = customers[i % customers.length]
        const techId = ['Booking', 'Menunggu Jadwal'].includes(step.value) ? null : technician.id
-       
-       const service = await prisma.services.create({
-         data: {
-           customerId: customer.id,
-           teknisiId: techId,
-           jenis_servis: 'AC',
-           keluhan: `Keluhan Servis ${step.value} - Unit ${i}\nJadwal: 2026-04-02 0${i}:00`,
-           status: step.value,
-           status_servis: step.value,
-           biaya_dasar: 50000,
-           estimasi_biaya: ['Menunggu Persetujuan Customer', 'Perbaikan Unit', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value) ? 450000 : null,
-           biaya: ['Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value) ? 450000 : null,
-           biaya_disetujui: ['Perbaikan Unit', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value),
-           alasan_batal: step.value === 'Dibatalkan' ? 'Permintaan Customer' : null
-         }
-       })
+        const serviceId = generateOrderId()
+        const service = await prisma.services.create({
+          data: {
+            id: serviceId,
+            customerId: customer.id,
+            teknisiId: techId,
+            jenis_servis: 'AC',
+            keluhan: `Keluhan Servis ${step.value} - Unit ${i}\nJadwal: 2026-04-02 0${i}:00`,
+            status: step.value,
+            status_servis: step.value,
+            biaya_dasar: 50000,
+            estimasi_biaya: ['Menunggu Persetujuan Customer', 'Perbaikan Unit', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value) ? 450000 : null,
+            biaya: ['Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value) ? 450000 : null,
+            biaya_disetujui: ['Perbaikan Unit', 'Menunggu Pembayaran', 'Selesai (Garansi Aktif)'].includes(step.value),
+            alasan_batal: step.value === 'Dibatalkan' ? 'Permintaan Customer' : null
+          }
+        })
 
        // Create Units
        await prisma.serviceAcUnit.create({
          data: {
            serviceId: service.id,
-           pk: 1.0,
+           pk: "1.0",
            layanan: {
              create: {
                nama: 'Cuci AC',

@@ -39,7 +39,7 @@ export async function createServiceCatalog(data: {
     const newItem = await db.acServiceCatalog.create({
       data: {
         nama: data.nama,
-        pk: data.pk,
+        pk: data.pk === "-" ? null : data.pk,
         harga: data.harga
       }
     })
@@ -66,7 +66,7 @@ export async function updateServiceCatalog(id: string, data: {
       where: { uuid: id },
       data: {
         nama: data.nama,
-        pk: data.pk,
+        pk: data.pk === "-" ? null : data.pk,
         harga: data.harga
       }
     })

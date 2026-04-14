@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Pagination } from "@/components/pagination"
 
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
-
-
+import { SearchInput } from "@/components/dashboard/search-input"
+import { StatusFilter } from "@/components/dashboard/status-filter"
 
 export const metadata: Metadata = {
   title: "Pesanan Saya",
@@ -22,22 +22,36 @@ export const metadata: Metadata = {
 export default async function MyOrdersPage({ 
   searchParams 
 }: { 
-  searchParams: Promise<{ tab?: string; page?: string }> 
+  searchParams: Promise<{ tab?: string; page?: string; q?: string; status?: string }> 
 }) {
   const user = await getCurrentUser()
-  const { tab, page } = await searchParams
+  const { tab, page, q, status } = await searchParams
   const activeTab = tab === "history" ? "history" : "ongoing"
   const currentPage = parseInt(page || "1")
   const pageSize = 10
 
-  const whereClause = {
+  const whereClause: any = {
     customerId: user.id,
     status_servis: activeTab === "ongoing" 
       ? { notIn: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] }
       : { in: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] },
   }
 
-  const [services, ongoingCount, historyCount] = await Promise.all([
+  // Add search filter if present
+  if (q) {
+    whereClause.OR = [
+      { id: { contains: q } },
+      { keluhan: { contains: q } },
+      { jenis_servis: { contains: q, mode: 'insensitive' } },
+    ]
+  }
+
+  // Add status filter if present
+  if (status) {
+    whereClause.status_servis = status
+  }
+
+  const [services, ongoingCount, historyCount, filteredCount] = await Promise.all([
     db.services.findMany({
       where: whereClause,
       include: {
@@ -62,9 +76,10 @@ export default async function MyOrdersPage({
     }),
     db.services.count({ where: { customerId: user.id, status_servis: { notIn: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] } } }),
     db.services.count({ where: { customerId: user.id, status_servis: { in: ["Selesai", "Dibatalkan", "Selesai (Garansi Aktif)"] } } }),
+    db.services.count({ where: whereClause }),
   ])
   
-  const totalCount = activeTab === "ongoing" ? ongoingCount : historyCount
+  const totalCount = filteredCount
 
   const totalPages = Math.ceil(totalCount / pageSize)
 
@@ -120,16 +135,11 @@ export default async function MyOrdersPage({
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="relative w-full sm:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none" />
-                    <Input
-                      placeholder="Cari ID pesanan..."
-                      className="pl-10 h-10 text-xs font-semibold bg-slate-50 border-none rounded-xl focus-visible:ring-[#66B21D] shadow-none"
-                    />
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 border-none bg-slate-50 rounded-xl text-slate-400 hover:text-[#66B21D] hover:bg-green-50 transition-all">
-                    <Filter className="h-4 w-4" />
-                  </Button>
+                  <SearchInput 
+                    placeholder="Search" 
+                    defaultValue={q} 
+                  />
+                  <StatusFilter type={activeTab as any} />
                 </div>
               </div>
             </CardHeader>
@@ -169,7 +179,7 @@ export default async function MyOrdersPage({
                     currentPage={currentPage}
                     totalPages={totalPages}
                     baseUrl="/customer-panel/pesanan"
-                    searchParams={{ tab: activeTab }}
+                    searchParams={{ tab: activeTab, q, status }}
                   />
                 </div>
               </div>

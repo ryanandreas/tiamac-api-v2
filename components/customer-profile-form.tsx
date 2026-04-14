@@ -14,6 +14,14 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { SuccessAlert } from "./success-alert"
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 export function CustomerProfileForm({
   initialValues,
 }: {
@@ -31,6 +39,9 @@ export function CustomerProfileForm({
     null
   )
   const [showAlert, setShowAlert] = useState(false)
+  
+  // State for controlled Select value since we need to send it via FormData
+  const [provinsi, setProvinsi] = useState(initialValues.provinsi ?? "")
 
   useEffect(() => {
     if (state?.success) {
@@ -47,6 +58,9 @@ export function CustomerProfileForm({
         isVisible={showAlert} 
         onClose={() => setShowAlert(false)} 
       />
+      
+      {/* Hidden input to ensure provinsi is included in FormData when using shadcn Select */}
+      <input type="hidden" name="provinsi" value={provinsi} />
       
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-1.5 px-0">
@@ -81,13 +95,19 @@ export function CustomerProfileForm({
           />
         </div>
         <div className="space-y-1.5 px-0">
-          <Label htmlFor="provinsi" className="text-xs font-bold text-slate-400 pl-1">Provinsi</Label>
-          <Input
-            id="provinsi"
-            name="provinsi"
-            defaultValue={initialValues.provinsi ?? ""}
-            className="h-11 px-4 bg-slate-50 border-none shadow-none rounded-xl focus-visible:ring-1 focus-visible:ring-[#66B21D] focus-visible:bg-white transition-all font-bold text-sm text-slate-900 placeholder:text-slate-300"
-          />
+          <Label htmlFor="provinsi" className="text-xs font-bold text-slate-400 pl-1">Pilih Wilayah (Jakarta)</Label>
+          <Select value={provinsi} onValueChange={setProvinsi}>
+            <SelectTrigger className="h-11 px-4 bg-slate-50 border-none shadow-none rounded-xl focus:ring-1 focus:ring-[#66B21D] focus:bg-white transition-all font-bold text-sm text-slate-900 text-left">
+              <SelectValue placeholder="Pilih Wilayah" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border-slate-100 shadow-xl">
+              <SelectItem value="Jakarta Barat" className="font-semibold text-sm py-3">Jakarta Barat</SelectItem>
+              <SelectItem value="Jakarta Pusat" className="font-semibold text-sm py-3">Jakarta Pusat</SelectItem>
+              <SelectItem value="Jakarta Selatan" className="font-semibold text-sm py-3">Jakarta Selatan</SelectItem>
+              <SelectItem value="Jakarta Timur" className="font-semibold text-sm py-3">Jakarta Timur</SelectItem>
+              <SelectItem value="Jakarta Utara" className="font-semibold text-sm py-3">Jakarta Utara</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <div className="space-y-1.5 px-0">

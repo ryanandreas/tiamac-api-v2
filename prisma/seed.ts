@@ -1,6 +1,15 @@
 import { PrismaClient, InventoryUom, PaymentType, StockMovementType, StockReferenceType } from '@prisma/client'
+import { generateOrderId } from '../lib/utils/id-utils'
+
+import { createHash } from 'node:crypto';
 
 const prisma = new PrismaClient()
+
+// Deterministic ID based on email for session persistence
+function getDeterministicId(email: string): string {
+  const hash = createHash('md5').update(email).digest('hex');
+  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-${hash.slice(12, 16)}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
+}
 
 async function main() {
   console.log('Seeding database with populated technicians and customers...')
@@ -21,8 +30,15 @@ async function main() {
   ])
 
   // 1. ADMINS
+  const adminEmail = 'admin@tiamac.id';
   const admin = await prisma.user.create({
-    data: { name: 'Admin TIAMAC', email: 'admin@tiamac.id', password: 'pass1234', status: 'ACTIVE' },
+    data: { 
+      id: getDeterministicId(adminEmail),
+      name: 'Admin TIAMAC', 
+      email: adminEmail, 
+      password: 'pass1234', 
+      status: 'ACTIVE' 
+    },
   })
   await prisma.staffProfile.create({ data: { userId: admin.id, role: 'admin' } })
 
@@ -38,7 +54,13 @@ async function main() {
   const createdTeknisi = [];
   for (const t of teknisiList) {
     const user = await prisma.user.create({
-      data: { name: t.name, email: t.email, password: 'pass1234', status: 'ACTIVE' }
+      data: { 
+        id: getDeterministicId(t.email),
+        name: t.name, 
+        email: t.email, 
+        password: 'pass1234', 
+        status: 'ACTIVE' 
+      }
     });
     await prisma.staffProfile.create({
       data: { userId: user.id, role: 'teknisi', no_telp: '0812' + Math.floor(Math.random()*100000000), wilayah: t.wilayah }
@@ -49,7 +71,7 @@ async function main() {
 
   // 3. CUSTOMERS (A lot more)
   const customerList = [
-    { name: 'Dina Pratiwi (Master)', email: 'dina@customer.id', alamat: 'Jl. Meruya Utara No. 10' },
+    { name: 'Dina Pratiwi', email: 'dina@customer.id', alamat: 'Jl. Meruya Utara No. 10' },
     { name: 'Sari Wijaya', email: 'sari@customer.id', alamat: 'Apartemen Green Park L-12' },
     { name: 'Rama Pratama', email: 'rama@customer.id', alamat: 'Kavling DKI Blok C-9' },
     { name: 'Eka Santoso', email: 'eka@customer.id', alamat: 'Jl. Kebon Jeruk No. 45' },
@@ -61,13 +83,25 @@ async function main() {
     { name: 'Kania Putri', email: 'kania@customer.id', alamat: 'Grogol Indah No. 14' },
   ];
 
+  const jakartaRegions = ['Jakarta Barat', 'Jakarta Pusat', 'Jakarta Selatan', 'Jakarta Timur', 'Jakarta Utara'];
   const createdCustomers = [];
-  for (const c of customerList) {
+  for (const [idx, c] of customerList.entries()) {
     const user = await prisma.user.create({
-      data: { name: c.name, email: c.email, password: 'pass1234', status: 'ACTIVE' }
+      data: { 
+        id: getDeterministicId(c.email),
+        name: c.name, 
+        email: c.email, 
+        password: 'pass1234', 
+        status: 'ACTIVE' 
+      }
     });
     await prisma.customerProfile.create({
-      data: { userId: user.id, no_telp: '0855' + Math.floor(Math.random()*100000000), alamat: c.alamat, provinsi: 'DKI Jakarta' }
+      data: { 
+        userId: user.id, 
+        no_telp: '0855' + Math.floor(Math.random()*100000000), 
+        alamat: c.alamat, 
+        provinsi: jakartaRegions[idx % jakartaRegions.length] 
+      }
     });
     createdCustomers.push(user);
   }
@@ -76,15 +110,42 @@ async function main() {
   // 4. SERVICE CATALOG & INVENTORY (Same as before)
   await prisma.acServiceCatalog.createMany({
     data: [
-      { nama: 'Bongkar', pk: '-', harga: 150000 },
-      { nama: 'Pasang', pk: '-', harga: 250000 },
+      // FLAT PRICES
+      { nama: 'Bongkar', pk: null, harga: 150000 },
+      { nama: 'Pasang', pk: null, harga: 250000 },
+      { nama: 'Bongkar + Pasang', pk: null, harga: 375000 },
+      { nama: 'Las Kebocoran + Isi Freon', pk: null, harga: 550000 },
+
+      // TIERED PRICES: 0.5 PK
+      { nama: 'Cuci AC', pk: '0.5', harga: 75000 },
+      { nama: 'Vaccum AC', pk: '0.5', harga: 100000 },
+      { nama: 'Tambah Freon', pk: '0.5', harga: 150000 },
+      { nama: 'Tambah Freon R32/R410', pk: '0.5', harga: 200000 },
+      { nama: 'Isi Freon R22', pk: '0.5', harga: 250000 },
+      { nama: 'Isi Freon R32/R410', pk: '0.5', harga: 350000 },
+      { nama: 'Pergantian Kapasitor', pk: '0.5', harga: 150000 },
+
+      // TIERED PRICES: 1 PK
       { nama: 'Cuci AC', pk: '1', harga: 85000 },
-      { nama: 'Isi Freon', pk: '1', harga: 275000 },
-      { nama: 'Service/Perbaikan Ringan', pk: '1', harga: 180000 },
+      { nama: 'Vaccum AC', pk: '1', harga: 125000 },
+      { nama: 'Tambah Freon', pk: '1', harga: 175000 },
+      { nama: 'Tambah Freon R32/R410', pk: '1', harga: 250000 },
+      { nama: 'Isi Freon R22', pk: '1', harga: 300000 },
+      { nama: 'Isi Freon R32/R410', pk: '1', harga: 450000 },
+      { nama: 'Pergantian Kapasitor', pk: '1', harga: 180000 },
+
+      // TIERED PRICES: 1.5-2 PK
+      { nama: 'Cuci AC', pk: '1.5-2', harga: 100000 },
+      { nama: 'Vaccum AC', pk: '1.5-2', harga: 150000 },
+      { nama: 'Tambah Freon', pk: '1.5-2', harga: 250000 },
+      { nama: 'Tambah Freon R32/R410', pk: '1.5-2', harga: 350000 },
+      { nama: 'Isi Freon R22', pk: '1.5-2', harga: 400000 },
+      { nama: 'Isi Freon R32/R410', pk: '1.5-2', harga: 550000 },
+      { nama: 'Pergantian Kapasitor', pk: '1.5-2', harga: 250000 },
     ],
   });
   const catalog = await prisma.acServiceCatalog.findMany();
-  const getCatalog = (nama: string) => catalog.find(c => c.nama === nama);
+  const getCatalog = (nama: string, pk: string | null = '1') => catalog.find(c => c.nama === nama && (c.pk === pk || c.pk === null));
 
   const freon = await prisma.inventoryItem.create({ data: { sku: 'FREON-R32-1KG', nama: 'Freon R32 (1kg)', uom: 'tabung', harga: 250000, qtyOnHand: 50, minStock: 2 } });
   const kapasitor = await prisma.inventoryItem.create({ data: { sku: 'KAPASITOR-35UF', nama: 'Kapasitor 35uF', uom: 'pcs', harga: 45000, qtyOnHand: 100, minStock: 5 } });
@@ -144,14 +205,16 @@ async function main() {
     for (let u = 0; u < unitCount; u++) {
       const services = u === 0 ? ['Cuci AC'] : (u === 1 ? ['Cuci AC', 'Isi Freon'] : ['Service/Perbaikan Ringan']);
       const unitTotal = services.reduce((acc, s) => acc + (getCatalog(s)?.harga || 0), 0);
-      unitSpecs.push({ pk: 1, layanan: services, total: unitTotal });
+      unitSpecs.push({ pk: "1.0", layanan: services, total: unitTotal });
       totalLayanan += unitTotal;
     }
     const materialPrice = (statusIndex >= 4 && status !== 'Dibatalkan') ? (freon.harga + kapasitor.harga) : 0;
     const calculatedTotal = BIAYA_DASAR + totalLayanan + materialPrice;
 
+    const serviceId = generateOrderId();
     const service = await prisma.services.create({
       data: {
+        id: serviceId,
         customerId: masterCustomer.id, teknisiId: isPastCheck ? masterTeknisi.id : null, jenis_servis: 'AC',
         keluhan: `Perbaikan ${unitCount} Unit AC #${index + 1}\nLokasi: Lantai ${index + 1}\nGejala: Tidak Dingin`,
         status, status_servis: status, biaya_dasar: BIAYA_DASAR,
@@ -172,12 +235,41 @@ async function main() {
         if (cat) await prisma.serviceAcUnitLayanan.create({ data: { unitId: unit.id, catalogId: cat.uuid, nama: cat.nama, harga: cat.harga } });
       }
     }
-    // Payments
+    // 5.1 Payments Logic based on alur.md
     const dpStatus = (statusIndex >= 1 && status !== 'Dibatalkan') ? 'PAID' : 'PENDING';
-    await prisma.servicePayment.create({ data: { serviceId: service.id, type: PaymentType.DOWN_PAYMENT, amount: BIAYA_DASAR, status: dpStatus, metodePembayaran: dpStatus === 'PAID' ? 'qris' : null } });
-    if (statusIndex >= 6 && status !== 'Dibatalkan') {
-      const fullStatus = isCompleted ? 'PAID' : 'PENDING';
-      await prisma.servicePayment.create({ data: { serviceId: service.id, type: PaymentType.FULL_PAYMENT, amount: calculatedTotal - BIAYA_DASAR, status: fullStatus, metodePembayaran: fullStatus === 'PAID' ? 'bank_transfer' : null, bank: fullStatus === 'PAID' ? 'bca' : null } });
+    
+    // Create DP Payment
+    await prisma.servicePayment.create({
+      data: {
+        serviceId: service.id,
+        type: PaymentType.DOWN_PAYMENT,
+        amount: BIAYA_DASAR,
+        status: dpStatus,
+        metodePembayaran: dpStatus === 'PAID' ? 'qris' : null,
+        bank: dpStatus === 'PAID' ? 'QRIS' : null,
+        vaNumber: dpStatus === 'PAID' ? 'QR' + Math.floor(10000000 + Math.random() * 90000000) : null,
+        waktuPembayaran: dpStatus === 'PAID' ? new Date(Date.now() - 2 * 24 * 3600000) : null,
+      }
+    });
+
+    // Create Full Payment for stages: Perbaikan Unit, Menunggu Pembayaran, Selesai
+    if (statusIndex >= 5 && status !== 'Dibatalkan') {
+      const isPaid = status === 'Selesai (Garansi Aktif)';
+      const fullStatus = isPaid ? 'PAID' : 'PENDING';
+      
+      await prisma.servicePayment.create({
+        data: {
+          serviceId: service.id,
+          type: PaymentType.FULL_PAYMENT,
+          amount: calculatedTotal - BIAYA_DASAR,
+          status: fullStatus,
+          metodePembayaran: fullStatus === 'PAID' ? 'bank_transfer' : null,
+          bank: fullStatus === 'PAID' ? 'bca' : null,
+          vaNumber: '8801' + Math.floor(10000000 + Math.random() * 90000000),
+          waktuPembayaran: fullStatus === 'PAID' ? new Date(Date.now() - 3600000) : null,
+          expiryTime: fullStatus === 'PENDING' ? new Date(Date.now() + 24 * 3600000) : null,
+        }
+      });
     }
     // Materials
     if (statusIndex >= 4 && status !== 'Dibatalkan') {

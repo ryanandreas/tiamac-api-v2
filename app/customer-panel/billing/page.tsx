@@ -10,6 +10,7 @@ import Link from "next/link"
 import { ServiceStatusHistoryDialog } from "@/components/dashboard/service-status-history-dialog"
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { Pagination } from "@/components/pagination"
+import { PaymentDetailDialog } from "@/components/customer/payment-detail-dialog"
 
 export const metadata: Metadata = {
   title: "Tagihan & Pembayaran",
@@ -61,6 +62,7 @@ export default async function BillingPage({
             layanan: true,
           },
         },
+        payments: true,
       },
       orderBy: {
         updatedAt: "desc",
@@ -138,7 +140,7 @@ export default async function BillingPage({
                     <CardContent className="p-6 pt-6 pb-6">
                       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                         <div className="space-y-2 min-w-0">
-                          <p className="text-xs font-semibold text-slate-400 group-hover:text-[#66B21D] transition-colors">#{orderIdShort}</p>
+                          <p className="text-xs font-semibold text-slate-400 group-hover:text-[#66B21D] transition-colors">{service.id}</p>
                           <h4 className="text-xl font-bold text-slate-900 leading-tight">
                             {service.status_servis === "Booking" ? "Biaya Kunjungan (DP)" : "Pelunasan Hasil Servis"}
                           </h4>
@@ -213,26 +215,36 @@ export default async function BillingPage({
                 {paidServices.length > 0 ? (
                   <>
                     {paidServices.map((service) => (
-                      <div key={service.id} className="px-6 py-3.5 flex items-center justify-between hover:bg-slate-50/30 transition-colors group">
+                      <div key={service.id} className="px-6 py-4 flex items-center justify-between hover:bg-slate-50/30 transition-colors group border-b border-slate-50 last:border-0">
                         <div className="flex items-center gap-5 min-w-0">
                           <div className="size-11 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-300 shrink-0 group-hover:bg-green-50 group-hover:text-[#66B21D] transition-colors">
                             <Receipt className="h-5 w-5" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-[10px] font-semibold text-slate-300 leading-none mb-1">#{service.id.slice(0, 8).toUpperCase()}</p>
-                            <p className="text-base font-bold text-slate-900 truncate">Order Payment</p>
-                            <p className="text-[10px] text-slate-400 mt-1 font-semibold">
+                            <p className="text-[10px] font-bold text-slate-300 leading-none mb-1 uppercase tracking-widest">{service.id}</p>
+                            <p className="text-base font-bold text-slate-900 truncate">Selesai & Lunas</p>
+                            <p className="text-[10px] text-slate-400 mt-1 font-semibold uppercase tracking-widest">
                               {new Date(service.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </p>
                           </div>
                         </div>
-                        <div className="flex flex-col items-end gap-1.5 shrink-0">
-                          <div className="text-lg font-bold text-slate-900 tracking-tight">
-                            {formatRupiah(service.biaya ?? 0)}
+                        <div className="flex items-center gap-6 shrink-0">
+                          <div className="flex flex-col items-end gap-1.5 shrink-0">
+                            <div className="text-lg font-bold text-slate-900 tracking-tight">
+                              {formatRupiah(service.biaya ?? 0)}
+                            </div>
+                            <Badge className="text-[9px] h-5 rounded-lg font-bold bg-green-50 text-[#66B21D] border-none px-2 shadow-none">
+                              Paid
+                            </Badge>
                           </div>
-                          <Badge className="text-[9px] h-5 rounded-lg font-bold bg-green-50 text-[#66B21D] border-none px-2 shadow-none">
-                            Success
-                          </Badge>
+                          <PaymentDetailDialog 
+                            service={service as any}
+                            trigger={
+                              <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-none bg-slate-50 hover:bg-green-50 hover:text-[#66B21D] transition-all">
+                                <Eye className="h-4.5 w-4.5" />
+                              </Button>
+                            }
+                          />
                         </div>
                       </div>
                     ))}

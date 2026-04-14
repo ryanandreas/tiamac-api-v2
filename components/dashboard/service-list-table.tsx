@@ -243,7 +243,7 @@ export function ServiceListTable({
                 <TableCell className={`${isCustomerView ? "pl-6 py-6" : "pl-8 py-6"}`}>
                   <div className="flex items-center gap-2">
                     <span className={`font-black tracking-tight ${isCustomerView ? "text-slate-900" : "text-slate-500 text-xs"}`}>
-                      #{item.id.slice(-8).toUpperCase()}
+                      {item.id}
                     </span>
                     {isCustomerView && (
                       <Button
@@ -432,7 +432,7 @@ export function ServiceListTable({
             <div className="space-y-2 text-center">
               <DialogTitle className="text-xl font-black text-slate-900 tracking-tight">Batalkan Pesanan?</DialogTitle>
               <DialogDescription className="text-sm font-bold text-slate-500 font-medium leading-relaxed">
-                Tindakan ini akan membatalkan seluruh proses pengerjaan untuk pesanan #{selectedService?.id.slice(-8).toUpperCase()} ini.
+                Tindakan ini akan membatalkan seluruh proses pengerjaan untuk pesanan {selectedService?.id} ini.
               </DialogDescription>
             </div>
 
