@@ -155,8 +155,9 @@ export function SchedulingTable({ data, teknisi }: SchedulingTableProps) {
   }
 
   const serviceAlamat = selectedService
-    ? extractLine(selectedService.keluhan ?? "", "Alamat:") ??
-      selectedService.customer?.customerProfile?.alamat ??
+    ? selectedService.alamat_servis ||
+      extractLine(selectedService.keluhan ?? "", "Alamat:") ||
+      selectedService.customer?.customerProfile?.alamat ||
       "-"
     : "-"
 

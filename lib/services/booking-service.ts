@@ -78,6 +78,7 @@ export class BookingService {
           keluhan: keluhanGabungan,
           status: "Booking",
           status_servis: "Booking",
+          alamat_servis: alamat, // SAVING ADDRESS HERE
           biaya_dasar: BASE_VISIT_FEE,
           estimasi_biaya: estimasiTotal,
           acUnits: {

@@ -51,6 +51,7 @@ export function PengecekanDetail({
   catalogRows,
   inventoryItems,
   usages,
+  alamatServis,
 }: {
   serviceId: string
   statusServis: string
@@ -62,6 +63,7 @@ export function PengecekanDetail({
   catalogRows: CatalogRow[]
   inventoryItems: InventoryItem[]
   usages: UsageItem[]
+  alamatServis?: string | null
 }) {
   const router = useRouter()
   const [busy, setBusy] = useState(false)
@@ -218,7 +220,7 @@ export function PengecekanDetail({
           </div>
           <div className="space-y-1">
             <div className="text-muted-foreground">Alamat</div>
-            <div className="text-sm">{customerAlamat || "-"}</div>
+            <div className="text-sm">{alamatServis || customerAlamat || "-"}</div>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Tanggal</span>

@@ -71,16 +71,16 @@ async function main() {
 
   // 3. CUSTOMERS (A lot more)
   const customerList = [
-    { name: 'Dina Pratiwi', email: 'dina@customer.id', alamat: 'Jl. Meruya Utara No. 10' },
-    { name: 'Sari Wijaya', email: 'sari@customer.id', alamat: 'Apartemen Green Park L-12' },
-    { name: 'Rama Pratama', email: 'rama@customer.id', alamat: 'Kavling DKI Blok C-9' },
-    { name: 'Eka Santoso', email: 'eka@customer.id', alamat: 'Jl. Kebon Jeruk No. 45' },
-    { name: 'Fani Lestari', email: 'fani@customer.id', alamat: 'Perum Puri Beta 2' },
-    { name: 'Gani Hermawan', email: 'gani@customer.id', alamat: 'Jl. Joglo Raya No. 88' },
-    { name: 'Hani Susanti', email: 'hani@customer.id', alamat: 'Ciledug Indah 1' },
-    { name: 'Indra Jaya', email: 'indra@customer.id', alamat: 'Villa Meruya Blok F-1' },
-    { name: 'Junaidi', email: 'juna@customer.id', alamat: 'Palmerah Barat No. 2' },
-    { name: 'Kania Putri', email: 'kania@customer.id', alamat: 'Grogol Indah No. 14' },
+    { name: 'Dina Pratiwi', email: 'dina@customer.id', alamat: 'Jl. Meruya Utara No. 10, Jakarta Barat' },
+    { name: 'Sari Wijaya', email: 'sari@customer.id', alamat: 'Apartemen Green Park Tower B Lt. 12, Jakarta Pusat' },
+    { name: 'Rama Pratama', email: 'rama@customer.id', alamat: 'Kavling DKI Blok C-9, Pondok Kelapa, Jakarta Timur' },
+    { name: 'Eka Santoso', email: 'eka@customer.id', alamat: 'Jl. Kebon Jeruk No. 45, Jakarta Barat' },
+    { name: 'Fani Lestari', email: 'fani@customer.id', alamat: 'Perum Puri Beta 2 Blok D-11, Ciledug, Tangerang' },
+    { name: 'Gani Hermawan', email: 'gani@customer.id', alamat: 'Jl. Joglo Raya No. 88, Jakarta Barat' },
+    { name: 'Hani Susanti', email: 'hani@customer.id', alamat: 'Ciledug Indah 1 No. 23, Tangerang' },
+    { name: 'Indra Jaya', email: 'indra@customer.id', alamat: 'Villa Meruya Blok F-1 No. 5, Jakarta Barat' },
+    { name: 'Junaidi', email: 'juna@customer.id', alamat: 'Jl. Palmerah Barat No. 2, Jakarta Selatan' },
+    { name: 'Kania Putri', email: 'kania@customer.id', alamat: 'Jl. Grogol Indah No. 14, Jakarta Barat' },
   ];
 
   const jakartaRegions = ['Jakarta Barat', 'Jakarta Pusat', 'Jakarta Selatan', 'Jakarta Timur', 'Jakarta Utara'];
@@ -147,8 +147,67 @@ async function main() {
   const catalog = await prisma.acServiceCatalog.findMany();
   const getCatalog = (nama: string, pk: string | null = '1') => catalog.find(c => c.nama === nama && (c.pk === pk || c.pk === null));
 
-  const freon = await prisma.inventoryItem.create({ data: { sku: 'FREON-R32-1KG', nama: 'Freon R32 (1kg)', uom: 'tabung', harga: 250000, qtyOnHand: 50, minStock: 2 } });
-  const kapasitor = await prisma.inventoryItem.create({ data: { sku: 'KAPASITOR-35UF', nama: 'Kapasitor 35uF', uom: 'pcs', harga: 45000, qtyOnHand: 100, minStock: 5 } });
+  // 4.1 INVENTORY ITEMS — Comprehensive AC spare parts & consumables
+  await prisma.inventoryItem.createMany({
+    data: [
+      // === FREON / REFRIGERANT ===
+      { sku: 'FREON-R32-1KG',    nama: 'Freon R32 (1 kg)',        uom: 'tabung', harga: 250000, qtyOnHand: 50, minStock: 5 },
+      { sku: 'FREON-R410-1KG',   nama: 'Freon R410A (1 kg)',      uom: 'tabung', harga: 280000, qtyOnHand: 40, minStock: 5 },
+      { sku: 'FREON-R22-1KG',    nama: 'Freon R22 (1 kg)',        uom: 'tabung', harga: 220000, qtyOnHand: 30, minStock: 5 },
+      { sku: 'FREON-R32-10KG',   nama: 'Freon R32 (10 kg)',       uom: 'tabung', harga: 2100000, qtyOnHand: 10, minStock: 2 },
+      { sku: 'FREON-R410-10KG',  nama: 'Freon R410A (10 kg)',     uom: 'tabung', harga: 2400000, qtyOnHand: 8,  minStock: 2 },
+
+      // === KAPASITOR ===
+      { sku: 'KAPS-25UF',        nama: 'Kapasitor 25 µF',         uom: 'pcs', harga: 35000,  qtyOnHand: 80, minStock: 10 },
+      { sku: 'KAPS-35UF',        nama: 'Kapasitor 35 µF',         uom: 'pcs', harga: 45000,  qtyOnHand: 80, minStock: 10 },
+      { sku: 'KAPS-45UF',        nama: 'Kapasitor 45 µF',         uom: 'pcs', harga: 55000,  qtyOnHand: 60, minStock: 10 },
+      { sku: 'KAPS-DUAL-35-5UF', nama: 'Kapasitor Dual 35+5 µF',  uom: 'pcs', harga: 75000,  qtyOnHand: 50, minStock: 5  },
+
+      // === FAN MOTOR ===
+      { sku: 'MOTOR-IND-1PK',    nama: 'Motor Fan Indoor 1 PK',   uom: 'pcs', harga: 350000,  qtyOnHand: 20, minStock: 3 },
+      { sku: 'MOTOR-IND-15PK',   nama: 'Motor Fan Indoor 1.5 PK', uom: 'pcs', harga: 420000,  qtyOnHand: 15, minStock: 2 },
+      { sku: 'MOTOR-OUT-1PK',    nama: 'Motor Fan Outdoor 1 PK',  uom: 'pcs', harga: 480000,  qtyOnHand: 15, minStock: 2 },
+      { sku: 'MOTOR-OUT-15PK',   nama: 'Motor Fan Outdoor 1.5 PK',uom: 'pcs', harga: 550000,  qtyOnHand: 10, minStock: 2 },
+
+      // === PCB / MODUL ===
+      { sku: 'PCB-IND-UNIV',     nama: 'PCB Indoor Universal',    uom: 'pcs', harga: 250000,  qtyOnHand: 25, minStock: 3 },
+      { sku: 'PCB-OUT-UNIV',     nama: 'PCB Outdoor Universal',   uom: 'pcs', harga: 350000,  qtyOnHand: 20, minStock: 3 },
+      { sku: 'PCB-INVERTER',     nama: 'Modul Inverter Board',    uom: 'pcs', harga: 750000,  qtyOnHand: 10, minStock: 2 },
+
+      // === THERMISTOR / SENSOR ===
+      { sku: 'SENSOR-ROOM',      nama: 'Thermistor Room Sensor',  uom: 'pcs', harga: 45000,   qtyOnHand: 50, minStock: 5 },
+      { sku: 'SENSOR-PIPE',      nama: 'Thermistor Pipe Sensor',  uom: 'pcs', harga: 55000,   qtyOnHand: 50, minStock: 5 },
+
+      // === PIPA & FITTING ===
+      { sku: 'PIPA-14-1M',       nama: 'Pipa Tembaga 1/4" (1 m)', uom: 'meter', harga: 35000, qtyOnHand: 200, minStock: 20 },
+      { sku: 'PIPA-38-1M',       nama: 'Pipa Tembaga 3/8" (1 m)', uom: 'meter', harga: 55000, qtyOnHand: 150, minStock: 20 },
+      { sku: 'PIPA-12-1M',       nama: 'Pipa Tembaga 1/2" (1 m)', uom: 'meter', harga: 75000, qtyOnHand: 100, minStock: 10 },
+      { sku: 'PIPA-ISOLASI-1M',  nama: 'Insulasi Pipa (1 m)',     uom: 'meter', harga: 12000, qtyOnHand: 300, minStock: 30 },
+
+      // === FILTER & KEBERSIHAN ===
+      { sku: 'FILTER-INDOOR',    nama: 'Filter Indoor AC',        uom: 'pcs', harga: 35000,   qtyOnHand: 100, minStock: 10 },
+      { sku: 'COIL-CLEANER',     nama: 'Coil Cleaner Spray',      uom: 'pcs', harga: 55000,   qtyOnHand: 60,  minStock: 10 },
+      { sku: 'AC-FOAM-CLEANER',  nama: 'AC Foam Cleaner 500ml',   uom: 'pcs', harga: 45000,   qtyOnHand: 80,  minStock: 10 },
+      { sku: 'LAP-MICROFIBER',   nama: 'Lap Microfiber 40x40 cm', uom: 'pcs', harga: 15000,   qtyOnHand: 200, minStock: 20 },
+
+      // === SEALANT & ADHESIVE ===
+      { sku: 'SEALANT-PIPA',     nama: 'Epoxy Sealant Pipa',      uom: 'pcs', harga: 65000,   qtyOnHand: 40, minStock: 5 },
+      { sku: 'DUCT-TAPE',        nama: 'Aluminium Duct Tape',     uom: 'roll', harga: 25000,   qtyOnHand: 50, minStock: 5 },
+
+      // === KABEL & KONEKTOR ===
+      { sku: 'KABEL-AC-3X15',    nama: 'Kabel Power AC 3x1.5mm (1m)', uom: 'meter', harga: 18000, qtyOnHand: 200, minStock: 20 },
+      { sku: 'KONEKTOR-PUSH',    nama: 'Push Connector Set',      uom: 'set',   harga: 25000,  qtyOnHand: 100, minStock: 10 },
+
+      // === DRAINASE ===
+      { sku: 'SELANG-DRAIN-1M',  nama: 'Selang Drain 3/4" (1m)', uom: 'meter', harga: 8000,   qtyOnHand: 300, minStock: 30 },
+      { sku: 'DRAIN-PAN-TABLET', nama: 'Drain Pan Tablet (10 pcs)', uom: 'set', harga: 30000,  qtyOnHand: 80,  minStock: 10 },
+    ],
+    skipDuplicates: true,
+  });
+
+  // Retrieve items for use in service creation
+  const freon     = await prisma.inventoryItem.findUniqueOrThrow({ where: { sku: 'FREON-R32-1KG' } });
+  const kapasitor = await prisma.inventoryItem.findUniqueOrThrow({ where: { sku: 'KAPS-35UF' } });
 
   // 5. ALUR STATUS & HISTORY LOGIC (Same as before)
   const ALUR_SERVIS = [
@@ -192,6 +251,37 @@ async function main() {
     }
   };
 
+  // Daftar alamat servis untuk seed (dirotasi per service)
+  const alamatServisList = [
+    'Jl. Meruya Utara No. 10, Jakarta Barat',
+    'Apartemen Green Park Tower B Lt. 12, Jakarta Pusat',
+    'Kavling DKI Blok C-9, Pondok Kelapa, Jakarta Timur',
+    'Jl. Kebon Jeruk No. 45, Jakarta Barat',
+    'Perum Puri Beta 2 Blok D-11, Ciledug, Tangerang',
+    'Jl. Joglo Raya No. 88, Jakarta Barat',
+    'Ciledug Indah 1 No. 23, Tangerang',
+    'Villa Meruya Blok F-1 No. 5, Jakarta Barat',
+    'Jl. Palmerah Barat No. 2, Jakarta Selatan',
+    'Jl. Grogol Indah No. 14, Jakarta Barat',
+    'Jl. Puri Indah Raya Blok S-2, Jakarta Barat',
+    'Ruko Taman Palem No. 7, Cengkareng, Jakarta Barat',
+    'Jl. Daan Mogot KM 14, Tangerang',
+    'Komplek Taman Aries Blok J3, Jakarta Barat',
+    'Jl. Kapuk Raya No. 100, Jakarta Utara',
+    'Perumahan Modernland Blok AA-12, Tangerang',
+    'Jl. Bintaro Utama Sektor 5, Tangerang Selatan',
+    'Jl. H. Nawi No. 33, Jakarta Selatan',
+    'Apartemen Kalibata City Tower Ebony Lt. 8, Jakarta Selatan',
+    'Jl. Raya Bekasi Timur No. 55, Jakarta Timur',
+    'Jl. Tebet Barat Dalam No. 12, Jakarta Selatan',
+    'Taman Kota Mas Blok B2 No. 9, Jakarta Utara',
+    'Jl. Pluit Karang Utara No. 3, Jakarta Utara',
+    'Komplek Perumahan Taman Waringin, Bogor',
+    'Jl. Raya Serpong No. 77, Tangerang Selatan',
+    'Jl. BSD Sektor XIV Blok G-3, Tangerang Selatan',
+    'Ruko Grand Serpong Walk No. 11, Tangerang'
+  ];
+
   const createServiceWithStatus = async (status: string, index: number) => {
     const statusIndex = ALUR_SERVIS.findIndex(s => s.value === status);
     const isPastCheck = statusIndex >= 2; 
@@ -212,12 +302,15 @@ async function main() {
     const calculatedTotal = BIAYA_DASAR + totalLayanan + materialPrice;
 
     const serviceId = generateOrderId();
+    // Rotasi alamat servis berdasarkan index global
+    const alamatServis = alamatServisList[(ALUR_SERVIS.findIndex(s => s.value === status) * 3 + index) % alamatServisList.length];
     const service = await prisma.services.create({
       data: {
         id: serviceId,
         customerId: masterCustomer.id, teknisiId: isPastCheck ? masterTeknisi.id : null, jenis_servis: 'AC',
         keluhan: `Perbaikan ${unitCount} Unit AC #${index + 1}\nLokasi: Lantai ${index + 1}\nGejala: Tidak Dingin`,
         status, status_servis: status, biaya_dasar: BIAYA_DASAR,
+        alamat_servis: alamatServis,
         estimasi_biaya: (statusIndex >= 4 && status !== 'Dibatalkan') ? calculatedTotal : null,
         biaya: isWorking ? calculatedTotal : null, biaya_disetujui: isWorking,
         bukti_foto_before: isWorking ? '/images/placeholder-before.jpg' : null,

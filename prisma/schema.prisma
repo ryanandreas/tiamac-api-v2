@@ -67,6 +67,7 @@ model Services {
   keluhan              String
   status               String
   status_servis        String
+  alamat_servis        String?
   biaya                Int?
   teknisiId            String?
   biaya_dasar          Int?                   @default(50000)
