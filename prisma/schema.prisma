@@ -61,7 +61,7 @@ model StaffProfile {
 }
 
 model Services {
-  id                   String                 @id
+  id                   String                 @id @default(uuid()) @db.Uuid
   customerId           String
   jenis_servis         String
   keluhan              String
@@ -91,7 +91,7 @@ model Services {
 
 model ServiceAcUnit {
   id        String                 @id @default(uuid())
-  serviceId String
+  serviceId String                 @db.Uuid
   pk        String
   createdAt DateTime               @default(now())
   updatedAt DateTime               @updatedAt
@@ -225,7 +225,7 @@ model Verification {
 
 model ServiceStatusHistory {
   id              String   @id @default(uuid())
-  serviceId       String   @db.Uuid
+  serviceId       String        @db.Uuid
   status          String
   status_servis   String
   notes           String?

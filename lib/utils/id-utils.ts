@@ -1,10 +1,8 @@
-import { randomBytes } from "crypto"
+import { randomUUID } from "crypto"
 
 /**
- * Generates a custom order ID in the format #XXXXXXXX (e.g., #7A6ABC29)
- * 8 random hexadecimal characters prepended with a hash.
+ * Generates a standard UUID for order IDs.
  */
 export function generateOrderId(): string {
-  const hex = randomBytes(4).toString("hex").toUpperCase()
-  return `#${hex}`
+  return randomUUID()
 }
