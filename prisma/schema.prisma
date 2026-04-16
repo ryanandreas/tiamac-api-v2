@@ -61,13 +61,13 @@ model StaffProfile {
 }
 
 model Services {
-  id                   String                 @id @default(uuid()) @db.Uuid
+  id                   String                 @id
   customerId           String
   jenis_servis         String
-  keluhan              String?
+  keluhan              String
+  status               String
+  status_servis        String
   alamat_servis        String?
-  status               String                 @default("OPEN")
-  status_servis        String?
   biaya                Int?
   teknisiId            String?
   biaya_dasar          Int?                   @default(50000)
@@ -91,9 +91,8 @@ model Services {
 
 model ServiceAcUnit {
   id        String                 @id @default(uuid())
-  serviceId String                 @db.Uuid
-  unit_name String?
-  pk        Float?
+  serviceId String
+  pk        String
   createdAt DateTime               @default(now())
   updatedAt DateTime               @updatedAt
   layanan   ServiceAcUnitLayanan[]
@@ -245,11 +244,11 @@ model ServicePayment {
   type                  PaymentType
   amount                Int
   status                String      @default("PENDING")
-  metodePembayaran      String?     // qris, bank_transfer, ewallet
-  bank                  String?     // bca, bni, mandiri, bri
-  vaNumber              String?     // Nomor Virtual Account
-  qrUrl                 String?     // URL gambar QRIS
-  paymentDetails        Json?       // JSON lengkap dari Midtrans untuk backup
+  metodePembayaran      String?
+  bank                  String?
+  vaNumber              String?
+  qrUrl                 String?
+  paymentDetails        Json?
   midtransTransactionId String?
   waktuPembayaran       DateTime?
   expiryTime            DateTime?

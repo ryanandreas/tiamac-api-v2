@@ -48,6 +48,7 @@ type TaskRow = {
     email: string | null
     customerProfile: { no_telp: string | null; alamat: string | null } | null
   }
+  alamat_servis: string | null
 }
 
 export function TugasTable({
@@ -134,7 +135,7 @@ export function TugasTable({
                             </div>
                             <div className="flex items-start gap-2 max-w-[200px]">
                                <MapPin className="h-3.5 w-3.5 text-slate-300 mt-0.5 shrink-0" />
-                               <span className="text-[10px] font-bold text-slate-400 line-clamp-2 leading-relaxed">{task.customer.customerProfile?.alamat || "Alamat tidak tersedia"}</span>
+                               <span className="text-[10px] font-bold text-slate-400 line-clamp-2 leading-relaxed">{task.alamat_servis || task.customer.customerProfile?.alamat || "Alamat tidak tersedia"}</span>
                             </div>
                          </div>
                       </TableCell>

@@ -42,7 +42,7 @@ type BaseService = Prisma.ServicesGetPayload<{
 type ServiceListItem = BaseService & {
   acUnits?: Array<{
     id: string
-    pk: number
+    pk: string
     layanan: Array<{ id: string; nama: string; harga?: number }>
   }>
   materialUsages?: Array<{
@@ -99,7 +99,7 @@ export function ServiceListTable({
 }: ServiceListTableProps) {
   const emptyColSpan = isCustomerView ? (showNextStep ? 6 : 5) : (showNextStep ? 8 : 7)
   const router = useRouter()
-  
+
   // States
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [selectedService, setSelectedService] = useState<ServiceListItem | null>(null)
@@ -108,7 +108,7 @@ export function ServiceListTable({
   const [approvalMode, setApprovalMode] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [serviceToDelete, setServiceToDelete] = useState<string | null>(null)
-  
+
   const [actionBusy, setActionBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -243,7 +243,7 @@ export function ServiceListTable({
                 <TableCell className={`${isCustomerView ? "pl-6 py-6" : "pl-8 py-6"}`}>
                   <div className="flex items-center gap-2">
                     <span className={`font-black tracking-tight ${isCustomerView ? "text-slate-900" : "text-slate-500 text-xs"}`}>
-                      #{item.id.slice(0, 8).toUpperCase()}
+                      {item.id}
                     </span>
                     {isCustomerView && (
                       <Button
@@ -305,10 +305,10 @@ export function ServiceListTable({
                 <TableCell className="py-6 text-center">
                   <Badge
                     className={`px-3 py-1 rounded-lg font-bold text-[9px] border-none ${item.status_servis === "Booking"
-                        ? "bg-blue-100 text-blue-600"
-                        : item.status_servis.startsWith("Selesai")
-                          ? "bg-green-100 text-[#66B21D]"
-                          : "bg-orange-100 text-orange-600"
+                      ? "bg-blue-100 text-blue-600"
+                      : item.status_servis.startsWith("Selesai")
+                        ? "bg-green-100 text-[#66B21D]"
+                        : "bg-orange-100 text-orange-600"
                       }`}
                   >
                     {item.status_servis}
@@ -327,29 +327,29 @@ export function ServiceListTable({
                   <div className="flex items-center justify-end gap-2">
                     {!isCustomerView ? (
                       <>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
+                        <Button
+                          variant="outline"
+                          size="icon"
                           onClick={() => openDetail(item.id)}
                           className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-[#66B21D] hover:border-green-100 hover:bg-green-50 transition-all"
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </Button>
                         {!hideEdit && (
-                          <Button 
-                            variant="outline" 
-                            size="icon" 
+                          <Button
+                            variant="outline"
+                            size="icon"
                             asChild
                             className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all"
                           >
                             <Link href={`/dashboard/servis/${item.id}/edit`}>
-                               <Edit2 className="h-3.5 w-3.5" />
+                              <Edit2 className="h-3.5 w-3.5" />
                             </Link>
                           </Button>
                         )}
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
+                        <Button
+                          variant="outline"
+                          size="icon"
                           onClick={() => handleDeleteClick(item.id)}
                           className="h-8 w-8 rounded-lg border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all"
                         >
@@ -367,7 +367,7 @@ export function ServiceListTable({
                           <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
                             Opsi Pesanan
                           </DropdownMenuLabel>
-                          
+
                           <DropdownMenuItem onClick={() => openDetail(item.id)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:bg-slate-50">
                             <Eye className="mr-3 h-4 w-4 text-slate-400" />
                             <span>Detail Servis</span>
@@ -375,10 +375,10 @@ export function ServiceListTable({
 
                           {item.status_servis === "Booking" && (
                             <div className="px-2 py-1">
-                              <PaymentButton 
-                                serviceId={item.id} 
-                                type="DOWN_PAYMENT" 
-                                amount={item.biaya_dasar ?? 50000} 
+                              <PaymentButton
+                                serviceId={item.id}
+                                type="DOWN_PAYMENT"
+                                amount={item.biaya_dasar ?? 50000}
                                 label="Bayar DP Rp 50.000"
                                 className="w-full justify-start h-9 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-bold text-[11px] gap-2"
                               />
@@ -387,10 +387,10 @@ export function ServiceListTable({
 
                           {(item.status_servis === "Menunggu Pembayaran" || item.status_servis === "Perbaikan Unit") && (
                             <div className="px-2 py-1">
-                              <PaymentButton 
-                                serviceId={item.id} 
-                                type="FULL_PAYMENT" 
-                                amount={item.biaya ?? 0} 
+                              <PaymentButton
+                                serviceId={item.id}
+                                type="FULL_PAYMENT"
+                                amount={item.biaya ?? 0}
                                 label="Bayar Pelunasan"
                                 className="w-full justify-start h-9 bg-[#66B21D] hover:bg-[#4d9e0f] text-white rounded-xl font-bold text-[11px] gap-2"
                               />
@@ -399,8 +399,8 @@ export function ServiceListTable({
 
                           {enableCustomerApproval && item.status_servis === "Menunggu Persetujuan Customer" && (
                             <DropdownMenuItem onClick={() => openApproveDialog(item)} className="rounded-xl px-3 py-2.5 text-xs font-bold text-[#66B21D] focus:bg-green-50 focus:text-[#66B21D]">
-                               <Check className="mr-3 h-4 w-4" />
-                               Konfirmasi Estimasi
+                              <Check className="mr-3 h-4 w-4" />
+                              Konfirmasi Estimasi
                             </DropdownMenuItem>
                           )}
 
@@ -428,26 +428,26 @@ export function ServiceListTable({
             <div className="size-16 rounded-3xl bg-red-50 text-red-500 flex items-center justify-center mx-auto shadow-sm border border-red-100/50">
               <XCircle className="size-8" />
             </div>
-            
+
             <div className="space-y-2 text-center">
               <DialogTitle className="text-xl font-black text-slate-900 tracking-tight">Batalkan Pesanan?</DialogTitle>
               <DialogDescription className="text-sm font-bold text-slate-500 font-medium leading-relaxed">
-                Tindakan ini akan membatalkan seluruh proses pengerjaan untuk pesanan #{selectedService?.id.slice(0, 8).toUpperCase()} ini.
+                Tindakan ini akan membatalkan seluruh proses pengerjaan untuk pesanan {selectedService?.id} ini.
               </DialogDescription>
             </div>
 
             {actionError && <div className="p-3 bg-red-50 text-red-500 text-[10px] font-bold rounded-lg border border-red-100">{actionError}</div>}
 
             <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 onClick={() => setConfirmOpen(false)}
                 className="h-12 rounded-2xl font-black text-xs bg-slate-50 hover:bg-slate-100 text-slate-400 transition-all border-none"
                 disabled={actionBusy}
               >
                 Kembali
               </Button>
-              <Button 
+              <Button
                 onClick={handleCancelAction}
                 className="h-12 rounded-2xl font-black text-xs bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 border-none"
                 disabled={actionBusy}

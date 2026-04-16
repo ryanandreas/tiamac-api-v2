@@ -63,7 +63,7 @@ export default async function PengecekanDetailPage({
         serviceId={service.id}
         statusServis={service.status_servis}
         customerName={service.customer?.name ?? "-"}
-        customerAlamat={service.customer?.customerProfile?.alamat ?? "-"}
+        customerAlamat={service.alamat_servis || service.customer?.customerProfile?.alamat || "-"}
         teknisiName={service.teknisi?.name ?? "-"}
         statusHistory={service.statusHistory}
         jadwal={extractJadwal(service.keluhan ?? "") ?? null}

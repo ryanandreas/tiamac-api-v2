@@ -20,22 +20,27 @@ const BASE_VISIT_FEE = 50000
 type CatalogRow = { nama: string; pk: string | null; harga: number }
 type CatalogIndex = Record<string, { defaultPrice?: number; priceByPk: Record<string, number> }>
 
-type UnitState = { pk?: number; layanan: string[] }
+type UnitState = { pk?: string; layanan: string[] }
 
 function formatRupiah(value: number) {
   return `Rp ${value.toLocaleString("id-ID")}`
 }
 
-function pkLabel(pk: number) {
-  if (pk === 0.5) return "1/2 PK"
-  return `${pk} PK`
+function pkLabel(pk: string | number | undefined) {
+  if (!pk) return "Belum Pilih PK"
+  const val = String(pk)
+  if (val === "0.5") return "1/2 PK"
+  if (val === "1") return "1 PK"
+  if (val === "1.5-2") return "1.5 - 2 PK"
+  return `${val} PK`
 }
 
 function calcUnitTotal(unit: UnitState, catalog: CatalogIndex) {
-  const pk = unit.pk ? String(unit.pk) : undefined
+  const pk = unit.pk
   return unit.layanan.reduce((sum, layananName) => {
     const item = catalog[layananName]
     if (!item) return sum
+    // Priority: Specific PK price -> Default price -> 0
     const price = (pk ? item.priceByPk[pk] : undefined) ?? item.defaultPrice ?? 0
     return sum + price
   }, 0)
@@ -129,17 +134,7 @@ export function AcBookingForm({
 
   const layananList = React.useMemo(() => Object.keys(catalog).sort(), [catalog])
 
-  const pkOptions = React.useMemo(() => {
-    const pkSet = new Set<number>()
-    for (const row of catalogRows) {
-      if (!row.pk) continue
-      const n = Number(row.pk)
-      if (Number.isFinite(n)) pkSet.add(n)
-    }
-    const values = Array.from(pkSet).sort((a, b) => a - b)
-    if (values.length === 0) return [0.5, 1, 1.5, 2]
-    return values
-  }, [catalogRows])
+  const pkOptions = ["0.5", "1", "1.5-2"]
 
   const unitsJson = React.useMemo(() => JSON.stringify(units.map((u) => ({ pk: u.pk, layanan: u.layanan }))), [units])
   const layananTotal = React.useMemo(() => units.reduce((sum, unit) => sum + calcUnitTotal(unit, catalog), 0), [units, catalog])
@@ -189,7 +184,7 @@ export function AcBookingForm({
     if (!form) return
     if (!form.reportValidity()) return
 
-    const hasPk = units.some((u) => typeof u.pk === "number" && Number.isFinite(u.pk) && (u.pk as number) > 0)
+    const hasPk = units.some((u) => typeof u.pk === "string" && u.pk !== "")
     if (!hasPk) {
       setClientMessage("Pilih PK untuk minimal 1 AC.")
       return
@@ -222,37 +217,7 @@ export function AcBookingForm({
     <div className="min-h-screen bg-[#F8FAFC]/50 pb-20">
       {/* Header Spacer or Nav would be above this in the layout.ts / page.tsx */}
       
-      <div className="max-w-[1200px] mx-auto px-4 lg:px-0 pt-12">
-        <div className="mb-16 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#66B21D]/5 border border-[#66B21D]/10 text-[#66B21D] text-xs font-bold uppercase tracking-wider">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#66B21D] animate-pulse" />
-            Service Verified
-          </div>
-          <h1 className="text-4xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
-            Pesan Servis Teknisi <br className="hidden lg:block" /> ke Lokasi Anda
-          </h1>
-          
-          {(state?.message || clientMessage) && showError && (
-            <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4 animate-in fade-in slide-in-from-top-8 duration-500">
-              <div className="p-6 rounded-[28px] bg-white border border-rose-100 flex items-center gap-5 shadow-2xl shadow-rose-200/40 ring-4 ring-rose-50/50">
-                <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 shrink-0">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                </div>
-                <div className="text-left flex-1">
-                  <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-1.5">Terjadi Kesalahan</p>
-                  <p className="text-sm font-bold text-slate-900 leading-tight uppercase tracking-tight">{state?.message || clientMessage}</p>
-                </div>
-                <button 
-                  type="button"
-                  onClick={() => setShowError(false)}
-                  className="p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-300 hover:text-slate-500"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="max-w-[1200px] mx-auto px-4 lg:px-0">
 
         <form id={formId} ref={formRef} action={formAction}>
           {/* Main 2-Column Grid */}

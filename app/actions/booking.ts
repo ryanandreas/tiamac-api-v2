@@ -9,7 +9,7 @@ import { BookingService } from "@/lib/services/booking-service"
 
 export type CreateBookingState = { success: boolean; message: string } | null
 
-type BookingUnit = { pk: number; layanan: string[] }
+type BookingUnit = { pk: string; layanan: string[] }
 
 const BASE_VISIT_FEE = 50000
 
@@ -28,7 +28,7 @@ function buildCatalogIndex(rows: Array<{ uuid: string; nama: string; pk: string 
   return idx
 }
 
-function getCatalogEntry(catalog: CatalogIndex, layananName: string, pk: number) {
+function getCatalogEntry(catalog: CatalogIndex, layananName: string, pk: string) {
   const item = catalog[layananName]
   if (!item) return undefined
   const pkKey = String(pk)

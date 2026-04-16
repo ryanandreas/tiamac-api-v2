@@ -64,7 +64,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   const profileAlamat = service.customer?.customerProfile?.alamat ?? undefined
   const profileProvinsi = service.customer?.customerProfile?.provinsi ?? undefined
-  const alamatText = [profileAlamat ?? alamat, profileProvinsi].filter(Boolean).join(", ")
+  
+  // Prioritas utama: alamat_servis (dari table services), fallback ke customer profile, lalu parsing keluhan
+  const displayAlamat = service.alamat_servis || profileAlamat || alamat
+  const alamatText = [displayAlamat, profileProvinsi].filter(Boolean).join(", ")
 
   const rawPhone = service.customer?.customerProfile?.no_telp ?? ""
   const phoneText = rawPhone

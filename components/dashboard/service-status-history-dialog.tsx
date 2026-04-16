@@ -228,7 +228,7 @@ export function ServiceStatusHistoryDialog({
                   <div className="min-w-0">
                     <p className="text-[11px] font-[700] text-[#9A3412]/60 uppercase tracking-[0.12em] mb-0.5">Lokasi Pengerjaan</p>
                     <p className="text-sm font-[800] text-[#9A3412] truncate">
-                      {data.keluhan?.split('\n').find((l: string) => l.trim().toLowerCase().startsWith('alamat:'))?.replace(/alamat:\s*/i, '') || data.customer?.customerProfile?.alamat || "Alamat tidak tersedia"}
+                      {data.alamat_servis || data.keluhan?.split('\n').find((l: string) => l.trim().toLowerCase().startsWith('alamat:'))?.replace(/alamat:\s*/i, '') || data.customer?.customerProfile?.alamat || "Alamat tidak tersedia"}
                     </p>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { generateOrderId } from "@/lib/utils/id-utils";
 import { CreateBookingSchema, CreateBookingInput } from "@/lib/validations/schemas";
 
 export const BASE_VISIT_FEE = 50000;
@@ -66,14 +67,18 @@ export class BookingService {
     ].join("\n");
 
     // 4. DB creation
+    const serviceId = generateOrderId();
+    
     return db.$transaction(async (tx) => {
       const service = await tx.services.create({
         data: {
+          id: serviceId,
           customerId,
           jenis_servis: "AC",
           keluhan: keluhanGabungan,
           status: "Booking",
           status_servis: "Booking",
+          alamat_servis: alamat, // SAVING ADDRESS HERE
           biaya_dasar: BASE_VISIT_FEE,
           estimasi_biaya: estimasiTotal,
           acUnits: {

@@ -17,7 +17,11 @@ export async function GET(req: Request) {
       include: {
         customer: true,
         teknisi: true,
-        acUnits: { include: { layanan: true } }
+        acUnits: { include: { layanan: true } },
+        statusHistory: {
+          orderBy: { createdAt: "asc" },
+          include: { changedBy: { select: { name: true } } }
+        }
       },
       orderBy: { createdAt: "desc" }
     });

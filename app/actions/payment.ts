@@ -95,15 +95,21 @@ export async function chargePayment(serviceId: string, paymentType: "DOWN_PAYMEN
 
     // 4. Extract Payment Instructions from Response
     let vaNumber = "";
-    let expiryTime = "";
+    let expiryTime = response.expiry_time || "";
     let qrUrl = "";
+    let bankName = bank || "";
 
     if (method === "bank_transfer") {
       const vaDetails = response.va_numbers?.[0];
-      vaNumber = vaDetails?.va_number || "";
-      expiryTime = response.expiry_time || "";
+      vaNumber = vaDetails?.va_number || response.permata_va_number || "";
+      bankName = vaDetails?.bank || (response.permata_va_number ? "permata" : bankName);
+    } else if (method === "echannel") {
+      vaNumber = response.bill_key || ""; // Bill Key behaves like VA
+      bankName = "mandiri";
+    } else if (method === "cstore") {
+      vaNumber = response.payment_code || ""; // Payment Code behaves like VA
+      bankName = response.store || "";
     } else if (method === "qris" || method === "gopay") {
-      // Find the QR action or URL
       const qrAction = response.actions?.find((a: any) => a.name === "generate-qr-code");
       qrUrl = qrAction?.url || "";
     }
@@ -114,6 +120,7 @@ export async function chargePayment(serviceId: string, paymentType: "DOWN_PAYMEN
       data: {
         vaNumber,
         qrUrl,
+        bank: bankName,
         midtransTransactionId: response.transaction_id,
         expiryTime: expiryTime ? new Date(expiryTime) : null,
         paymentDetails: response as any,
