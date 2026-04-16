@@ -46,7 +46,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   if (!service) notFound()
   if (service.customerId !== user.id) redirect("/customer-panel/dashboard")
-
+ 
   const orderIdShort = service.id.slice(0, 8).toUpperCase()
 
   const formatRupiah = (amount: number) =>

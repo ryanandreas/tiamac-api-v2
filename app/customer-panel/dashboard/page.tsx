@@ -121,7 +121,7 @@ export default async function CustomerDashboardPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <p className="text-sm font-extrabold text-slate-900 truncate">#{service.id.slice(-8).toUpperCase()}</p>
+                            <p className="text-sm font-extrabold text-slate-900 truncate">#{service.id.slice(0, 8).toUpperCase()}</p>
                             <Badge
                               className={`text-[10px] px-2 py-0.5 rounded-lg font-bold border-none ${service.status_servis === "Menunggu Pembayaran" || service.status_servis === "Booking"
                                 ? "bg-orange-100 text-orange-600"

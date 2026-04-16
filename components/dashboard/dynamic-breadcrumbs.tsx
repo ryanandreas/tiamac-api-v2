@@ -50,7 +50,10 @@ export function DynamicBreadcrumbs() {
         {pathSegments.map((segment, index) => {
           const isLast = index === pathSegments.length - 1
           const href = `/${pathSegments.slice(0, index + 1).join("/")}`
-          const label = routeMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(segment)
+          const label = isUuid 
+            ? `#${segment.slice(0, 8).toUpperCase()}` 
+            : (routeMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1))
 
           return (
             <React.Fragment key={href}>

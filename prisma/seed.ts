@@ -86,8 +86,29 @@ async function main() {
   const catalog = await prisma.acServiceCatalog.findMany();
   const getCatalog = (nama: string) => catalog.find(c => c.nama === nama);
 
-  const freon = await prisma.inventoryItem.create({ data: { sku: 'FREON-R32-1KG', nama: 'Freon R32 (1kg)', uom: 'tabung', harga: 250000, qtyOnHand: 50, minStock: 2 } });
-  const kapasitor = await prisma.inventoryItem.create({ data: { sku: 'KAPASITOR-35UF', nama: 'Kapasitor 35uF', uom: 'pcs', harga: 45000, qtyOnHand: 100, minStock: 5 } });
+  const inventoryItems = [
+    { sku: 'FR-R32', nama: 'Freon R32', uom: 'kg', harga: 250000, qtyOnHand: 50, minStock: 5 },
+    { sku: 'FR-R410A', nama: 'Freon R410A', uom: 'kg', harga: 280000, qtyOnHand: 30, minStock: 5 },
+    { sku: 'FR-R22', nama: 'Freon R22', uom: 'kg', harga: 230000, qtyOnHand: 20, minStock: 5 },
+    { sku: 'KAP-15UF', nama: 'Kapasitor 15uF', uom: 'pcs', harga: 25000, qtyOnHand: 40, minStock: 5 },
+    { sku: 'KAP-35UF', nama: 'Kapasitor 35uF', uom: 'pcs', harga: 45000, qtyOnHand: 100, minStock: 10 },
+    { sku: 'KAP-50UF', nama: 'Kapasitor 50uF', uom: 'pcs', harga: 65000, qtyOnHand: 30, minStock: 5 },
+    { sku: 'PIPA-1438', nama: 'Pipa AC 1/4 + 3/8', uom: 'meter', harga: 95000, qtyOnHand: 200, minStock: 20 },
+    { sku: 'PIPA-1412', nama: 'Pipa AC 1/4 + 1/2', uom: 'meter', harga: 125000, qtyOnHand: 100, minStock: 15 },
+    { sku: 'BRKT-OUT', nama: 'Bracket Outdoor Standard', uom: 'set', harga: 75000, qtyOnHand: 50, minStock: 10 },
+    { sku: 'DUCT-TAPE', nama: 'Duct tape (Roll)', uom: 'roll', harga: 15000, qtyOnHand: 150, minStock: 20 },
+    { sku: 'KABEL-NYM', nama: 'Kabel NYM 2x1.5', uom: 'meter', harga: 12000, qtyOnHand: 500, minStock: 50 },
+    { sku: 'DRAIN-FLEX', nama: 'Selang Pembuangan Fleksibel', uom: 'meter', harga: 10000, qtyOnHand: 300, minStock: 30 },
+  ];
+
+  const createdItems = [];
+  for (const item of inventoryItems) {
+    const created = await prisma.inventoryItem.create({ data: item });
+    createdItems.push(created);
+  }
+
+  const freon = createdItems.find(i => i.sku === 'FR-R32')!;
+  const kapasitor = createdItems.find(i => i.sku === 'KAP-35UF')!;
 
   // 5. ALUR STATUS & HISTORY LOGIC (Same as before)
   const ALUR_SERVIS = [
