@@ -11,7 +11,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         customer: true,
         teknisi: true,
         acUnits: { include: { layanan: true } },
-        materialUsages: { include: { item: true } }
+        materialUsages: { include: { item: true } },
+        statusHistory: {
+          orderBy: { createdAt: "asc" },
+          include: { changedBy: { select: { name: true } } }
+        }
       }
     });
 

@@ -28,7 +28,7 @@ project ini adalah proses pembaharusan frontend dari project referensi semua log
 * Gunakan Plus Jakarta Sans sebagai font utama
 * untuk setiap pembuatan tampilan pop up detail servis gunakan tampilan yang ada pada " dashboard/jadwal-saya"
 * pembuatan page panel admin atau teknisi, gunakan /dashboard/tugas sebagai acuan layout seperti  breadcrumb, padding, card, dan style lainnya
-* Untuk uuid untuk service ID gunakan format Hex (#XXXXXXXX upper case) sebagai tampilan Frontend
+* UUID untuk service ID gunakan format Hex (#XXXXXXXX upper case) sebagai tampilan Frontend. untuk di level databasenya tetap pake format UUID (seperti d935dc90-6d74-496f-ba2a-03f4398b31a7)
 
 Warna:
 
