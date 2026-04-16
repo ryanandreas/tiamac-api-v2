@@ -309,7 +309,6 @@ async function main() {
         id: serviceId,
         customerId: masterCustomer.id, teknisiId: isPastCheck ? masterTeknisi.id : null, jenis_servis: 'AC',
         keluhan: `Perbaikan ${unitCount} Unit AC #${index + 1}\nLokasi: Lantai ${index + 1}\nGejala: Tidak Dingin`,
-        alamat_servis: `Jl. Contoh No. ${index + 1}, Jakarta Barat`,
         status, status_servis: status, biaya_dasar: BIAYA_DASAR,
         alamat_servis: alamatServis,
         estimasi_biaya: (statusIndex >= 4 && status !== 'Dibatalkan') ? calculatedTotal : null,
