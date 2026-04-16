@@ -8,9 +8,10 @@ import { SiteNavbar } from "@/components/site-navbar"
 import { SidebarProvider } from "@/components/ui/sidebar"
 
 const ONGOING_STATUSES = [
+  "Booking",
   "Menunggu Jadwal",
   "Konfirmasi Teknisi",
-  "Dalam Pengecekan",
+  "Pengecekan Unit",
   "Menunggu Persetujuan Customer",
   "Perbaikan Unit",
   "Pekerjaan Selesai",

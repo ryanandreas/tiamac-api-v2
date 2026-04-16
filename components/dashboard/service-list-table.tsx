@@ -69,7 +69,7 @@ function nextStepLabel(status: string) {
       return "Menunggu jadwal"
     case "Konfirmasi Teknisi":
       return "Teknisi menuju lokasi"
-    case "Dalam Pengecekan":
+    case "Pengecekan Unit":
       return "Menunggu diagnosa"
     case "Menunggu Persetujuan Customer":
       return "Setujui estimasi biaya"

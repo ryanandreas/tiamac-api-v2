@@ -9,9 +9,10 @@ import Link from "next/link"
 import { Clock, CreditCard, Package, ArrowRight, AlertCircle, ShieldCheck, Wrench } from "lucide-react"
 
 const ONGOING_STATUSES = [
+  "Booking",
   "Menunggu Jadwal",
   "Konfirmasi Teknisi",
-  "Dalam Pengecekan",
+  "Pengecekan Unit",
   "Menunggu Persetujuan Customer",
   "Perbaikan Unit",
   "Pekerjaan Selesai",

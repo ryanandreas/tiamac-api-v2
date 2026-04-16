@@ -87,6 +87,7 @@ async function main() {
            teknisiId: techId,
            jenis_servis: 'AC',
            keluhan: `Keluhan Servis ${step.value} - Unit ${i}\nJadwal: 2026-04-02 0${i}:00`,
+           alamat_servis: `Alamat Servis ${step.value} - Unit ${i}`,
            status: step.value,
            status_servis: step.value,
            biaya_dasar: 50000,

@@ -61,12 +61,13 @@ model StaffProfile {
 }
 
 model Services {
-  id                   String                 @id @default(uuid())
+  id                   String                 @id @default(uuid()) @db.Uuid
   customerId           String
   jenis_servis         String
-  keluhan              String
-  status               String
-  status_servis        String
+  keluhan              String?
+  alamat_servis        String?
+  status               String                 @default("OPEN")
+  status_servis        String?
   biaya                Int?
   teknisiId            String?
   biaya_dasar          Int?                   @default(50000)
@@ -90,8 +91,9 @@ model Services {
 
 model ServiceAcUnit {
   id        String                 @id @default(uuid())
-  serviceId String
-  pk        Float
+  serviceId String                 @db.Uuid
+  unit_name String?
+  pk        Float?
   createdAt DateTime               @default(now())
   updatedAt DateTime               @updatedAt
   layanan   ServiceAcUnitLayanan[]
@@ -165,16 +167,16 @@ model StockMovement {
 
 model ServiceMaterialUsage {
   id              String        @id @default(uuid())
-  serviceId       String
+  serviceId       String        @db.Uuid
   itemId          String
-  qty             Int
+  qty             Float
   harga_satuan    Int
   notes           String?
   createdByUserId String?
   createdAt       DateTime      @default(now())
   createdBy       User?         @relation(fields: [createdByUserId], references: [id])
   item            InventoryItem @relation(fields: [itemId], references: [id])
-  service         Services      @relation(fields: [serviceId], references: [id])
+  service         Services      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@index([itemId])
   @@index([serviceId])
@@ -224,7 +226,7 @@ model Verification {
 
 model ServiceStatusHistory {
   id              String   @id @default(uuid())
-  serviceId       String
+  serviceId       String   @db.Uuid
   status          String
   status_servis   String
   notes           String?
@@ -239,7 +241,7 @@ model ServiceStatusHistory {
 
 model ServicePayment {
   id                    String      @id @default(uuid())
-  serviceId             String
+  serviceId             String      @db.Uuid
   type                  PaymentType
   amount                Int
   status                String      @default("PENDING")

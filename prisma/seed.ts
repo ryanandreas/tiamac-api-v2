@@ -41,7 +41,7 @@ async function main() {
       data: { name: t.name, email: t.email, password: 'pass1234', status: 'ACTIVE' }
     });
     await prisma.staffProfile.create({
-      data: { userId: user.id, role: 'teknisi', no_telp: '0812' + Math.floor(Math.random()*100000000), wilayah: t.wilayah }
+      data: { userId: user.id, role: 'teknisi', no_telp: '0812' + Math.floor(Math.random() * 100000000), wilayah: t.wilayah }
     });
     createdTeknisi.push(user);
   }
@@ -49,7 +49,7 @@ async function main() {
 
   // 3. CUSTOMERS (A lot more)
   const customerList = [
-    { name: 'Dina Pratiwi (Master)', email: 'dina@customer.id', alamat: 'Jl. Meruya Utara No. 10' },
+    { name: 'Dina Pratiwi', email: 'dina@customer.id', alamat: 'Jl. Meruya Utara No. 10' },
     { name: 'Sari Wijaya', email: 'sari@customer.id', alamat: 'Apartemen Green Park L-12' },
     { name: 'Rama Pratama', email: 'rama@customer.id', alamat: 'Kavling DKI Blok C-9' },
     { name: 'Eka Santoso', email: 'eka@customer.id', alamat: 'Jl. Kebon Jeruk No. 45' },
@@ -67,7 +67,7 @@ async function main() {
       data: { name: c.name, email: c.email, password: 'pass1234', status: 'ACTIVE' }
     });
     await prisma.customerProfile.create({
-      data: { userId: user.id, no_telp: '0855' + Math.floor(Math.random()*100000000), alamat: c.alamat, provinsi: 'DKI Jakarta' }
+      data: { userId: user.id, no_telp: '0855' + Math.floor(Math.random() * 100000000), alamat: c.alamat, provinsi: 'DKI Jakarta' }
     });
     createdCustomers.push(user);
   }
@@ -133,11 +133,11 @@ async function main() {
 
   const createServiceWithStatus = async (status: string, index: number) => {
     const statusIndex = ALUR_SERVIS.findIndex(s => s.value === status);
-    const isPastCheck = statusIndex >= 2; 
+    const isPastCheck = statusIndex >= 2;
     const isCompleted = status === 'Selesai (Garansi Aktif)';
     const isWorking = statusIndex >= 5 && status !== 'Dibatalkan';
     const BIAYA_DASAR = 50000;
-    
+
     const unitCount = (index % 2 === 0) ? 2 : 3;
     const unitSpecs = [];
     let totalLayanan = 0;
@@ -154,6 +154,7 @@ async function main() {
       data: {
         customerId: masterCustomer.id, teknisiId: isPastCheck ? masterTeknisi.id : null, jenis_servis: 'AC',
         keluhan: `Perbaikan ${unitCount} Unit AC #${index + 1}\nLokasi: Lantai ${index + 1}\nGejala: Tidak Dingin`,
+        alamat_servis: `Jl. Contoh No. ${index + 1}, Jakarta Barat`,
         status, status_servis: status, biaya_dasar: BIAYA_DASAR,
         estimasi_biaya: (statusIndex >= 4 && status !== 'Dibatalkan') ? calculatedTotal : null,
         biaya: isWorking ? calculatedTotal : null, biaya_disetujui: isWorking,
@@ -181,8 +182,8 @@ async function main() {
     }
     // Materials
     if (statusIndex >= 4 && status !== 'Dibatalkan') {
-      await prisma.serviceMaterialUsage.createMany({ data: [ { serviceId: service.id, itemId: freon.id, qty: 1, harga_satuan: freon.harga, notes: 'Isi Freon', createdByUserId: masterTeknisi.id }, { serviceId: service.id, itemId: kapasitor.id, qty: 1, harga_satuan: kapasitor.harga, notes: 'Ganti Kapasitor', createdByUserId: masterTeknisi.id } ] });
-      await prisma.stockMovement.createMany({ data: [ { itemId: freon.id, type: StockMovementType.OUT, qty: 1, referenceType: StockReferenceType.SERVICE_USAGE, referenceId: service.id, createdByUserId: masterTeknisi.id }, { itemId: kapasitor.id, type: StockMovementType.OUT, qty: 1, referenceType: StockReferenceType.SERVICE_USAGE, referenceId: service.id, createdByUserId: masterTeknisi.id } ] });
+      await prisma.serviceMaterialUsage.createMany({ data: [{ serviceId: service.id, itemId: freon.id, qty: 1, harga_satuan: freon.harga, notes: 'Isi Freon', createdByUserId: masterTeknisi.id }, { serviceId: service.id, itemId: kapasitor.id, qty: 1, harga_satuan: kapasitor.harga, notes: 'Ganti Kapasitor', createdByUserId: masterTeknisi.id }] });
+      await prisma.stockMovement.createMany({ data: [{ itemId: freon.id, type: StockMovementType.OUT, qty: 1, referenceType: StockReferenceType.SERVICE_USAGE, referenceId: service.id, createdByUserId: masterTeknisi.id }, { itemId: kapasitor.id, type: StockMovementType.OUT, qty: 1, referenceType: StockReferenceType.SERVICE_USAGE, referenceId: service.id, createdByUserId: masterTeknisi.id }] });
     }
     return service;
   };
