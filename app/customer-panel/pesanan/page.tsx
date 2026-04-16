@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/app/actions/session"
+import { startOfDay, endOfDay, parseISO } from "date-fns"
 import { ServiceListTable } from "@/components/dashboard/service-list-table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -13,7 +14,7 @@ import { Pagination } from "@/components/pagination"
 
 import { DynamicBreadcrumbs } from "@/components/dashboard/dynamic-breadcrumbs"
 import { SearchInput } from "@/components/dashboard/search-input"
-import { StatusFilter } from "@/components/dashboard/status-filter"
+import { OrderFilters } from "@/components/dashboard/order-filters"
 
 export const metadata: Metadata = {
   title: "Pesanan Saya",
@@ -22,10 +23,10 @@ export const metadata: Metadata = {
 export default async function MyOrdersPage({ 
   searchParams 
 }: { 
-  searchParams: Promise<{ tab?: string; page?: string; q?: string; status?: string }> 
+  searchParams: Promise<{ tab?: string; page?: string; q?: string; status?: string; date?: string }> 
 }) {
   const user = await getCurrentUser()
-  const { tab, page, q, status } = await searchParams
+  const { tab, page, q, status, date } = await searchParams
   const activeTab = tab === "history" ? "history" : "ongoing"
   const currentPage = parseInt(page || "1")
   const pageSize = 10
@@ -39,9 +40,30 @@ export default async function MyOrdersPage({
 
   // Add search filter if present
   if (q) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(q)
+    
+    // Support searching by hex shorthand (e.g., #7A6ABC29 or 7A6ABC29)
+    const hexMatch = q.match(/^#?([0-9a-fA-F]{8})$/)
+    let foundIds: string[] = []
+    
+    if (hexMatch) {
+      const hexPrefix = hexMatch[1].toLowerCase()
+      try {
+        // Cast UUID to text to allow prefix matching
+        const rawResults = await db.$queryRaw<{ id: string }[]>`
+          SELECT id FROM services 
+          WHERE CAST(id AS TEXT) LIKE ${hexPrefix + '%'}
+        `
+        foundIds = rawResults.map(r => r.id)
+      } catch (e) {
+        console.error("Raw search error:", e)
+      }
+    }
+    
     whereClause.OR = [
-      { id: { contains: q } },
-      { keluhan: { contains: q } },
+      ...(isUuid ? [{ id: q }] : []),
+      ...(foundIds.length > 0 ? [{ id: { in: foundIds } }] : []),
+      { keluhan: { contains: q, mode: 'insensitive' } },
       { jenis_servis: { contains: q, mode: 'insensitive' } },
     ]
   }
@@ -49,6 +71,21 @@ export default async function MyOrdersPage({
   // Add status filter if present
   if (status) {
     whereClause.status_servis = status
+  }
+
+  // Add date filter if present
+  if (date) {
+    try {
+      const parsedDate = parseISO(date)
+      if (!isNaN(parsedDate.getTime())) {
+        whereClause.createdAt = {
+          gte: startOfDay(parsedDate),
+          lte: endOfDay(parsedDate),
+        }
+      }
+    } catch (e) {
+      console.error("Invalid date format:", date)
+    }
   }
 
   const [services, ongoingCount, historyCount, filteredCount] = await Promise.all([
@@ -139,7 +176,7 @@ export default async function MyOrdersPage({
                     placeholder="Search" 
                     defaultValue={q} 
                   />
-                  <StatusFilter type={activeTab as any} />
+                  <OrderFilters type={activeTab as any} />
                 </div>
               </div>
             </CardHeader>
@@ -218,7 +255,7 @@ export default async function MyOrdersPage({
                 </p>
                 <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <p className="text-sm font-semibold leading-relaxed max-w-xl text-white">
-                    Pengerjaan dengan status &quot;Selesai (Garansi Aktif)&quot; dapat diklaim jika terjadi masalah dalam 30 hari pengerjaan. Simpan nomor pesanan Anda.
+                    Pengerjaan dengan status &quot;Selesai (Garansi Aktif)&quot; dapat diklaim jika terjadi masalah dalam 30 hari pengerjaan. Simpan Order ID Anda.
                   </p>
                   <Button variant="secondary" size="sm" className="h-10 px-6 rounded-xl font-bold text-xs text-[#66B21D] shrink-0">Pelajari Syarat & Ketentuan</Button>
                 </div>

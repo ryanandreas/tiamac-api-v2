@@ -140,7 +140,7 @@ export default async function BillingPage({
                     <CardContent className="p-6 pt-6 pb-6">
                       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                         <div className="space-y-2 min-w-0">
-                          <p className="text-xs font-semibold text-slate-400 group-hover:text-[#66B21D] transition-colors">{service.id}</p>
+                          <p className="text-xs font-semibold text-slate-400 group-hover:text-[#66B21D] transition-colors">#{service.id.slice(0, 8).toUpperCase()}</p>
                           <h4 className="text-xl font-bold text-slate-900 leading-tight">
                             {service.status_servis === "Booking" ? "Biaya Kunjungan (DP)" : "Pelunasan Hasil Servis"}
                           </h4>
@@ -221,7 +221,7 @@ export default async function BillingPage({
                             <Receipt className="h-5 w-5" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-[10px] font-bold text-slate-300 leading-none mb-1 uppercase tracking-widest">{service.id}</p>
+                            <p className="text-[10px] font-bold text-slate-300 leading-none mb-1 uppercase tracking-widest">#{service.id.slice(0, 8).toUpperCase()}</p>
                             <p className="text-base font-bold text-slate-900 truncate">Selesai & Lunas</p>
                             <p className="text-[10px] text-slate-400 mt-1 font-semibold uppercase tracking-widest">
                               {new Date(service.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}

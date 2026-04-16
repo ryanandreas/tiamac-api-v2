@@ -80,7 +80,7 @@ export default async function TransaksiPage() {
                 transactions.map((tr) => (
                   <TableRow key={tr.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors group">
                     <TableCell className="py-4 pl-6">
-                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#66B21D] transition-colors leading-none tracking-widest">#{tr.id.slice(0, 8)}</span>
+                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#66B21D] transition-colors leading-none tracking-widest">#{tr.id.slice(0, 8).toUpperCase()}</span>
                     </TableCell>
                     <TableCell className="py-4 font-bold text-sm text-slate-900 group-hover:text-[#66B21D] transition-colors">{tr.customer.name}</TableCell>
                     <TableCell className="py-4 text-center font-bold text-sm text-slate-900">{formatPrice(tr.biaya || 0)}</TableCell>

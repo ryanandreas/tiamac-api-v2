@@ -225,7 +225,7 @@ export function ServiceListTable({
           <TableHeader className={isCustomerView ? "" : "bg-slate-50/30"}>
             <TableRow className="border-slate-50 hover:bg-transparent">
               <TableHead className={`h-12 text-[10px] font-bold text-slate-400 ${isCustomerView ? "pl-6" : "pl-8"}`}>
-                {isCustomerView ? "No. Pesanan" : "ID Pesanan"}
+                {isCustomerView ? "Order ID" : "ID Pesanan"}
               </TableHead>
               {!isCustomerView && (
                 <TableHead className="h-12 text-[10px] font-bold text-slate-400">Customer</TableHead>
@@ -243,7 +243,7 @@ export function ServiceListTable({
                 <TableCell className={`${isCustomerView ? "pl-6 py-6" : "pl-8 py-6"}`}>
                   <div className="flex items-center gap-2">
                     <span className={`font-black tracking-tight ${isCustomerView ? "text-slate-900" : "text-slate-500 text-xs"}`}>
-                      {item.id}
+                      #{item.id.slice(0, 8).toUpperCase()}
                     </span>
                     {isCustomerView && (
                       <Button

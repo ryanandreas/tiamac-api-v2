@@ -129,7 +129,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <Card className="rounded-3xl border-none shadow-none overflow-hidden bg-white !py-0 gap-0">
             <CardHeader className="px-6 pt-5 pb-5 border-b border-slate-50 flex flex-row items-center justify-between">
               <div className="space-y-1">
-                <span className="text-[10px] font-semibold text-slate-400">Nomor Pesanan</span>
+                <span className="text-[10px] font-semibold text-slate-400">Order ID</span>
                 <p className="text-lg font-bold text-slate-900 leading-none">#{orderIdShort}</p>
               </div>
               
